@@ -60,6 +60,14 @@ button{ font:inherit; color:inherit; }
 .section-gap{ margin-top:clamp(42px,6.5vw,80px); }
 
 /* nav */
+
+@media (max-width:640px){
+  
+  .navlinks{ gap:2px; }
+  .navlink{ padding:6px 10px; font-size:13px; min-height:34px; }
+  #btn-theme{ padding:5px 9px; font-size:12px; min-height:32px; }
+}
+
 .nav{ position:sticky; top:0; z-index:70; background:rgba(4,7,13,.86); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); }
 .nav-in{ display:flex; align-items:center; gap:var(--s3); padding:9px 0; }
 .brand{ display:flex; align-items:center; gap:10px; font-weight:700; white-space:nowrap; }
@@ -72,9 +80,9 @@ button{ font:inherit; color:inherit; }
   color:var(--muted); font-size:14.5px; font-weight:500; white-space:nowrap; min-height:40px; }
 .navlink:hover{ color:var(--text); background:var(--panel); }
 .navlink[aria-current="page"]{ color:var(--text); background:var(--panel-2); border-color:var(--line-strong); }
-.status{ display:flex; align-items:center; gap:8px; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--muted); white-space:nowrap; }
-.dot{ width:8px;height:8px;border-radius:50%; background:var(--green); box-shadow:0 0 10px var(--green); animation:beat 2s ease-in-out infinite; }
-@keyframes beat{ 0%,100%{opacity:1} 50%{opacity:.35} }
+
+
+ 50%{opacity:.35} }
 @media (max-width:900px){ .status .st-2{ display:none; } }
 @media (max-width:520px){ .brand span{ display:none; } }
 
@@ -113,8 +121,19 @@ button{ font:inherit; color:inherit; }
 
 /* 3D bench */
 .bench{ border:1px solid var(--line); border-radius:var(--r-lg); background:linear-gradient(180deg,#060b14,#03060c); overflow:hidden; box-shadow:var(--shadow); }
-.stage{ position:relative; aspect-ratio:16/10; min-height:290px; }
-@media (max-width:640px){ .stage{ aspect-ratio:4/3; min-height:250px; } }
+.stage{ position:relative; aspect-ratio:16/10; min-height:290px; width:100%; max-width:100%; overflow:hidden; }
+@media (max-width:768px){
+  .stage{ aspect-ratio:16/11; min-height:260px; }
+  .bench{ max-width:100%; overflow:hidden; }
+  .stage-tag{ font-size:9.5px; padding:3px 7px; top:6px; left:6px; max-width:calc(100% - 12px); }
+  .stage-hud{ top:6px; right:6px; gap:4px; }
+  .stage-hud .btn{ padding:4px 8px; font-size:11px; min-height:28px; }
+  .stage-hud .seg button{ padding:4px 8px; font-size:11px; min-height:28px; min-width:60px; }
+}
+@media (max-width:480px){
+  .stage{ aspect-ratio:1/1; min-height:250px; }
+  .stage-tag{ display:none; }
+}
 .stage canvas{ display:block; width:100%; height:100%; touch-action:none; }
 .stage-tag{ position:absolute; top:10px; left:10px; font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.06em;
   color:var(--muted); background:rgba(4,8,14,.72); border:1px solid var(--line); border-radius:8px; padding:5px 9px; max-width:calc(100% - 20px); }
@@ -185,7 +204,11 @@ button{ font:inherit; color:inherit; }
 
 /* tables */
 .tt-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
-table{ border-collapse:collapse; width:100%; font-family:"IBM Plex Mono",monospace; font-size:13px; min-width:420px; }
+table{ border-collapse:collapse; width:100%; font-family:"IBM Plex Mono",monospace; font-size:13px; }
+@media (max-width:640px){
+  table{ min-width:280px; font-size:11.5px; }
+  th, td{ padding:5px 6px; }
+}
 th,td{ padding:8px 10px; text-align:center; border-bottom:1px solid var(--line); white-space:nowrap; }
 th{ color:var(--dim); font-weight:500; font-size:11px; letter-spacing:.07em; }
 tbody tr{ transition:background .22s; }
@@ -248,13 +271,32 @@ tr.bad td{ color:var(--red); }
 .gauge .num{ font-family:"IBM Plex Mono",monospace; font-size:52px; font-weight:600; color:var(--cyan); }
 
 /* layout: simulator */
-.sim-grid{ display:grid; grid-template-columns:minmax(0,1.3fr) minmax(330px,.8fr); gap:var(--s3); align-items:start; }
+.sim-grid{ display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,.85fr); gap:var(--s3); align-items:start; width:100%; max-width:100%; }
+.sim-grid > div{ min-width:0; max-width:100%; }
+.card{ min-width:0; max-width:100%; overflow:hidden; }
+.tt-wrap{ width:100%; max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
 @media (max-width:1080px){ .sim-grid{ grid-template-columns:1fr; } }
 .hub-core{ display:grid; place-items:center; padding:20px 0 6px; }
 .core-node{ font-family:"IBM Plex Mono",monospace; letter-spacing:.13em; font-size:12.5px; color:var(--cyan);
   border:1px solid var(--line-strong); border-radius:999px; padding:9px 20px; background:var(--sunk); box-shadow:0 0 44px -16px var(--cyan); }
 .branch{ width:100%; height:auto; display:block; }
 
+
+
+/* compare grid & inline expansion */
+.cmp-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--s3); align-items:start; }
+@media (max-width:960px){ .cmp-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:520px){ .cmp-grid{ grid-template-columns:1fr; } }
+.cmp-unit{ border-radius:var(--r-lg); border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),rgba(6,10,18,.6));
+  overflow:hidden; transition:border-color .2s, box-shadow .2s; }
+.cmp-unit.active{ border-color:var(--accent, var(--cyan)); box-shadow:0 0 28px -6px var(--accent, var(--cyan)); }
+.cmp-card-btn{ width:100%; text-align:left; cursor:pointer; padding:var(--s3); background:none; border:none; color:inherit; display:flex; flex-direction:column; gap:10px; }
+.cmp-inline-detail{ display:none; padding:var(--s3); border-top:1px solid var(--line); background:var(--sunk); animation:fadeIn .2s ease-out; }
+.cmp-unit.active .cmp-inline-detail{ display:block; }
+@keyframes fadeIn{ from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+th[data-cmp], td[data-cmp]{ cursor:pointer; transition:background .15s, color .15s; }
+th[data-cmp]:hover, td[data-cmp]:hover{ background:rgba(58,214,255,.09); color:var(--cyan); }
+th[data-cmp].col-active, td[data-cmp].col-active{ background:rgba(58,214,255,.14); color:var(--cyan); font-weight:600; }
 
 /* presets & interactive controls */
 .stage-hud .seg{ display:inline-flex; border-radius:9px; overflow:hidden; border:1px solid var(--line-strong); background:var(--sunk); }
@@ -269,8 +311,149 @@ tr.bad td{ color:var(--red); }
 .speed-slider::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:12px; height:12px; border-radius:50%; background:var(--cyan); cursor:pointer; box-shadow:0 0 6px var(--cyan); }
 .speed-slider::-moz-range-thumb{ width:12px; height:12px; border-radius:50%; background:var(--cyan); cursor:pointer; border:none; box-shadow:0 0 6px var(--cyan); }
 
+
+/* ---------- MULTI-THEME SYSTEM (ENHANCED AESTHETICS) ---------- */
+/* 1. CYBER OBSIDIAN (DEEP NEON DARK) */
+:root[data-theme="cyber"]{
+  --bg:#03060c; --bg-2:#070c18;
+  --panel:rgba(58,214,255,.055); --panel-2:rgba(58,214,255,.1);
+  --sunk:rgba(2,5,10,.82);
+  --line:rgba(58,214,255,.18); --line-strong:rgba(58,214,255,.4);
+  --text:#edf3ff; --muted:#94a8d0; --dim:#5c739d;
+  --cyan:#00f2fe; --blue:#3b82f6; --green:#10f089; --red:#ff4365; --amber:#ffb800; --purple:#b066fe;
+  --shadow:0 24px 60px -28px rgba(0,0,0,.95);
+  color-scheme:dark;
+}
+
+/* 2. MIDNIGHT AURORA (GALACTIC INDIGO / VIOLET) */
+:root[data-theme="midnight"]{
+  --bg:#060616; --bg-2:#0d0d2b;
+  --panel:rgba(192,132,252,.08); --panel-2:rgba(192,132,252,.14);
+  --sunk:rgba(4,4,16,.85);
+  --line:rgba(192,132,252,.22); --line-strong:rgba(192,132,252,.48);
+  --text:#f8f7ff; --muted:#aba8df; --dim:#726fab;
+  --cyan:#38bdf8; --blue:#6366f1; --green:#34d399; --red:#fb7185; --amber:#fbbf24; --purple:#c084fc;
+  --shadow:0 24px 60px -28px rgba(5,2,25,.95);
+  color-scheme:dark;
+}
+:root[data-theme="midnight"] body{
+  background-image:
+    radial-gradient(1100px 650px at 80% -10%, rgba(192,132,252,.14), transparent 60%),
+    radial-gradient(900px 550px at 5% 15%, rgba(56,189,248,.13), transparent 62%),
+    radial-gradient(800px 500px at 60% 85%, rgba(52,211,153,.09), transparent 60%),
+    linear-gradient(rgba(192,132,252,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(192,132,252,.035) 1px, transparent 1px);
+}
+
+/* 3. PEARLESCENT AURORA WHITE FADE WITH MULTIPLE GLOWING BLOWING COLOURS */
+:root[data-theme="studio"]{
+  --bg:#f4f7fc; --bg-2:#e8eef8;
+  --panel:rgba(255,255,255,.76); --panel-2:rgba(255,255,255,.92);
+  --sunk:rgba(240,244,252,.85);
+  --line:rgba(99,102,241,.14); --line-strong:rgba(99,102,241,.32);
+  --text:#090e1a; --muted:#475569; --dim:#64748b;
+  --cyan:#0284c7; --blue:#2563eb; --green:#059669; --red:#e11d48; --amber:#d97706; --purple:#7c3aed;
+  --shadow:0 22px 54px -18px rgba(99,102,241,.18);
+  color-scheme:light;
+}
+
+:root[data-theme="studio"] body{
+  background-color:#f4f7fc;
+  background-image:
+    radial-gradient(1000px 600px at 92% -8%, rgba(6,182,212,.22), transparent 58%),
+    radial-gradient(920px 580px at -2% 10%, rgba(168,85,247,.22), transparent 60%),
+    radial-gradient(860px 540px at 85% 65%, rgba(244,63,94,.16), transparent 58%),
+    radial-gradient(820px 500px at 15% 85%, rgba(16,185,129,.16), transparent 58%),
+    linear-gradient(rgba(99,102,241,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,.04) 1px, transparent 1px);
+  background-attachment:fixed;
+}
+
+:root[data-theme="studio"] .nav{
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(99,102,241,.16);
+}
+:root[data-theme="studio"] .card{
+  background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(244,247,253,.82));
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 20px 50px -20px rgba(99,102,241,.16);
+}
+:root[data-theme="studio"] .card.quiet{
+  background:rgba(238,242,250,.85);
+}
+:root[data-theme="studio"] .bench{
+  background:linear-gradient(180deg,#e8edf7,#dde5f2);
+  border-color:rgba(99,102,241,.2);
+}
+:root[data-theme="studio"] .dock{
+  background:rgba(244,247,253,.94);
+  border-top-color:rgba(99,102,241,.15);
+}
+:root[data-theme="studio"] .stage-tag{
+  background:rgba(255,255,255,.9);
+  color:var(--text);
+  border-color:rgba(99,102,241,.2);
+}
+:root[data-theme="studio"] .stage-hud .btn{
+  background:rgba(255,255,255,.92);
+  color:var(--text);
+  border-color:rgba(99,102,241,.25);
+  box-shadow:0 4px 12px rgba(99,102,241,.08);
+}
+:root[data-theme="studio"] .btn{
+  background:rgba(255,255,255,.8);
+  border-color:rgba(99,102,241,.22);
+  color:var(--text);
+}
+:root[data-theme="studio"] .btn:hover{
+  background:rgba(99,102,241,.08);
+  border-color:var(--cyan);
+}
+:root[data-theme="studio"] .btn.primary{
+  background:linear-gradient(135deg,#0284c7,#2563eb);
+  color:#ffffff;
+  border-color:transparent;
+  box-shadow:0 8px 24px -6px rgba(37,99,235,.45);
+}
+:root[data-theme="studio"] .pill{
+  background:rgba(255,255,255,.7);
+  border-color:rgba(99,102,241,.18);
+  color:var(--text);
+}
+:root[data-theme="studio"] .fstage{
+  background:rgba(255,255,255,.8);
+  border-color:rgba(99,102,241,.16);
+}
+:root[data-theme="studio"] .ro{
+  background:rgba(255,255,255,.85);
+  border-color:rgba(99,102,241,.16);
+}
+:root[data-theme="studio"] .why{
+  background:rgba(240,244,255,.5);
+  border-left-color:var(--cyan);
+}
+:root[data-theme="studio"] .opt{
+  background:rgba(255,255,255,.9);
+  border-color:rgba(99,102,241,.18);
+}
+:root[data-theme="studio"] .timing{
+  background:rgba(240,244,255,.85);
+  border-color:rgba(99,102,241,.16);
+}
+:root[data-theme="studio"] .cmp-unit{
+  background:rgba(255,255,255,.85);
+  border-color:rgba(99,102,241,.18);
+}
+:root[data-theme="studio"] .cmp-inline-detail{
+  background:rgba(244,248,255,.95);
+}
+
 /* toast */
-#toast{ position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%) translateY(12px);
+#toast{ display:none !important;  position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%) translateY(12px);
   background:rgba(6,11,20,.95); border:1px solid var(--line-strong); border-radius:12px; padding:9px 15px; z-index:90;
   font-family:"IBM Plex Mono",monospace; font-size:12.5px; opacity:0; transition:opacity .2s, transform .2s; pointer-events:none; max-width:92vw; }
 #toast.on{ opacity:1; transform:translateX(-50%) translateY(0); }
@@ -293,13 +476,12 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
     <div class="brand"><span class="brand-mark"><i></i></span><span>Flip-Flop Lab</span></div>
     <div class="navlinks">
       <button class="navlink" data-page="home" aria-current="page">Home</button>
-      <button class="navlink" data-page="learn">Learn</button>
-      <button class="navlink" data-page="sim">Simulator</button>
+      <button class="navlink" data-page="sim">Learn</button>
       <button class="navlink" data-page="compare">Compare</button>
       <button class="navlink" data-page="quiz">Quiz</button>
     </div>
-    <button class="btn small ghost" id="btn-sound" title="Toggle audio feedback" aria-label="Toggle sound" style="padding:6px 11px;min-height:34px;font-size:13px"><span id="sound-icon">🔈</span> <span class="st-2">Sound</span></button>
-      <div class="status"><span class="dot"></span><span class="mono">DIGITAL LAB ONLINE</span><span class="st-2 mono" style="color:var(--dim)">SIMULATION: READY</span></div>
+    <button class="btn small ghost" id="btn-theme" title="Switch color theme" aria-label="Switch theme" style="padding:6px 12px;min-height:34px;font-size:13px"><span id="theme-icon">🎨</span> <span class="st-2">Theme</span></button>
+      
   </div>
 </nav>
 
@@ -314,8 +496,8 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
         <p class="hero-sub">Understand digital memory by seeing it in action.</p>
         <p class="hero-desc">Explore, simulate and master SR, JK, D and T flip-flops through interactive 3D circuits. Set an input, pulse the clock, and watch one bit get stored — on the board, in the truth table and on the waveform at the same time.</p>
         <div class="row" style="margin-top:var(--s4)">
-          <button class="btn primary" data-goto="sim">Open the simulator</button>
-          <button class="btn ghost" data-goto="learn">Start learning</button>
+          <button class="btn primary" data-goto="sim">Start Learning</button>
+          <button class="btn ghost" data-goto="compare">Compare Flip-Flops</button>
         </div>
         <div class="row" style="margin-top:var(--s3)">
           <span class="pill">4 flip-flops</span><span class="pill">live truth tables</span><span class="pill">scrubbable waveforms</span><span class="pill">18-question test</span>
@@ -355,23 +537,14 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
   </div>
 </section>
 
-<!-- ============ LEARN ============ -->
-<section class="page" id="page-learn">
-  <div class="wrap">
-    <p class="eyebrow">Learn</p>
-    <h2 class="h-lg">Choose a flip-flop</h2>
-    <p class="lead" style="margin-top:8px">Each one opens a full lesson: the circuit on the bench, the rules, a live simulation, the truth table and a quick test.</p>
-    <div class="ff-grid" id="learn-cards" style="margin-top:var(--s4)"></div>
-    <div id="learn-detail" style="margin-top:var(--s4)"></div>
-  </div>
-</section>
+
 
 <!-- ============ SIMULATOR ============ -->
 <section class="page" id="page-sim">
   <div class="wrap">
     <div class="card-head">
       <div>
-        <p class="eyebrow" id="sim-eyebrow" style="margin:0">Simulator</p>
+        <p class="eyebrow" id="sim-eyebrow" style="margin:0">Interactive Learning Lab</p>
         <h2 class="h-md" id="sim-title">JK Flip-Flop</h2>
       </div>
       <div class="row" id="sim-switcher" role="group" aria-label="Choose flip-flop type"></div>
@@ -486,10 +659,12 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
     <h2 class="h-lg">Same cell, different rules</h2>
     <p class="lead" style="margin-top:8px">Select a node to expand it. The centre is the memory cell every one of them shares.</p>
     <div class="hub-core"><span class="core-node mono">FLIP-FLOP CORE</span></div>
-    <div class="ff-grid" id="hub"></div>
-    <div class="card" id="cmp-detail" style="margin-top:var(--s3)"></div>
-    <div class="card">
-      <h3>Side by side</h3>
+    <div class="cmp-grid" id="hub"></div>
+    <div class="card" style="margin-top:var(--s4)">
+      <div class="card-head">
+        <h3>Side-by-side comparison</h3>
+        <span class="pill mono">Click any column or card above to inspect</span>
+      </div>
       <div class="tt-wrap"><table id="cmp-table"><thead></thead><tbody></tbody></table></div>
     </div>
   </div>
@@ -1124,7 +1299,10 @@ const Lab3D = (function(){
       target.z + sph.r * Math.sin(sph.ph) * Math.cos(sph.th));
     camera.lookAt(target);
   }
-  function resetCam(){ sph = { r:14.5, th:.95, ph:.92 }; applyCam(); }
+  function getInitialR(){
+    return window.innerWidth < 480 ? 18.0 : window.innerWidth < 768 ? 16.5 : 14.5;
+  }
+  function resetCam(){ sph = { r: getInitialR(), th:.95, ph:.92 }; applyCam(); }
   function topView(){ sph = { r:13, th:0, ph:.28 }; applyCam(); }
 
   function pick(e){
@@ -1269,7 +1447,7 @@ const Lab3D = (function(){
     const p1 = new THREE.PointLight(0x3ad6ff, .7, 26); p1.position.set(-7, 5, 5); scene.add(p1);
     const p2 = new THREE.PointLight(0xab7dff, .5, 26); p2.position.set(7, 5, -5); scene.add(p2);
     bindEvents(renderer.domElement);
-    applyCam(); requestAnimationFrame(loop);
+    sph.r = getInitialR(); applyCam(); requestAnimationFrame(loop);
     return true;
   }
 
@@ -1292,11 +1470,30 @@ const Lab3D = (function(){
     const w = mountEl.clientWidth, h = mountEl.clientHeight;
     if(!w || !h) return;
     renderer.setSize(w, h, false);
-    camera.aspect = w / h; camera.updateProjectionMatrix();
+    const aspect = w / h;
+    camera.aspect = aspect;
+    
+    // Responsive Field-of-View on mobile viewports
+    // Prevents 3D PCB board from moving outside the screen
+    const baseFov = 41;
+    const baseAspect = 1.55;
+    if(aspect < baseAspect){
+      const baseHRad = 2 * Math.atan(Math.tan(baseFov * Math.PI / 360) * baseAspect);
+      camera.fov = 2 * Math.atan(Math.tan(baseHRad / 2) / aspect) * (180 / Math.PI);
+    } else {
+      camera.fov = baseFov;
+    }
+    camera.updateProjectionMatrix();
+  }
+  function updateThemeColors(t){
+    if(!ok) return;
+    const col = t === "studio" ? 0xf0f4fc : t === "midnight" ? 0x060616 : 0x03060c;
+    if(scene && scene.fog) scene.fog.color.setHex(col);
+    if(renderer) renderer.setClearColor(col, 0);
   }
   window.addEventListener("resize", resize);
 
-  return { init, build, mount, unmount, pause, sync, resize, resetCam, topView, clockPulse, inputPulse,
+  return { init, build, mount, unmount, pause, sync, updateThemeColors, resize, resetCam, topView, clockPulse, inputPulse,
            setFocus, setLabels, available:()=>ok, spin:v=>autoSpin = v };
 })();
 
@@ -1304,9 +1501,8 @@ const Lab3D = (function(){
 function note(txt){ $$(".stage-tag").forEach(t => t.textContent = String(txt).toUpperCase().slice(0, 90)); }
 let toastT = null;
 function toast(msg){
-  const el = $("#toast"); if(!el) return;
-  el.textContent = msg; el.classList.add("on");
-  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), 1500);
+  // Pop messages at bottom of screen completely stopped per user request
+  return;
 }
 function announce(){
   const el = $("#live"); if(!el) return;
@@ -1663,6 +1859,27 @@ function bindTiming(){
 }
 
 
+
+/* ---------- theme management ---------- */
+const THEMES = ["cyber", "midnight", "studio"];
+let currentTheme = localStorage.getItem("ff_theme") || "cyber";
+
+function applyTheme(t){
+  if(!THEMES.includes(t)) t = "cyber";
+  currentTheme = t;
+  document.documentElement.setAttribute("data-theme", t);
+  localStorage.setItem("ff_theme", t);
+  const icon = $("#theme-icon");
+  if(icon) icon.textContent = t === "studio" ? "☀️" : t === "midnight" ? "🌌" : "🎨";
+  Lab3D.updateThemeColors(t);
+  toast("Active theme: " + (t === "studio" ? "Clean Studio (Light)" : t === "midnight" ? "Midnight Aurora" : "Cyber Obsidian"));
+}
+
+function cycleTheme(){
+  const idx = (THEMES.indexOf(currentTheme) + 1) % THEMES.length;
+  applyTheme(THEMES[idx]);
+}
+
 /* ---------- export waveform PNG ---------- */
 function exportTimingPNG(){
   if(!tcv) return;
@@ -1901,62 +2118,69 @@ function quizCard(list, host, title){
 
 /* ---------- compare ---------- */
 function renderCompare(){
-  $("#hub").innerHTML = ORDER.map(k => cardHTML(k, "data-cmp")).join("");
-  $("#cmp-table thead").innerHTML = "<tr><th style='text-align:left'></th>" + ORDER.map(k => `<th>${k}</th>`).join("") + "</tr>";
+  const hub = $("#hub");
+  hub.innerHTML = ORDER.map(k => {
+    const d = FFS[k];
+    return `<div class="cmp-unit" id="cmp-unit-${k}" style="--accent:${d.accent}">
+      <button type="button" class="cmp-card-btn" data-cmp="${k}">
+        ${miniSVG(k)}
+        <div><h3 style="margin:0">${d.name}</h3><div class="tag mono" style="font-size:11px;color:${d.accent}">${d.tag}</div></div>
+        <p style="margin:0;font-size:13px;color:var(--muted)">${d.line}</p>
+        <span class="pill mono" style="align-self:flex-start;font-size:10px">Click to inspect</span>
+      </button>
+      <div class="cmp-inline-detail" id="cmp-detail-${k}">
+        <div class="card-head" style="margin-bottom:8px">
+          <span class="pill">${d.trigger === "edge" ? "rising-edge triggered" : "level-triggered"}</span>
+          <button class="btn primary small" data-open="${k}">Learn & Simulate ${k}</button>
+        </div>
+        <p style="font-size:13.5px;line-height:1.6;margin-bottom:10px">${d.what}</p>
+        <div class="row" style="gap:6px">${CMP_ROWS.slice(0, 4).map(r => `<span class="pill" style="font-size:10px">${r.k}: <b>${r[k]}</b></span>`).join("")}</div>
+      </div>
+    </div>`;
+  }).join("");
+
+  $("#cmp-table thead").innerHTML = "<tr><th style='text-align:left'>Feature</th>" +
+    ORDER.map(k => `<th data-cmp="${k}" title="Click to inspect ${k}">${k} Flip-Flop</th>`).join("") + "</tr>";
+
   $("#cmp-table tbody").innerHTML = CMP_ROWS.map(r =>
-    `<tr><td style="text-align:left;color:var(--dim)">${r.k}</td>` + ORDER.map(k => `<td>${r[k]}</td>`).join("") + "</tr>").join("");
-  $$("#hub [data-cmp]").forEach(b => b.addEventListener("click", () => cmpDetail(b.dataset.cmp)));
+    `<tr><td style="text-align:left;color:var(--dim)">${r.k}</td>` +
+    ORDER.map(k => `<td data-cmp="${k}" title="Click to inspect ${k}">${r[k]}</td>`).join("") + "</tr>").join("");
+
+  // Wire click events on both cards and table cells
+  $$("#page-compare [data-cmp]").forEach(el => {
+    el.addEventListener("click", () => cmpDetail(el.dataset.cmp));
+  });
+
+  $$("#page-compare [data-open]").forEach(b => {
+    b.addEventListener("click", () => {
+      switchType(b.dataset.open);
+      showPage("sim");
+    });
+  });
+
   cmpDetail("JK");
 }
-function cmpDetail(k){
-  const d = FFS[k];
-  $("#cmp-detail").innerHTML = `<div class="card-head">
-      <div><p class="eyebrow" style="margin:0;color:${d.accent}">${d.tag}</p><h3 class="h-sm">${d.name}</h3></div>
-      <div class="row"><span class="pill">${d.trigger === "edge" ? "edge-triggered" : "level-triggered"}</span>
-      <button class="btn small" data-open="${k}">Simulate ${k}</button></div></div>
-    <p>${d.what}</p>
-    <div class="row">${CMP_ROWS.slice(0, 4).map(r => `<span class="pill">${r.k}: ${r[k]}</span>`).join("")}</div>`;
-  $$("#cmp-detail [data-open]").forEach(b => b.addEventListener("click", () => { switchType(k); showPage("sim"); }));
-}
 
-/* ---------- learn detail ---------- */
-function learnDetail(k){
-  const d = FFS[k], host = $("#learn-detail");
-  host.innerHTML = `<div class="card" style="--accent:${d.accent}">
-    <div class="card-head">
-      <div><p class="eyebrow" style="margin:0;color:${d.accent}">${d.tag}</p><h3 class="h-md">${d.name}</h3></div>
-      <div class="row"><span class="pill">${d.trigger === "edge" ? "rising-edge triggered" : "level-triggered model"}</span>
-        <button class="btn primary small" id="ld-sim">Open full simulator</button></div>
-    </div>
-    <div class="sim-grid" style="margin-top:4px">
-      <div>
-        <div class="bench">
-          <div class="stage" id="stage-learn"><div class="stage-tag mono">DRAG TO ORBIT · CLICK THE SWITCHES</div>
-            <div class="stage-hud"><button class="btn small" data-reset-cam="1">Reset view</button></div></div>
-          <div class="dock dock-host"></div>
-        </div>
-        <div class="card" style="margin-top:var(--s3)"><h3>Truth table</h3>
-          <div class="tt-wrap"><table><thead><tr>${d.truthHead.map(h => `<th>${h}</th>`).join("")}</tr></thead>
-          <tbody>${d.truthRows.map(r => `<tr class="${r.bad ? "bad" : ""}">${r.c.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
-          <p style="color:var(--muted);font-size:13px;margin-top:9px">${d.triggerNote}</p></div>
-      </div>
-      <div>
-        <div class="card"><h3>What is it?</h3><p style="margin:0">${d.what}</p></div>
-        <div class="card"><h3>Inputs</h3><p style="margin:0">${d.inputsText}</p></div>
-        <div class="card"><h3>Outputs</h3><p style="margin:0">${d.outputsText}</p></div>
-        <div class="card"><h3>How it works</h3><p style="margin:0">${d.how}</p>
-          <div class="why" style="margin-top:10px"><div class="t mono">IN PLAIN WORDS</div><p>${d.simple}</p></div></div>
-        <div class="card"><h3>Where it is used</h3><div class="row">${d.apps.map(a => `<span class="pill">${a}</span>`).join("")}</div></div>
-        <div class="card"><h3>Quick test</h3><div id="ld-quiz"></div></div>
-      </div>
-    </div></div>`;
-  switchType(k);
-  mountStage("learn");
-  $("#ld-sim").addEventListener("click", () => showPage("sim"));
-  bindCam(host);
-  const pick = QUIZ.filter(q => q.q.indexOf(k) >= 0 || q.e.indexOf(k) >= 0);
-  quizCard((pick.length >= 3 ? pick : QUIZ).slice(0, 3), $("#ld-quiz"), "Quick test — " + d.name);
-  if(host.scrollIntoView) host.scrollIntoView({ behavior:"smooth", block:"start" });
+let activeCmp = null;
+
+function cmpDetail(k){
+  if(activeCmp === k){
+    // Clicked again -> close it!
+    activeCmp = null;
+    $$(".cmp-unit").forEach(u => u.classList.remove("active"));
+    $$("#cmp-table th, #cmp-table td").forEach(c => c.classList.remove("col-active"));
+    return;
+  }
+  
+  // Open clicked flip-flop
+  activeCmp = k;
+  $$(".cmp-unit").forEach(u => u.classList.toggle("active", u.id === "cmp-unit-" + k));
+  $$("#cmp-table th, #cmp-table td").forEach(c => c.classList.toggle("col-active", c.dataset.cmp === k));
+
+  const activeUnit = $("#cmp-unit-" + k);
+  if(activeUnit && activeUnit.scrollIntoView && window.innerWidth < 768){
+    activeUnit.scrollIntoView({ behavior:"smooth", block:"nearest" });
+  }
 }
 
 /* ---------- 2D fallback ---------- */
@@ -2391,7 +2615,7 @@ function setViewMode(mode){
 }
 
 function mountStage(page){
-  const el = page === "home" ? $("#stage-home") : page === "sim" ? $("#stage-sim") : $("#stage-learn");
+  const el = page === "home" ? $("#stage-home") : $("#stage-sim");
   Lab3D.unmount();
   Fallback.unmount();
   Schematic.unmount();
@@ -2408,7 +2632,7 @@ function mountStage(page){
 function showPage(name){
   $$(".page").forEach(p => p.classList.toggle("active", p.id === "page-" + name));
   $$(".navlink").forEach(b => b.dataset.page === name ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
-  if(name === "home" || name === "sim" || (name === "learn" && $("#stage-learn"))) mountStage(name);
+  if(name === "home" || name === "sim") mountStage(name);
   else Lab3D.pause();
   window.scrollTo(0, 0);
   setTimeout(() => { Lab3D.resize(); drawTiming(); }, 40);
@@ -2438,13 +2662,11 @@ function renderAll(){
 }
 function init(){
   $("#home-cards").innerHTML = ORDER.map(k => cardHTML(k)).join("");
-  $("#learn-cards").innerHTML = ORDER.map(k => cardHTML(k)).join("");
   $("#apps").innerHTML = APPS.map(a => `<div class="app-card">${appSVG(a.ic)}<h4>${a.t}</h4><p>${a.d}</p></div>`).join("");
   $("#branch-holder").innerHTML = branchSVG();
   renderCompare();
   quizCard(QUIZ, $("#quiz-card"), "Flip-Flop Mastery");
   $$("#home-cards [data-ff]").forEach(b => b.addEventListener("click", () => { switchType(b.dataset.ff); showPage("sim"); }));
-  $$("#learn-cards [data-ff]").forEach(b => b.addEventListener("click", () => learnDetail(b.dataset.ff)));
   $$(".navlink").forEach(b => b.addEventListener("click", () => showPage(b.dataset.page)));
   wireGoto(); bindCam(); bindTiming();
 
@@ -2459,15 +2681,10 @@ function init(){
     Lab3D.setLabels(S.labels); toast(S.labels ? "Board labels on" : "Board labels off");
   });
   $$("[data-vm]").forEach(b => b.addEventListener("click", () => setViewMode(b.dataset.vm)));
-  if($("#btn-sound")){
-    $("#btn-sound").addEventListener("click", () => {
-      const on = Sound.toggle();
-      $("#sound-icon").textContent = on ? "🔊" : "🔈";
-      toast(on ? "Sound effects enabled" : "Sound effects muted");
-    });
-  }
+  if($("#btn-theme")) $("#btn-theme").addEventListener("click", cycleTheme);
   $$("[data-preset]").forEach(b => b.addEventListener("click", () => applyPreset(b.dataset.preset)));
   if($("#timing-export")) $("#timing-export").addEventListener("click", exportTimingPNG);
+  applyTheme(currentTheme);
   $("#step-prev").addEventListener("click", () => stepGo(stepI - 1));
   $("#step-next").addEventListener("click", () => stepGo(stepI + 1));
   $("#step-restart").addEventListener("click", () => { resetSim(true); stepGo(0); });

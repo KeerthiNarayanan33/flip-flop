@@ -1,0 +1,77 @@
+# Flip-Flop Lab Enhancement & Verification Plan
+
+An interactive digital electronics learning platform featuring 3D Three.js PCB simulation, 2D fallbacks, live truth tables, timing waveforms, step-by-step tutorials, and mastery quizzes for SR, JK, D, and T flip-flops.
+
+## User Review Required
+
+> [!IMPORTANT]
+> The original project file was uploaded as `flipflop` without an `.html` file extension. We have created `index.html` to allow browsers and web servers to serve it properly. Both files can be maintained or `index.html` can be kept as the main entry point.
+
+---
+
+## 1. File Correctness & Audit Findings
+
+We inspected the uploaded project and found the following issues:
+
+1. **File Extension Missing**: The project was uploaded as a single file named `flipflop` without an `.html` extension. Web browsers, web servers (GitHub Pages, Netlify, Vercel), and local static file servers require `index.html` to serve and open it properly.
+2. **Duplicate JavaScript Function**: `showLogic()` was defined twice (lines 1462 and 1476). The first definition was an outdated version missing edge direction indicators (`rising ↑` / `falling ↓`).
+3. **Dead DOM Queries**: `setAuto()` looked for `#clk-auto` and `#home-clock`, but the dock controls dynamically render buttons with `[data-act="auto"]`.
+4. **WebGL Texture Dimension Warning**: In `textSprite()`, canvas dimensions `256x72` are non-power-of-two, causing WebGL warnings (`THREE.WebGLRenderer: Texture has been resized from (256x72) to (256x64)`).
+5. **Missing Favicon**: Browser requested `/favicon.ico` resulting in 404 errors. An inline SVG data URI favicon will resolve this cleanly.
+6. **Fixed Clock Rate**: Auto clock period is hardcoded to 800ms without user control over clock speed.
+
+---
+
+## 2. Proposed Enhancements
+
+### A. Gate-Level Circuit Schematic (Internal Logic Diagram)
+Add an interactive gate-level schematic view toggleable alongside the 3D board:
+- **SR Latch/FF**: Dual cross-coupled NOR/NAND gates with feedback loops and enable/clock gating.
+- **JK Flip-Flop**: Internal master-slave NAND gate structure with feedback connections from $Q$ and $\bar{Q}$.
+- **D Flip-Flop**: Single data line with inverter to $R$ input and clock enable gates.
+- **T Flip-Flop**: JK configuration with $J$ and $K$ tied together to input $T$.
+- *Real-time visual feedback*: Gate inputs, outputs, and connecting wires illuminate green (HIGH / 1) or dim/red (LOW / 0) as signals propagate.
+
+### B. Interactive Clock Frequency & Speed Controller
+- Add a clock rate slider in the control dock:
+  - **Slow / Step-by-step** (0.5 Hz / 2000ms): Perfect for watching signal propagation.
+  - **Normal** (1.2 Hz / 800ms): Standard lab pace.
+  - **Fast** (3 Hz / 330ms): Great for watching frequency division and counters in action.
+
+### C. Educational Lab Presets / Scenarios
+Add a "Lab Scenarios" quick-action bar:
+- **Frequency Divider (÷2)**: Demonstrates T flip-flop or JK ($J=K=1$) dividing the clock frequency by 2.
+- **Race Condition / Forbidden State**: Demonstrates SR latch invalid $S=1, R=1$ state and explains meta-stability.
+- **Binary Counter Bit**: Demonstrates cascading toggle behavior.
+- **1-Bit Memory Register**: Demonstrates latching arbitrary data with D flip-flop.
+
+### D. Digital Oscilloscope Waveform Export
+- Add an "Export Waveform" button to the timing diagram panel that exports the captured digital waveform canvas as a high-resolution PNG image for students to save in their homework or lab reports.
+
+### E. Subtle Audio Synthesizer Feedback (Web Audio API)
+- Pure browser Web Audio API oscillator (no external audio files):
+  - Tactile click on switch toggle.
+  - Soft blip on clock edge pulse.
+  - Alert chime on invalid state ($S=1, R=1$).
+  - Sound toggle button (`Mute / Unmute`) with saved state.
+
+### F. File Structure & Modern Packaging
+- Maintain `index.html` as the primary standard entry point.
+- Keep `flipflop` synchronized.
+- Add an inline SVG favicon depicting a flip-flop logic symbol.
+
+---
+
+## 3. Verification Plan
+
+### Automated & Static Verification
+- Run Node.js syntax checker on all script blocks to guarantee zero syntax errors.
+- Run static DOM ID and event listener checks to confirm no null pointer errors.
+
+### Browser & UI Verification via Chrome DevTools MCP
+- Navigate to `http://localhost:8080/index.html`.
+- Verify console has 0 errors and 0 warnings.
+- Test 3D WebGL rendering, 2D fallback, and new Gate Schematic view.
+- Test all navigation pages: Home, Learn, Simulator, Compare, Quiz.
+- Test input toggling, clock pulse, auto clock with speed slider, presets, and waveform export.
+- Capture screenshots of all updated views.

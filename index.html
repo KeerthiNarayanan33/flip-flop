@@ -1,0 +1,2501 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23050a14' stroke='%233ad6ff' stroke-width='2'/><rect x='8' y='8' width='16' height='16' rx='3' fill='%230e1a2e'/><path d='M4 12h4M4 20h4M24 12h4M24 20h4' stroke='%233ad6ff' stroke-width='2' stroke-linecap='round'/><circle cx='16' cy='16' r='3' fill='%2335e58a'/></svg>">
+<title>Flip-Flop Lab — Interactive Digital Electronics</title>
+<meta name="description" content="Learn SR, JK, D and T flip-flops on a real 3D bench: set inputs, pulse the clock, and watch the logic, truth table and waveforms respond together.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04070d; --bg-2:#070b14;
+  --panel:rgba(146,178,255,.05); --panel-2:rgba(146,178,255,.085);
+  --sunk:rgba(3,6,12,.66);
+  --line:rgba(130,168,255,.15); --line-strong:rgba(130,168,255,.32);
+  --text:#e9eefc; --muted:#94a5c9; --dim:#6a7a9c;
+  --cyan:#3ad6ff; --blue:#5b8cff; --green:#35e58a; --red:#ff5f6d; --amber:#ffb454; --purple:#ab7dff;
+  --r-sm:10px; --r:14px; --r-lg:20px;
+  --s1:6px; --s2:10px; --s3:16px; --s4:24px; --s5:38px; --s6:60px;
+  --shadow:0 20px 56px -30px rgba(0,0,0,.95);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#04070d; } }
+:root[data-theme="dark"]{ --bg:#04070d; }
+:root[data-theme="light"]{ --bg:#0b111c; --bg-2:#101828; --muted:#a6b4d3; }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); -webkit-text-size-adjust:100%; }
+*,*::before,*::after{ box-sizing:inherit; }
+body{
+  margin:0; background:var(--bg); color:var(--text); font-size:16px; line-height:1.55;
+  font-family:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif; overflow-x:hidden;
+  background-image:
+    radial-gradient(1000px 600px at 82% -12%, rgba(58,214,255,.09), transparent 62%),
+    radial-gradient(880px 520px at 4% 6%, rgba(171,125,255,.09), transparent 64%),
+    linear-gradient(rgba(130,168,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(130,168,255,.035) 1px, transparent 1px);
+  background-size:auto,auto,46px 46px,46px 46px; background-attachment:fixed;
+}
+.mono{ font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; }
+h1,h2,h3,h4{ margin:0; line-height:1.14; letter-spacing:-.021em; font-weight:600; }
+p{ margin:0 0 .8em; max-width:66ch; }
+a{ color:var(--cyan); }
+button{ font:inherit; color:inherit; }
+:focus-visible{ outline:2px solid var(--cyan); outline-offset:3px; border-radius:8px; }
+.sr-only{ position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0; }
+.wrap{ width:min(1320px,100% - 40px); margin-inline:auto; }
+@media (max-width:640px){ .wrap{ width:min(1320px,100% - 22px); } }
+.page{ display:none; padding:var(--s4) 0 var(--s6); }
+.page.active{ display:block; }
+.eyebrow{ font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.13em; color:var(--cyan); margin-bottom:8px; }
+.h-lg{ font-size:clamp(30px,5vw,52px); }
+.h-md{ font-size:clamp(22px,3.2vw,33px); }
+.h-sm{ font-size:clamp(17px,2.1vw,20px); }
+.lead{ color:var(--muted); font-size:clamp(15px,1.5vw,17.5px); }
+.stack{ display:grid; gap:var(--s3); }
+.section-gap{ margin-top:clamp(42px,6.5vw,80px); }
+
+/* nav */
+.nav{ position:sticky; top:0; z-index:70; background:rgba(4,7,13,.86); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); }
+.nav-in{ display:flex; align-items:center; gap:var(--s3); padding:9px 0; }
+.brand{ display:flex; align-items:center; gap:10px; font-weight:700; white-space:nowrap; }
+.brand-mark{ width:30px;height:30px;border-radius:9px;background:linear-gradient(145deg,#0e1a2e,#050a14);
+  border:1px solid var(--line-strong); display:grid;place-items:center; box-shadow:inset 0 0 18px rgba(58,214,255,.22); }
+.brand-mark i{ width:11px;height:11px;border-radius:2px;background:var(--cyan); box-shadow:0 0 12px var(--cyan); display:block; }
+.navlinks{ display:flex; gap:3px; flex:1; overflow-x:auto; scrollbar-width:none; }
+.navlinks::-webkit-scrollbar{ display:none; }
+.navlink{ background:none;border:1px solid transparent;border-radius:11px;padding:9px 13px;cursor:pointer;
+  color:var(--muted); font-size:14.5px; font-weight:500; white-space:nowrap; min-height:40px; }
+.navlink:hover{ color:var(--text); background:var(--panel); }
+.navlink[aria-current="page"]{ color:var(--text); background:var(--panel-2); border-color:var(--line-strong); }
+.status{ display:flex; align-items:center; gap:8px; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--muted); white-space:nowrap; }
+.dot{ width:8px;height:8px;border-radius:50%; background:var(--green); box-shadow:0 0 10px var(--green); animation:beat 2s ease-in-out infinite; }
+@keyframes beat{ 0%,100%{opacity:1} 50%{opacity:.35} }
+@media (max-width:900px){ .status .st-2{ display:none; } }
+@media (max-width:520px){ .brand span{ display:none; } }
+
+/* buttons */
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; min-height:40px;
+  border-radius:11px; padding:9px 16px; font-size:14.5px; font-weight:600;
+  border:1px solid var(--line-strong); background:var(--panel-2); color:var(--text);
+  transition:transform .12s, background .15s, border-color .15s, box-shadow .15s; }
+.btn:hover{ background:rgba(146,178,255,.14); border-color:var(--cyan); }
+.btn:active{ transform:translateY(1px) scale(.985); }
+.btn.primary{ background:linear-gradient(140deg,rgba(58,214,255,.24),rgba(91,140,255,.14)); border-color:rgba(58,214,255,.5); box-shadow:0 0 30px -14px var(--cyan); }
+.btn.ghost{ background:transparent; }
+.btn.small{ padding:7px 12px; font-size:13px; min-height:36px; border-radius:9px; }
+.btn[aria-pressed="true"]{ border-color:var(--cyan); background:rgba(58,214,255,.17); }
+.btn:disabled{ opacity:.42; cursor:not-allowed; }
+.btn.coach{ animation:coach 1.4s ease-in-out infinite; }
+@keyframes coach{ 0%,100%{ box-shadow:0 0 0 0 rgba(58,214,255,.5) } 50%{ box-shadow:0 0 0 7px rgba(58,214,255,0) } }
+
+/* panels */
+.card{ padding:var(--s3); border-radius:var(--r-lg); border:1px solid var(--line);
+  background:linear-gradient(180deg,var(--panel),rgba(6,10,18,.6)); box-shadow:var(--shadow); }
+.card.quiet{ background:var(--sunk); box-shadow:none; }
+.card + .card{ margin-top:var(--s3); }
+.card h3{ font-size:16px; margin-bottom:var(--s2); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; gap:var(--s2); margin-bottom:var(--s2); flex-wrap:wrap; }
+.row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.pill{ font-family:"IBM Plex Mono",monospace; font-size:11px; border:1px solid var(--line); border-radius:999px; padding:4px 10px; color:var(--muted); }
+
+/* hero */
+.hero{ display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.18fr); gap:var(--s4); align-items:center; }
+@media (max-width:1000px){ .hero{ grid-template-columns:1fr; } }
+.hero h1{ font-size:clamp(40px,7.6vw,78px); font-weight:700; letter-spacing:-.04em; }
+.hero h1 span{ display:block; }
+.hero-sub{ font-size:clamp(17px,2.1vw,21px); margin-top:12px; font-weight:500; }
+.hero-desc{ color:var(--muted); margin-top:10px; }
+
+/* 3D bench */
+.bench{ border:1px solid var(--line); border-radius:var(--r-lg); background:linear-gradient(180deg,#060b14,#03060c); overflow:hidden; box-shadow:var(--shadow); }
+.stage{ position:relative; aspect-ratio:16/10; min-height:290px; }
+@media (max-width:640px){ .stage{ aspect-ratio:4/3; min-height:250px; } }
+.stage canvas{ display:block; width:100%; height:100%; touch-action:none; }
+.stage-tag{ position:absolute; top:10px; left:10px; font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.06em;
+  color:var(--muted); background:rgba(4,8,14,.72); border:1px solid var(--line); border-radius:8px; padding:5px 9px; max-width:calc(100% - 20px); }
+.stage-hud{ position:absolute; top:10px; right:10px; display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.stage-hud .btn{ background:rgba(4,8,14,.78); backdrop-filter:blur(6px); }
+#tooltip{ position:absolute; pointer-events:none; z-index:6; transform:translate(-50%,-150%);
+  font-family:"IBM Plex Mono",monospace; font-size:11px; padding:5px 9px; border-radius:8px;
+  background:rgba(4,8,14,.94); border:1px solid var(--line-strong); white-space:nowrap; opacity:0; transition:opacity .12s; }
+#tooltip.on{ opacity:1; }
+
+/* control dock */
+.dock{ border-top:1px solid var(--line); background:rgba(4,8,15,.8); padding:var(--s2) var(--s3) var(--s3); }
+.dock-grid{ display:flex; gap:var(--s3); align-items:flex-end; flex-wrap:wrap; }
+.dock-label{ font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.12em; color:var(--dim); margin-bottom:6px; display:block; }
+.seg{ display:flex; border:1px solid var(--line-strong); border-radius:12px; overflow:hidden; background:var(--sunk); }
+.seg button{ background:none; border:0; cursor:pointer; padding:10px 0; width:52px; min-height:44px;
+  font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600; color:var(--dim); transition:background .14s,color .14s; }
+.seg button:hover{ background:rgba(146,178,255,.09); color:var(--text); }
+.seg button[aria-pressed="true"][data-v="1"]{ background:rgba(53,229,138,.2); color:var(--green); box-shadow:inset 0 -2px 0 var(--green); }
+.seg button[aria-pressed="true"][data-v="0"]{ background:rgba(255,95,109,.16); color:var(--red); box-shadow:inset 0 -2px 0 var(--red); }
+.seg + .seg{ margin-left:0; }
+.dock-unit{ min-width:112px; }
+.dock-unit .name{ font-size:13px; color:var(--muted); margin-top:6px; }
+.clk-btn{ min-height:60px; padding:0 22px; border-radius:14px; font-size:15px;
+  border:1px solid rgba(171,125,255,.55); background:linear-gradient(140deg,rgba(171,125,255,.26),rgba(91,140,255,.1)); }
+.clk-btn:hover{ border-color:var(--purple); }
+.clk-btn.hot{ box-shadow:0 0 0 6px rgba(171,125,255,.16); }
+.dock-sep{ width:1px; align-self:stretch; background:var(--line); }
+@media (max-width:760px){ .dock-sep{ display:none; } .dock-grid{ gap:var(--s2); } .dock-unit{ min-width:96px; } }
+
+/* signal flow ribbon */
+.flow{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:6px; margin-top:var(--s3); }
+@media (max-width:900px){ .flow{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+.fstage{ position:relative; border:1px solid var(--line); border-radius:var(--r); padding:10px 11px; background:var(--sunk); transition:border-color .2s, background .2s, box-shadow .2s; }
+.fstage .fk{ font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.1em; color:var(--dim); }
+.fstage .fv{ font-family:"IBM Plex Mono",monospace; font-size:14px; margin-top:3px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.fstage.live{ border-color:var(--cyan); background:rgba(58,214,255,.12); box-shadow:0 0 22px -8px var(--cyan); }
+.fstage.live .fv{ color:var(--text); }
+.fstage.live .fk{ color:var(--cyan); }
+
+/* readouts */
+.state-hero{ display:grid; grid-template-columns:repeat(auto-fit,minmax(112px,1fr)); gap:var(--s2); }
+.ro{ border:1px solid var(--line); border-radius:var(--r); padding:10px 12px; background:var(--sunk); position:relative; overflow:hidden; }
+.ro .k{ font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--dim); letter-spacing:.09em; }
+.ro .v{ font-family:"IBM Plex Mono",monospace; font-size:38px; font-weight:600; line-height:1.05; }
+.ro .s{ font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--muted); }
+.ro.big .v{ font-size:52px; }
+.ro.flash{ animation:flash .55s ease-out; }
+@keyframes flash{ 0%{ background:rgba(58,214,255,.3) } 100%{ background:var(--sunk) } }
+.v.hi{ color:var(--green); text-shadow:0 0 24px rgba(53,229,138,.45); }
+.v.lo{ color:var(--red); }
+.v.clk{ color:var(--purple); }
+.delta{ position:absolute; right:10px; top:10px; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--cyan); opacity:0; transition:opacity .2s; }
+.delta.on{ opacity:1; }
+.mode-chip{ display:inline-flex; align-items:center; gap:7px; font-family:"IBM Plex Mono",monospace; font-size:12px;
+  padding:6px 12px; border-radius:999px; border:1px solid var(--line-strong); background:var(--sunk); }
+.mode-chip.warn{ border-color:var(--red); color:var(--red); background:rgba(255,95,109,.12); }
+.mode-chip.tog{ border-color:var(--purple); color:var(--purple); }
+.mode-chip.set{ border-color:var(--green); color:var(--green); }
+.mode-chip.rst{ border-color:var(--amber); color:var(--amber); }
+
+/* explanation */
+.why{ border-left:2px solid var(--cyan); padding:8px 0 8px 13px; }
+.why .t{ font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--cyan); letter-spacing:.11em; }
+.why p{ margin:6px 0 0; font-size:14.5px; }
+.why .chain{ font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--muted); margin-top:8px; }
+.alert{ border:1px solid var(--red); background:rgba(255,95,109,.1); color:#ffd9dc; border-radius:var(--r); padding:11px 13px; font-size:13.5px; }
+
+/* tables */
+.tt-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+table{ border-collapse:collapse; width:100%; font-family:"IBM Plex Mono",monospace; font-size:13px; min-width:420px; }
+th,td{ padding:8px 10px; text-align:center; border-bottom:1px solid var(--line); white-space:nowrap; }
+th{ color:var(--dim); font-weight:500; font-size:11px; letter-spacing:.07em; }
+tbody tr{ transition:background .22s; }
+tbody tr.now{ background:rgba(58,214,255,.15); box-shadow:inset 3px 0 0 var(--cyan); }
+tbody tr.next{ background:rgba(171,125,255,.11); box-shadow:inset 3px 0 0 var(--purple); }
+tbody tr.now td:first-child::before{ content:"▶ "; color:var(--cyan); }
+tbody tr.next td:first-child::before{ content:"⋯ "; color:var(--purple); }
+td.op{ color:var(--muted); }
+tr.bad td{ color:var(--red); }
+.tt-key{ font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--dim); display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; }
+.tt-key b{ font-weight:500; }
+
+/* timing */
+.timing-box{ position:relative; }
+.timing{ width:100%; height:236px; display:block; border-radius:var(--r); background:rgba(3,6,12,.7); border:1px solid var(--line); touch-action:pan-y; }
+@media (max-width:640px){ .timing{ height:200px; } }
+.scrub{ position:absolute; pointer-events:none; background:rgba(4,8,14,.95); border:1px solid var(--line-strong);
+  border-radius:9px; padding:7px 10px; font-family:"IBM Plex Mono",monospace; font-size:11px; opacity:0; transition:opacity .12s; z-index:3; }
+.scrub.on{ opacity:1; }
+
+/* steps */
+.step-n{ font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--cyan); border:1px solid var(--line-strong); border-radius:9px; padding:6px 9px; }
+.progress{ height:5px; border-radius:99px; background:rgba(146,178,255,.11); overflow:hidden; margin:10px 0; }
+.progress i{ display:block; height:100%; background:linear-gradient(90deg,var(--cyan),var(--blue)); transition:width .3s; }
+.done-badge{ color:var(--green); font-family:"IBM Plex Mono",monospace; font-size:11.5px; }
+
+/* cards grid */
+.ff-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--s3); }
+@media (max-width:900px){ .ff-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:470px){ .ff-grid{ grid-template-columns:1fr; } }
+.ff-card{ text-align:left; cursor:pointer; padding:var(--s3); border-radius:var(--r-lg); border:1px solid var(--line);
+  background:linear-gradient(180deg,var(--panel),rgba(6,10,18,.6)); display:flex; flex-direction:column; gap:10px;
+  transition:transform .18s, border-color .18s, box-shadow .18s; }
+.ff-card:hover{ transform:translateY(-3px); border-color:var(--accent,var(--cyan)); box-shadow:0 22px 44px -30px var(--accent,var(--cyan)); }
+.ff-card .mini{ width:100%; height:104px; display:block; }
+.ff-card h3{ font-size:20px; margin:0; }
+.ff-card .tag{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--accent,var(--cyan)); }
+.ff-card p{ color:var(--muted); font-size:13.5px; margin:0; }
+.ff-card .go{ font-size:13.5px; font-weight:600; color:var(--accent,var(--cyan)); margin-top:auto; }
+
+/* apps */
+.app-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--s2); }
+@media (max-width:900px){ .app-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:460px){ .app-grid{ grid-template-columns:1fr; } }
+.app-card{ padding:14px; border-radius:var(--r); border:1px solid var(--line); background:var(--sunk); }
+.app-card svg{ width:100%; height:62px; display:block; margin-bottom:8px; }
+.app-card h4{ font-size:15px; }
+.app-card p{ font-size:12.5px; color:var(--muted); margin:4px 0 0; }
+
+/* quiz */
+.opt{ display:block; width:100%; text-align:left; padding:13px 15px; border-radius:var(--r); cursor:pointer; min-height:46px;
+  border:1px solid var(--line); background:var(--sunk); margin-bottom:8px; transition:border-color .14s, background .14s; }
+.opt:hover:not(:disabled){ border-color:var(--cyan); }
+.opt .k{ font-family:"IBM Plex Mono",monospace; color:var(--dim); margin-right:10px; }
+.opt.correct{ border-color:var(--green); background:rgba(53,229,138,.13); }
+.opt.wrong{ border-color:var(--red); background:rgba(255,95,109,.12); }
+.opt:disabled{ cursor:default; }
+.score-row{ display:flex; gap:14px; flex-wrap:wrap; font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--muted); }
+.gauge{ display:grid; place-items:center; margin:6px 0 12px; }
+.gauge .num{ font-family:"IBM Plex Mono",monospace; font-size:52px; font-weight:600; color:var(--cyan); }
+
+/* layout: simulator */
+.sim-grid{ display:grid; grid-template-columns:minmax(0,1.3fr) minmax(330px,.8fr); gap:var(--s3); align-items:start; }
+@media (max-width:1080px){ .sim-grid{ grid-template-columns:1fr; } }
+.hub-core{ display:grid; place-items:center; padding:20px 0 6px; }
+.core-node{ font-family:"IBM Plex Mono",monospace; letter-spacing:.13em; font-size:12.5px; color:var(--cyan);
+  border:1px solid var(--line-strong); border-radius:999px; padding:9px 20px; background:var(--sunk); box-shadow:0 0 44px -16px var(--cyan); }
+.branch{ width:100%; height:auto; display:block; }
+
+
+/* presets & interactive controls */
+.stage-hud .seg{ display:inline-flex; border-radius:9px; overflow:hidden; border:1px solid var(--line-strong); background:var(--sunk); }
+.stage-hud .seg button{ border:none; border-radius:0; min-height:32px; padding:6px 14px; font-size:12.5px; white-space:nowrap; background:transparent; width:auto !important; font-family:inherit; }
+.stage-hud .seg button[aria-pressed="true"]{ background:var(--panel-2); color:var(--cyan); font-weight:600; box-shadow:inset 0 0 12px rgba(58,214,255,.2); }
+.stage-hud .seg button + button{ border-left:1px solid var(--line); }
+
+.preset-bar{ display:flex; align-items:center; gap:8px; margin:10px 0 14px; flex-wrap:wrap; }
+.preset-btn{ border-color:var(--line); background:var(--panel); font-size:12.5px; padding:6px 12px; }
+.preset-btn:hover{ border-color:var(--cyan); background:rgba(58,214,255,.12); }
+.speed-slider{ -webkit-appearance:none; appearance:none; height:4px; border-radius:2px; background:rgba(130,168,255,.2); outline:none; }
+.speed-slider::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:12px; height:12px; border-radius:50%; background:var(--cyan); cursor:pointer; box-shadow:0 0 6px var(--cyan); }
+.speed-slider::-moz-range-thumb{ width:12px; height:12px; border-radius:50%; background:var(--cyan); cursor:pointer; border:none; box-shadow:0 0 6px var(--cyan); }
+
+/* toast */
+#toast{ position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%) translateY(12px);
+  background:rgba(6,11,20,.95); border:1px solid var(--line-strong); border-radius:12px; padding:9px 15px; z-index:90;
+  font-family:"IBM Plex Mono",monospace; font-size:12.5px; opacity:0; transition:opacity .2s, transform .2s; pointer-events:none; max-width:92vw; }
+#toast.on{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+footer{ border-top:1px solid var(--line); margin-top:var(--s6); padding:24px 0 36px; color:var(--muted); font-size:14px; }
+footer strong{ color:var(--text); display:block; font-size:16px; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+}
+</style>
+</head>
+<body>
+<a class="sr-only" href="#main">Skip to main content</a>
+<div id="toast" role="status"></div>
+<div id="live" class="sr-only" role="status" aria-live="polite"></div>
+
+<nav class="nav" aria-label="Primary">
+  <div class="wrap nav-in">
+    <div class="brand"><span class="brand-mark"><i></i></span><span>Flip-Flop Lab</span></div>
+    <div class="navlinks">
+      <button class="navlink" data-page="home" aria-current="page">Home</button>
+      <button class="navlink" data-page="learn">Learn</button>
+      <button class="navlink" data-page="sim">Simulator</button>
+      <button class="navlink" data-page="compare">Compare</button>
+      <button class="navlink" data-page="quiz">Quiz</button>
+    </div>
+    <button class="btn small ghost" id="btn-sound" title="Toggle audio feedback" aria-label="Toggle sound" style="padding:6px 11px;min-height:34px;font-size:13px"><span id="sound-icon">🔈</span> <span class="st-2">Sound</span></button>
+      <div class="status"><span class="dot"></span><span class="mono">DIGITAL LAB ONLINE</span><span class="st-2 mono" style="color:var(--dim)">SIMULATION: READY</span></div>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ============ HOME ============ -->
+<section class="page active" id="page-home">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <h1><span>FLIP-FLOP</span><span>LAB</span></h1>
+        <p class="hero-sub">Understand digital memory by seeing it in action.</p>
+        <p class="hero-desc">Explore, simulate and master SR, JK, D and T flip-flops through interactive 3D circuits. Set an input, pulse the clock, and watch one bit get stored — on the board, in the truth table and on the waveform at the same time.</p>
+        <div class="row" style="margin-top:var(--s4)">
+          <button class="btn primary" data-goto="sim">Open the simulator</button>
+          <button class="btn ghost" data-goto="learn">Start learning</button>
+        </div>
+        <div class="row" style="margin-top:var(--s3)">
+          <span class="pill">4 flip-flops</span><span class="pill">live truth tables</span><span class="pill">scrubbable waveforms</span><span class="pill">18-question test</span>
+        </div>
+      </div>
+      <div class="bench">
+        <div class="stage" id="stage-home">
+          <div class="stage-tag mono" id="home-tag">JK FLIP-FLOP · AUTO CLOCK</div>
+          <div class="stage-hud">
+            <button class="btn small" data-reset-cam="1">Reset view</button>
+            <button class="btn small" data-goto="sim">Take control</button>
+          </div>
+        </div>
+        <div class="dock dock-host" data-dock="home"></div>
+      </div>
+    </div>
+
+    <div class="section-gap">
+      <p class="eyebrow">Pick a starting point</p>
+      <h2 class="h-md">Four ways to remember one bit</h2>
+      <p class="lead" style="margin-top:8px">Every flip-flop below stores exactly one bit. What changes is how you tell it what to store.</p>
+      <div class="ff-grid" id="home-cards" style="margin-top:var(--s3)"></div>
+    </div>
+
+    <div class="section-gap card" style="padding:clamp(18px,3vw,32px)">
+      <p class="eyebrow">One idea — four behaviours</p>
+      <h2 class="h-md">They are all the same memory cell</h2>
+      <p class="lead" style="margin-top:8px;max-width:60ch">A cross-coupled pair of gates holds a bit forever. Each flip-flop simply wraps that cell in different input logic.</p>
+      <div id="branch-holder" style="margin-top:var(--s3)"></div>
+    </div>
+
+    <div class="section-gap">
+      <p class="eyebrow">Where the bit ends up</p>
+      <h2 class="h-md">Flip-flops in real hardware</h2>
+      <div class="app-grid" id="apps" style="margin-top:var(--s3)"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LEARN ============ -->
+<section class="page" id="page-learn">
+  <div class="wrap">
+    <p class="eyebrow">Learn</p>
+    <h2 class="h-lg">Choose a flip-flop</h2>
+    <p class="lead" style="margin-top:8px">Each one opens a full lesson: the circuit on the bench, the rules, a live simulation, the truth table and a quick test.</p>
+    <div class="ff-grid" id="learn-cards" style="margin-top:var(--s4)"></div>
+    <div id="learn-detail" style="margin-top:var(--s4)"></div>
+  </div>
+</section>
+
+<!-- ============ SIMULATOR ============ -->
+<section class="page" id="page-sim">
+  <div class="wrap">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow" id="sim-eyebrow" style="margin:0">Simulator</p>
+        <h2 class="h-md" id="sim-title">JK Flip-Flop</h2>
+      </div>
+      <div class="row" id="sim-switcher" role="group" aria-label="Choose flip-flop type"></div>
+    </div>
+
+    <div class="preset-bar row" style="gap:8px;margin:10px 0 14px;align-items:center;flex-wrap:wrap">
+      <span class="mono" style="font-size:11px;letter-spacing:.08em;color:var(--cyan);text-transform:uppercase">Presets:</span>
+      <button class="btn small ghost preset-btn" data-preset="div2" title="Watch frequency division by 2">⚡ Frequency Divider (÷2)</button>
+      <button class="btn small ghost preset-btn" data-preset="race" title="Inspect forbidden state in SR">⚠️ Forbidden State (SR)</button>
+      <button class="btn small ghost preset-btn" data-preset="latch" title="Store a data bit into D flip-flop">💾 1-Bit Latch (D)</button>
+      <button class="btn small ghost preset-btn" data-preset="toggle" title="Toggle counting with JK">🔄 Binary Toggle (JK)</button>
+    </div>
+
+    <div class="sim-grid">
+      <div>
+        <div class="bench">
+          <div class="stage" id="stage-sim">
+            <div class="stage-tag mono" id="sim-tag">DRAG TO ORBIT · CLICK A SWITCH ON THE BOARD</div>
+            <div class="stage-hud" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+              <button class="btn small" data-reset-cam="1">Reset view</button>
+              <button class="btn small" id="btn-probe" aria-pressed="false" title="Show pin labels on the board">Labels</button>
+              <div class="seg" role="group" aria-label="View mode">
+                <button type="button" class="btn small" data-vm="3d" id="vm-3d" aria-pressed="true">3D Board</button>
+                <button type="button" class="btn small" data-vm="schematic" id="vm-schematic" aria-pressed="false">Logic Gates</button>
+                <button type="button" class="btn small" data-vm="2d" id="vm-2d" aria-pressed="false">2D Layout</button>
+              </div>
+            </div>
+          </div>
+          <div class="dock dock-host" data-dock="sim"></div>
+        </div>
+
+        <div class="flow" id="flow" aria-hidden="true"></div>
+
+        <div class="card" style="margin-top:var(--s3)">
+          <div class="card-head"><h3>Truth table</h3>
+            <div class="row"><span class="pill" id="tt-trigger"></span></div>
+          </div>
+          <div class="tt-wrap"><table id="truth"><thead></thead><tbody></tbody></table></div>
+          <div class="tt-key"><b>▶ now — the row the circuit is in</b><b>⋯ next — what the next clock edge will do</b></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Timing diagram</h3>
+            <div class="row">
+              <span class="pill mono" id="timing-hint">drag across to inspect</span>
+              <button class="btn small" id="timing-export" title="Export waveform as high-res PNG image">Export PNG</button>
+              <button class="btn small" id="timing-clear">Clear trace</button>
+            </div>
+          </div>
+          <div class="timing-box">
+            <canvas class="timing" id="timing" role="img" aria-label="Timing diagram"></canvas>
+            <div class="scrub mono" id="scrub"></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-head"><h3>Live state</h3><span class="mode-chip" id="mode-chip">HOLD</span></div>
+          <div class="state-hero" id="readouts"></div>
+          <div id="invalid-box" style="margin-top:var(--s2)"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>What just happened</h3>
+            <div class="row">
+              <button class="btn small" id="btn-logic">See the logic</button>
+              <button class="btn small" id="btn-simple" aria-pressed="false">Explain simply</button>
+            </div>
+          </div>
+          <div class="why" id="why"><div class="t mono">READY</div><p>Set an input or pulse the clock to begin.</p></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Learn step by step</h3><span class="mono" style="font-size:11px;color:var(--dim)" id="step-count">STEP 1 / 7</span></div>
+          <div class="progress"><i id="step-bar" style="width:14%"></i></div>
+          <div class="row" style="align-items:flex-start;flex-wrap:nowrap;gap:12px">
+            <span class="step-n mono" id="step-n">01</span>
+            <div><div id="step-txt" style="font-size:15px"></div>
+              <div id="step-hint" style="color:var(--muted);font-size:13px;margin-top:5px"></div></div>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <button class="btn small" id="step-prev">Previous</button>
+            <button class="btn small" id="step-next">Next</button>
+            <button class="btn small ghost" id="step-restart">Restart</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Circuit challenge</h3><span class="mono" style="font-size:11px;color:var(--dim)" id="chal-score">0 solved</span></div>
+          <div class="mono" id="chal-target" style="font-size:16px;color:var(--amber)">—</div>
+          <p style="font-size:13px;color:var(--muted);margin:7px 0 0" id="chal-hint"></p>
+          <div class="row" style="margin-top:12px">
+            <button class="btn small" id="chal-next">New challenge</button>
+            <button class="btn small ghost" id="chal-skip">Skip</button>
+          </div>
+        </div>
+
+        <div class="card quiet">
+          <h3>Keyboard</h3>
+          <div class="mono" style="font-size:12px;color:var(--muted);line-height:2" id="keys-help"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPARE ============ -->
+<section class="page" id="page-compare">
+  <div class="wrap">
+    <p class="eyebrow">Compare</p>
+    <h2 class="h-lg">Same cell, different rules</h2>
+    <p class="lead" style="margin-top:8px">Select a node to expand it. The centre is the memory cell every one of them shares.</p>
+    <div class="hub-core"><span class="core-node mono">FLIP-FLOP CORE</span></div>
+    <div class="ff-grid" id="hub"></div>
+    <div class="card" id="cmp-detail" style="margin-top:var(--s3)"></div>
+    <div class="card">
+      <h3>Side by side</h3>
+      <div class="tt-wrap"><table id="cmp-table"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section class="page" id="page-quiz">
+  <div class="wrap" style="max-width:840px">
+    <p class="eyebrow">Test yourself</p>
+    <h2 class="h-lg">Flip-flop mastery</h2>
+    <p class="lead" style="margin-top:8px">Eighteen questions on states, clock edges, truth tables and waveforms. Every answer comes with the reasoning.</p>
+    <div class="card" style="margin-top:var(--s3)" id="quiz-card"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <strong>Flip-Flop Lab</strong>
+    <p style="margin:5px 0 0">Interactive digital electronics learning. Built for learning digital logic through visualization.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+"use strict";
+
+/* ---------- audio synthesizer (Web Audio API) ---------- */
+const Sound = (function(){
+  let ctx = null, enabled = false;
+  function getCtx(){
+    if(!ctx && (window.AudioContext || window.webkitAudioContext)){
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(ctx && ctx.state === "suspended") ctx.resume();
+    return ctx;
+  }
+  function toggle(){
+    getCtx();
+    enabled = !enabled;
+    return enabled;
+  }
+  function isEnabled(){ return enabled; }
+  function playTone(freq, duration, type, gainVal){
+    if(!enabled) return;
+    const c = getCtx();
+    if(!c) return;
+    try {
+      const osc = c.createOscillator();
+      const gain = c.createGain();
+      osc.type = type || "sine";
+      osc.frequency.setValueAtTime(freq, c.currentTime);
+      gain.gain.setValueAtTime(gainVal || 0.08, c.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(c.destination);
+      osc.start();
+      osc.stop(c.currentTime + duration);
+    } catch(e){}
+  }
+  function click(high){ playTone(high ? 780 : 520, 0.045, "triangle", 0.06); }
+  function pulse(edge){ playTone(edge === "rise" ? 620 : 420, 0.07, "sine", 0.07); }
+  function alert(){ playTone(220, 0.22, "sawtooth", 0.09); }
+  return { toggle, isEnabled, click, pulse, alert };
+})();
+
+const QB = "Q\u0305";
+const $  = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+/* ======================= 1. DATA ======================= */
+const FFS = {
+  SR: {
+    key:"SR", name:"SR Flip-Flop", tag:"Set and Reset", accent:"#3ad6ff",
+    line:"Two inputs: one forces the bit to 1, the other forces it to 0.",
+    inputs:[{id:"S",label:"Set"},{id:"R",label:"Reset"}],
+    trigger:"level",
+    triggerNote:"Clocked (gated) SR latch — level-triggered learning model: while CLK is HIGH the outputs follow S and R continuously.",
+    what:"The SR flip-flop is the simplest memory element in digital electronics. Two cross-coupled NOR gates feed each other, so once an output settles it keeps itself there with no further input. S drives the stored bit to 1, R drives it to 0, and with both LOW the cell simply remembers.",
+    inputsText:"S (Set) forces Q to 1. R (Reset) forces Q to 0. CLK gates both: while the clock is LOW the inputs are ignored completely.",
+    outputsText:"Q is the stored bit. "+QB+" is its complement — except in the forbidden state, where the model breaks down.",
+    how:"While CLK is HIGH the latch is transparent. S=1 sets, R=1 resets, and S=R=0 holds. S=R=1 drives both outputs LOW at once, which is why the state is forbidden: the moment the inputs return to 0 the two gates race each other and the final bit is unpredictable.",
+    simple:"S means Set (make it 1) and R means Reset (make it 0). Press neither and it keeps whatever it had. Press both and the circuit gets confused — that's the one combination you never use.",
+    invalidNote:"S = 1 and R = 1 drives Q and "+QB+" both LOW, so they stop being complements. When the inputs fall back to 0 both gates try to switch at the same time and whichever is marginally faster wins — the resulting bit is unpredictable and depends on manufacturing, temperature and wiring. This is exactly the problem the JK flip-flop fixes.",
+    apps:["Switch debouncing","Simple alarm latches","Basic control-signal storage"],
+    truthHead:["S","R","Q(next)","Meaning"],
+    truthRows:[
+      {c:["0","0","Q","Hold"],  m:i=>!i.S&&!i.R},
+      {c:["0","1","0","Reset"], m:i=>!i.S&&i.R},
+      {c:["1","0","1","Set"],   m:i=>i.S&&!i.R},
+      {c:["1","1","invalid","Forbidden"], bad:true, m:i=>i.S&&i.R}
+    ],
+    steps:[
+      {t:"Set S = 1 while the clock is LOW.", h:"The latch is closed — nothing should change yet.", chk:s=>s.in.S===1&&s.clk===0},
+      {t:"Look at Q. It has not moved.", h:"A gated latch ignores its inputs until the clock opens it.", chk:()=>true},
+      {t:"Hold the clock HIGH with a pulse.", h:"Press Pulse clock. During the HIGH window the latch becomes transparent.", chk:s=>s.q===1},
+      {t:"Q is now 1 and "+QB+" is 0.", h:"S wrote a 1 into the cell and the cell is holding it.", chk:s=>s.q===1},
+      {t:"Set S back to 0 and pulse the clock.", h:"With S=R=0 the cell holds — Q stays 1.", chk:s=>s.in.S===0&&s.q===1},
+      {t:"Now raise R = 1 and pulse the clock.", h:"R clears the cell.", chk:s=>s.q===0},
+      {t:"Q is back to 0. Try S = R = 1 to see the forbidden state.", h:"Both outputs go LOW and the warning appears.", chk:s=>s.invalid}
+    ]
+  },
+  JK: {
+    key:"JK", name:"JK Flip-Flop", tag:"Universal flip-flop", accent:"#a97bff",
+    line:"Everything SR does, plus a toggle instead of a forbidden state.",
+    inputs:[{id:"J",label:"Set input"},{id:"K",label:"Reset input"}],
+    trigger:"edge",
+    triggerNote:"Edge-triggered: the state changes only on the rising edge of CLK.",
+    what:"The JK flip-flop takes the SR cell and feeds the outputs back into the input gates. That feedback makes the J=K=1 combination meaningful instead of forbidden: the flip-flop inverts itself. Because it can set, reset, hold and toggle, it is called the universal flip-flop.",
+    inputsText:"J behaves like Set, K behaves like Reset, and CLK decides when either one is allowed to act.",
+    outputsText:"Q and "+QB+" are always exact complements. There is no combination that breaks them.",
+    how:"On each rising clock edge the flip-flop reads J and K. 0/0 holds, 1/0 sets, 0/1 resets, and 1/1 copies "+QB+" into Q — a toggle. Internal feedback guarantees that only one of the two input paths is ever enabled, so both gates can never be driven at once.",
+    simple:"JK works like SR, but when J and K are both 1 it flips to the opposite state instead of becoming invalid.",
+    apps:["Binary and ripple counters","Shift registers","Frequency dividers","State machines"],
+    truthHead:["J","K","Q","Q(next)","Operation"],
+    truthRows:[
+      {c:["0","0","0","0","Hold"],   m:(i,q)=>!i.J&&!i.K&&q===0},
+      {c:["0","0","1","1","Hold"],   m:(i,q)=>!i.J&&!i.K&&q===1},
+      {c:["0","1","0","0","Reset"],  m:(i,q)=>!i.J&&i.K&&q===0},
+      {c:["0","1","1","0","Reset"],  m:(i,q)=>!i.J&&i.K&&q===1},
+      {c:["1","0","0","1","Set"],    m:(i,q)=>i.J&&!i.K&&q===0},
+      {c:["1","0","1","1","Set"],    m:(i,q)=>i.J&&!i.K&&q===1},
+      {c:["1","1","0","1","Toggle"], m:(i,q)=>i.J&&i.K&&q===0},
+      {c:["1","1","1","0","Toggle"], m:(i,q)=>i.J&&i.K&&q===1}
+    ],
+    steps:[
+      {t:"Set J = 1 and leave K = 0.", h:"Nothing happens yet — this flip-flop only listens on a clock edge.", chk:s=>s.in.J===1&&s.in.K===0},
+      {t:"Pulse the clock once.", h:"On the rising edge, J=1 and K=0 means Set.", chk:s=>s.q===1},
+      {t:"Q is 1. Now set K = 1 as well.", h:"J=K=1 arms toggle mode.", chk:s=>s.in.J===1&&s.in.K===1},
+      {t:"Pulse the clock. Q flips to 0.", h:"Toggle copies "+QB+" into Q.", chk:s=>s.in.J===1&&s.in.K===1&&s.q===0},
+      {t:"Pulse again. Q flips back to 1.", h:"Each edge inverts the bit — this is how counters are built.", chk:s=>s.in.J===1&&s.in.K===1&&s.q===1},
+      {t:"Turn J and K both to 0 and pulse.", h:"Hold: Q must stay exactly where it is.", chk:s=>s.in.J===0&&s.in.K===0},
+      {t:"Q never became invalid. That is the JK advantage.", h:"The forbidden SR combination became a useful operation.", chk:()=>true}
+    ]
+  },
+  D: {
+    key:"D", name:"D Flip-Flop", tag:"Data storage", accent:"#4f8cff",
+    line:"Whatever sits on D at the clock edge becomes the stored bit.",
+    inputs:[{id:"D",label:"Data"}],
+    trigger:"edge",
+    triggerNote:"Edge-triggered: Q samples D only at the rising edge of CLK.",
+    what:"The D flip-flop removes every ambiguous input combination by deriving the reset input from the set input. One data line goes in, one bit is stored. It is the building block of registers, pipelines and virtually all synchronous logic inside a CPU.",
+    inputsText:"D is the data you want to store. CLK decides the instant it gets captured.",
+    outputsText:"Q holds the captured bit until the next active edge. "+QB+" is its complement.",
+    how:"Q follows D on the active clock edge, and only then. Between edges D can change as often as it likes — the stored bit does not move. That separation between when data is ready and when it is captured is what makes synchronous design possible.",
+    simple:"Think of D as a box where you put one bit of information. When the clock ticks, the flip-flop stores whatever is currently on D.",
+    apps:["Registers and register files","Pipeline stages","Data buffers","Synchronisers between clock domains"],
+    truthHead:["D","Q(next)","Operation"],
+    truthRows:[
+      {c:["0","0","Store 0"], m:i=>!i.D},
+      {c:["1","1","Store 1"], m:i=>i.D}
+    ],
+    steps:[
+      {t:"Set D = 1.", h:"Watch Q carefully — it should not move.", chk:s=>s.in.D===1},
+      {t:"Q is still unchanged.", h:"No clock edge has happened yet, so nothing was captured.", chk:()=>true},
+      {t:"Apply a clock pulse.", h:"Press Pulse clock.", chk:s=>s.q===1},
+      {t:"Q became 1.", h:"The rising edge copied D into the cell.", chk:s=>s.q===1},
+      {t:"Change D to 0 — but do not clock it.", h:"Q must still read 1.", chk:s=>s.in.D===0&&s.q===1},
+      {t:"Apply another clock pulse.", h:"Now the new value gets captured.", chk:s=>s.q===0},
+      {t:"Q became 0. Q follows D, but only on the edge.", h:"That single rule is the whole D flip-flop.", chk:()=>true}
+    ]
+  },
+  T: {
+    key:"T", name:"T Flip-Flop", tag:"Toggle and counting", accent:"#ffb454",
+    line:"One input decides whether the bit holds or inverts each clock.",
+    inputs:[{id:"T",label:"Toggle"}],
+    trigger:"edge",
+    triggerNote:"Edge-triggered: T is evaluated on the rising edge of CLK.",
+    what:"The T flip-flop is a JK flip-flop with J and K tied together. With T HIGH it inverts on every clock edge, which divides the clock frequency by two — chain a few and you have a binary counter.",
+    inputsText:"T selects the behaviour: LOW to hold, HIGH to toggle. CLK provides the timing.",
+    outputsText:"Q is the stored bit; with T HIGH it produces a square wave at half the clock frequency. "+QB+" is its complement.",
+    how:"On each rising edge, Q(next) = T XOR Q. With T=0 the cell holds; with T=1 it inverts. Two edges are needed for one full output cycle, so the output frequency is exactly half the clock frequency.",
+    simple:"Think of T like a light switch. If T is 1, every clock pulse changes the light from ON to OFF or OFF to ON. If T is 0, nothing changes.",
+    apps:["Ripple and synchronous counters","Frequency division","Clock generation","Digital clocks and timers"],
+    truthHead:["T","Q","Q(next)","Operation"],
+    truthRows:[
+      {c:["0","0","0","Hold"],   m:(i,q)=>!i.T&&q===0},
+      {c:["0","1","1","Hold"],   m:(i,q)=>!i.T&&q===1},
+      {c:["1","0","1","Toggle"], m:(i,q)=>i.T&&q===0},
+      {c:["1","1","0","Toggle"], m:(i,q)=>i.T&&q===1}
+    ],
+    steps:[
+      {t:"Leave T = 0 and pulse the clock twice.", h:"Q does not move — T=0 means hold.", chk:s=>s.in.T===0},
+      {t:"Now set T = 1.", h:"Toggle mode armed.", chk:s=>s.in.T===1},
+      {t:"Pulse the clock. Q goes 0 → 1.", h:"The first inversion.", chk:s=>s.in.T===1&&s.q===1},
+      {t:"Pulse again. Q goes 1 → 0.", h:"Two edges make one full output cycle.", chk:s=>s.in.T===1&&s.q===0},
+      {t:"Turn on Auto clock and watch the waveform.", h:"Q is a clean square wave at half the clock rate.", chk:s=>s.auto},
+      {t:"Compare the CLK and Q lanes in the timing diagram.", h:"Count the clock edges between two Q rises — there are two.", chk:()=>true},
+      {t:"That halving is frequency division.", h:"Four T flip-flops in a chain divide by 16 and count to 15.", chk:()=>true}
+    ]
+  }
+};
+const ORDER = ["SR","JK","D","T"];
+
+const APPS = [
+  {t:"Registers", d:"Eight D flip-flops side by side store one byte on a single clock edge.", ic:"reg"},
+  {t:"Counters", d:"T flip-flops in a chain count clock pulses in binary.", ic:"cnt"},
+  {t:"Memory", d:"Latch arrays hold bits in caches and internal buffers.", ic:"mem"},
+  {t:"Frequency division", d:"Each toggle stage halves the frequency of the signal feeding it.", ic:"div"},
+  {t:"Digital clocks", d:"Divider chains turn a crystal oscillator into one pulse per second.", ic:"clk"},
+  {t:"CPUs", d:"Every pipeline stage is a bank of flip-flops between blocks of logic.", ic:"cpu"},
+  {t:"State machines", d:"The current state of a controller is just a few stored bits.", ic:"fsm"},
+  {t:"Data buffering", d:"Flip-flops resynchronise signals arriving from another clock domain.", ic:"buf"}
+];
+
+const CMP_ROWS = [
+  {k:"Inputs",            SR:"S, R (+ CLK)", JK:"J, K, CLK", D:"D, CLK", T:"T, CLK"},
+  {k:"Main operation",    SR:"Set / Reset / Hold", JK:"Set / Reset / Hold / Toggle", D:"Store the data bit", T:"Hold or invert"},
+  {k:"Toggle capability", SR:"None", JK:"Yes, when J = K = 1", D:"Only by wiring "+QB+" back to D", T:"Yes, when T = 1"},
+  {k:"Invalid state",     SR:"Yes — S = R = 1", JK:"None", D:"None", T:"None"},
+  {k:"Triggering here",   SR:"Level (gated latch)", JK:"Rising edge", D:"Rising edge", T:"Rising edge"},
+  {k:"Typical application",SR:"Latches, debouncing", JK:"Counters, registers, FSMs", D:"Registers, pipelines", T:"Counters, dividers"},
+  {k:"Complexity",        SR:"Lowest", JK:"Highest", D:"Low", T:"Low"},
+  {k:"Key concept",       SR:"A bit can hold itself", JK:"Feedback removes the forbidden state", D:"Capture data on the edge", T:"Inversion divides frequency"}
+];
+
+const QUIZ = [
+  {q:"J = 1, K = 1 and Q = 0. What is Q after the next rising clock edge?", o:["0","1","Invalid","Unknown"], a:1, e:"J = K = 1 is toggle mode, so Q inverts from 0 to 1."},
+  {q:"Which input combination is forbidden on an SR flip-flop?", o:["S=0, R=0","S=0, R=1","S=1, R=0","S=1, R=1"], a:3, e:"S = R = 1 drives both outputs LOW, so Q and "+QB+" stop being complements and the next state is unpredictable."},
+  {q:"A D flip-flop has Q = 1. D is changed to 0 but no clock edge arrives. What is Q?", o:["0","1","Toggles","Invalid"], a:1, e:"An edge-triggered flip-flop only samples D at the active edge. Without an edge the stored bit does not move."},
+  {q:"A T flip-flop with T = 1 is fed a 8 kHz clock. What is the frequency at Q?", o:["16 kHz","8 kHz","4 kHz","2 kHz"], a:2, e:"Two clock edges are needed for one full output cycle, so the output is half the input frequency: 4 kHz."},
+  {q:"Which flip-flop is called the universal flip-flop?", o:["SR","JK","D","T"], a:1, e:"JK can set, reset, hold and toggle, and the other three can be derived from it."},
+  {q:"S = 0, R = 0 on a clocked SR flip-flop with Q = 1. What happens on the clock?", o:["Q = 0","Q = 1","Q toggles","Invalid"], a:1, e:"With both inputs LOW the cell holds, so Q stays at 1."},
+  {q:"How do you build a T flip-flop from a JK flip-flop?", o:["Tie J to K","Tie K to ground","Invert J into K","Tie J to Q"], a:0, e:"Tying J and K together makes a single input: 0 holds, 1 toggles."},
+  {q:"Which statement about edge triggering is correct?", o:["The output follows the input the whole time the clock is HIGH","The output changes only at the transition of the clock","The clock has no effect","The output changes on both inputs and the clock at once"], a:1, e:"Edge triggering acts at the instant the clock transitions, not throughout the HIGH level."},
+  {q:"A D flip-flop has "+QB+" wired back into D. With a running clock, what does Q do?", o:["Stays at 0","Stays at 1","Toggles every edge","Becomes invalid"], a:2, e:"Feeding the complement back makes each edge capture the opposite of the current bit — the same behaviour as a T flip-flop with T = 1."},
+  {q:"J = 0, K = 1, Q = 1. What is Q(next)?", o:["0","1","Toggle","Invalid"], a:0, e:"J = 0, K = 1 is the reset combination, so Q goes to 0."},
+  {q:"Why does the JK flip-flop avoid the SR forbidden state?", o:["It uses fewer gates","Output feedback disables one input path at all times","It ignores the clock","Its inputs are inverted"], a:1, e:"Q and "+QB+" are fed back into the input gates, so only one of the set or reset paths can ever be enabled."},
+  {q:"Four T flip-flops (T = 1) are chained. How many clock pulses before the count returns to 0000?", o:["4","8","16","32"], a:2, e:"Each stage halves the frequency, so four stages give 2⁴ = 16 distinct states."},
+  {q:"In a timing diagram, Q rises exactly where CLK rises and D was already HIGH. What kind of device is this?", o:["Level-triggered latch","Positive-edge-triggered flip-flop","Negative-edge-triggered flip-flop","Combinational gate"], a:1, e:"The output changes at the rising transition of the clock, which is positive-edge triggering."},
+  {q:"A gated SR latch has CLK = 0 and S = 1. What is Q?", o:["1","0","Unchanged","Invalid"], a:2, e:"While the clock gate is closed the inputs are ignored completely and the latch holds its previous value."},
+  {q:"Which flip-flop is used most for a parallel register?", o:["SR","JK","D","T"], a:2, e:"One D flip-flop per bit captures a whole word on a single clock edge with no decoding needed."},
+  {q:"T = 0 and the clock runs for ten pulses. What happens to Q?", o:["It toggles ten times","It stays the same","It goes to 0","It becomes invalid"], a:1, e:"T = 0 is hold mode — clock edges have no effect on the stored bit."},
+  {q:"Q = 0 and "+QB+" = 0 at the same time. What does that indicate?", o:["Normal hold","Toggle in progress","The SR forbidden state","A reset"], a:2, e:"Q and "+QB+" must be complements. Both LOW only happens with S = R = 1 on an SR latch."},
+  {q:"JK flip-flop, J = 1, K = 1, clocked five times starting from Q = 0. What is Q at the end?", o:["0","1","Invalid","It depends on K"], a:1, e:"Each edge inverts the bit: 0,1,0,1,0,1. After five edges Q = 1."}
+];
+
+const CHALLENGES = {
+  common:[
+    {t:"Make Q = 1", h:"Drive the stored bit HIGH and leave it there.", chk:s=>s.q===1&&!s.invalid},
+    {t:"Make Q = 0", h:"Clear the stored bit.", chk:s=>s.q===0&&!s.invalid},
+    {t:"Toggle Q twice", h:"Two changes of the output since the challenge started.", chk:s=>s.changes>=2},
+    {t:"Hold Q unchanged through 3 clock pulses", h:"Choose inputs that mean hold, then clock three times.", chk:s=>s.edges>=3&&s.changes===0},
+    {t:"Produce the sequence 0 → 1 → 0", h:"Watch the output history in the timing diagram.", chk:s=>/010/.test(s.seq)}
+  ],
+  SR:[{t:"Trigger the forbidden state", h:"Only one input combination does this.", chk:s=>s.invalid}],
+  JK:[{t:"Toggle Q four times in a row", h:"Set J = K = 1 and keep clocking.", chk:s=>s.changes>=4}],
+  D:[{t:"Store D = 1 without changing D again", h:"Set the data line, then clock it in.", chk:s=>s.q===1&&s.in.D===1&&s.edges>=1}],
+  T:[{t:"Divide the clock: get 3 toggles", h:"T = 1 and three clock pulses.", chk:s=>s.changes>=3}]
+};
+
+/* ======================= 2. SIMULATION ENGINE ======================= */
+const S = {
+  type:"JK", in:{}, q:0, qbar:1, clk:0, invalid:false, mode:"HOLD",
+  auto:false, period:1000, simple:false, edge:"rise", labels:false,
+  edges:0, changes:0, seq:"0", history:[], flash:null, lastQ:0, marks:[]
+};
+
+function def(){ return FFS[S.type]; }
+
+function nextState(type, i, q){
+  switch(type){
+    case "SR":
+      if(!i.S && !i.R) return {q:q, mode:"HOLD"};
+      if(!i.S &&  i.R) return {q:0, mode:"RESET"};
+      if( i.S && !i.R) return {q:1, mode:"SET"};
+      return {q:0, mode:"INVALID", invalid:true};
+    case "JK":
+      if(!i.J && !i.K) return {q:q, mode:"HOLD"};
+      if(!i.J &&  i.K) return {q:0, mode:"RESET"};
+      if( i.J && !i.K) return {q:1, mode:"SET"};
+      return {q:q?0:1, mode:"TOGGLE"};
+    case "D":
+      return {q:i.D?1:0, mode:i.D?"SET":"RESET"};
+    case "T":
+      return i.T ? {q:q?0:1, mode:"TOGGLE"} : {q:q, mode:"HOLD"};
+  }
+}
+
+/* the only place Q is ever written */
+function capture(reason){
+  const before = S.q;
+  const r = nextState(S.type, S.in, S.q);
+  S.q = r.q;
+  S.invalid = !!r.invalid;
+  S.qbar = S.invalid ? 0 : (S.q ? 0 : 1);
+  S.mode = r.mode;
+  if(S.invalid) Sound.alert();
+  if(S.q !== before){
+    S.changes++;
+    S.seq = (S.seq + S.q).slice(-24);
+    S.flash = performance.now();
+    S.lastQ = before;
+    flashQ(before, S.q);
+  }
+  if(reason === "edge" || reason === "gate-open") S.marks.push(S.history.length);
+  explain(reason, before);
+  renderLive();
+  flowRun(reason === "input" ? "input" : "clock", before);
+  announce();
+}
+
+/* mode preview without writing Q (used for the readout between clock edges) */
+function previewMode(){
+  const r = nextState(S.type, S.in, S.q);
+  return r.mode;
+}
+
+function setInput(id, v){
+  const was = S.in[id] ? 1 : 0, now = v ? 1 : 0;
+  S.in[id] = now;
+  Sound.click(now);
+  if(def().trigger === "level" && S.clk === 1) capture("input");
+  else { S.mode = previewMode(); explain("arm"); renderLive(); flowRun("input"); announce(); }
+  if(was !== now) toast(id + " = " + now + (now ? "  HIGH" : "  LOW"));
+  Lab3D.sync(); syncDocks();
+}
+
+function setClk(v){
+  const prev = S.clk;
+  S.clk = v ? 1 : 0;
+  const rising = prev === 0 && S.clk === 1, falling = prev === 1 && S.clk === 0;
+  const d = def();
+  if(d.trigger === "level"){
+    if(rising){ S.edges++; Lab3D.clockPulse(); capture("gate-open"); }
+    else if(falling){ S.mode = previewMode(); explain("gate-close"); renderLive(); flowRun("clock"); }
+    else renderLive();
+    return;
+  }
+  const active = (S.edge === "rise") ? rising : falling;
+  if(active){ S.edges++; Lab3D.clockPulse(); capture("edge"); }
+  else renderLive();
+}
+
+let pulseTimer = null;
+function pulseClock(){
+  if(pulseTimer){ clearTimeout(pulseTimer); pulseTimer = null; setClk(0); }  /* finish the pulse in flight, then send a new one */
+  Sound.pulse(S.edge);
+  setClk(1);
+  pulseTimer = setTimeout(()=>{ setClk(0); pulseTimer = null; }, 170);
+}
+
+let autoTimer = null;
+function setAuto(on){
+  S.auto = on;
+  clearInterval(autoTimer); autoTimer = null;
+  if(on) autoTimer = setInterval(pulseClock, S.period);
+  syncDocks();
+}
+
+function setClockPeriod(ms){
+  S.period = clamp(Number(ms) || 800, 200, 2500);
+  if(S.auto){
+    clearInterval(autoTimer);
+    autoTimer = setInterval(pulseClock, S.period);
+  }
+  $$(".speed-slider").forEach(sl => sl.value = S.period);
+  $$(".speed-val").forEach(el => el.textContent = (1000 / S.period).toFixed(1) + "Hz");
+}
+
+function resetSim(keepType){
+  setAuto(false);
+  S.marks.length = 0; S.history.length = 0;
+  S.in = {}; def().inputs.forEach(i => S.in[i.id] = 0);
+  S.q = 0; S.qbar = 1; S.clk = 0; S.invalid = false; S.mode = "HOLD";
+  S.edges = 0; S.changes = 0; S.seq = "0"; S.history.length = 0;
+  explain("reset"); renderLive(); Lab3D.sync(); syncDocks(); announce();
+  if(!keepType) chalNew(true);
+}
+
+function switchType(t){
+  S.type = t;
+  resetSim(true);
+  Lab3D.build(t);
+  renderAll(); renderDocks();
+  stepGo(0);
+  chalNew(true);
+}
+
+/* rolling history for the timing diagram */
+setInterval(()=>{
+  if(document.hidden) return;
+  S.history.push({ clk:S.clk, q:S.q, qb:S.qbar, in:Object.assign({}, S.in) });
+  if(S.history.length > 300){ S.history.shift(); S.marks = S.marks.map(m => m - 1).filter(m => m >= 0); }
+}, 55);
+
+
+/* ======================= 3. 3D BENCH ======================= */
+const Lab3D = (function(){
+  let renderer, scene, camera, ray, root, ok = true, mountEl = null, tip = null, running = false;
+  let sph = { r:14.5, th:0.95, ph:0.92 }, target = null;
+  let dragging = false, moved = 0, px = 0, py = 0, pinch = 0, autoSpin = false, hovered = null;
+  const wires = [], pulses = [], silk = [];
+  let leds = {}, swObjs = {}, focusRing = null, clkRing = null, hit = [], tmp = null;
+
+  /* shared geometry / textures (perf) */
+  const G = {};
+  function geo(k, make){ return G[k] || (G[k] = make()); }
+  let _halo;
+  function haloTex(){
+    if(_halo) return _halo;
+    const c = document.createElement("canvas"); c.width = c.height = 64;
+    const g = c.getContext("2d"), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(.35, "rgba(255,255,255,.38)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+    _halo = new THREE.CanvasTexture(c); return _halo;
+  }
+  function textSprite(size, wpx){
+    const c = document.createElement("canvas"); c.width = wpx || 256; c.height = 64;
+    const tex = new THREE.CanvasTexture(c);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:tex, transparent:true, depthWrite:false, depthTest:false }));
+    sp.scale.set(size, size * (64 / (wpx || 256)), 1);
+    function set(text, color, weight){
+      const g = c.getContext("2d");
+      g.clearRect(0, 0, c.width, c.height);
+      g.fillStyle = color || "#c9d6f0";
+      g.font = (weight || 600) + " 42px 'IBM Plex Mono', monospace";
+      g.textAlign = "center"; g.textBaseline = "middle";
+      g.fillText(text, c.width / 2, 32);
+      tex.needsUpdate = true;
+    }
+    return { sp, set };
+  }
+
+  /* orthogonal PCB trace */
+  function trace(pts, color, get, net){
+    const v = pts.map(p => new THREE.Vector3(p[0], 0.19, p[1]));
+    const curve = new THREE.CatmullRomCurve3(v, false, "catmullrom", 0.0);
+    const m = new THREE.Mesh(new THREE.TubeGeometry(curve, Math.max(24, v.length * 12), 0.05, 6, false),
+      new THREE.MeshStandardMaterial({ color:0x3e4d68, emissive:new THREE.Color(color), emissiveIntensity:.04, roughness:.4, metalness:.85 }));
+    root.add(m);
+    wires.push({ m, curve, get, color, level:0, net:net });
+    /* solder pads at both ends */
+    [v[0], v[v.length - 1]].forEach(p => {
+      const pad = new THREE.Mesh(geo("pad", () => new THREE.CylinderGeometry(0.11, 0.11, 0.03, 12)),
+        new THREE.MeshStandardMaterial({ color:0xb9c6e0, roughness:.3, metalness:1 }));
+      pad.position.set(p.x, 0.16, p.z); root.add(pad);
+    });
+    const s = new THREE.Mesh(geo("pulse", () => new THREE.SphereGeometry(0.1, 10, 8)),
+      new THREE.MeshBasicMaterial({ color:color }));
+    s.visible = false; root.add(s);
+    pulses.push({ s, curve, t:1, speed:2.4 });
+    return curve;
+  }
+  function fire(net){
+    const w = wires.filter(x => x.net === net);
+    w.forEach(x => { const p = pulses.find(p => p.curve === x.curve); if(p){ p.t = 0; p.s.visible = true; } });
+  }
+
+  function silkLabel(text, x, z, color, size){
+    const t = textSprite(size || 0.8);
+    t.set(text, color || "#48618c");
+    t.sp.position.set(x, 0.2, z);
+    root.add(t.sp); silk.push(t.sp);
+    t.sp.visible = S.labels;
+    return t;
+  }
+
+  function makeSwitch(x, z, id, label, color){
+    const g = new THREE.Group(); g.position.set(x, 0.17, z);
+    const base = new THREE.Mesh(geo("swbase", () => new THREE.BoxGeometry(1.0, 0.18, 0.86)),
+      new THREE.MeshStandardMaterial({ color:0x121a2a, roughness:.62, metalness:.35 }));
+    base.castShadow = true;
+    base.userData = { tip:label + " (" + id + ") — click to toggle", act:"sw", id:id };
+    g.add(base); hit.push(base);
+    const lev = new THREE.Group(); lev.position.y = 0.09;
+    const stick = new THREE.Mesh(geo("stick", () => new THREE.BoxGeometry(0.15, 0.48, 0.15)),
+      new THREE.MeshStandardMaterial({ color:0xc9d6f0, roughness:.28, metalness:.95 }));
+    stick.position.y = 0.24; stick.castShadow = true;
+    const knob = new THREE.Mesh(geo("knob", () => new THREE.SphereGeometry(0.13, 14, 10)),
+      new THREE.MeshStandardMaterial({ color:color, emissive:new THREE.Color(color), emissiveIntensity:.25, roughness:.3 }));
+    knob.position.y = 0.5;
+    knob.userData = stick.userData = base.userData;
+    hit.push(knob, stick); lev.add(stick, knob); g.add(lev);
+    /* state lamp — value is readable without relying on colour */
+    const lamp = new THREE.Mesh(geo("lamp", () => new THREE.SphereGeometry(0.075, 10, 8)),
+      new THREE.MeshStandardMaterial({ color:0x2a3242, emissive:new THREE.Color(0x35e58a), emissiveIntensity:.05 }));
+    lamp.position.set(0.36, 0.12, 0); g.add(lamp);
+    const txt = textSprite(1.05); txt.set(id + "=0", "#8fa0c4"); txt.sp.position.set(0, 0.16, 0.74); g.add(txt.sp);
+    root.add(g);
+    swObjs[id] = { lev, knob, lamp, txt, id, target:0, cur:0, shown:-1 };
+  }
+
+  function makeLED(x, z, key, label){
+    const g = new THREE.Group(); g.position.set(x, 0.17, z);
+    const cup = new THREE.Mesh(geo("cup", () => new THREE.CylinderGeometry(0.25, 0.3, 0.16, 16)),
+      new THREE.MeshStandardMaterial({ color:0x151d2c, roughness:.7, metalness:.3 }));
+    cup.castShadow = true; g.add(cup);
+    const dome = new THREE.Mesh(geo("dome", () => new THREE.SphereGeometry(0.23, 18, 14)),
+      new THREE.MeshStandardMaterial({ color:0x2a3242, emissive:new THREE.Color(0x35e58a), emissiveIntensity:.04, roughness:.2, transparent:true, opacity:.96 }));
+    dome.position.y = 0.2;
+    dome.userData = { tip:label + " output LED", act:"led", id:key };
+    hit.push(dome); g.add(dome);
+    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map:haloTex(), color:0x35e58a, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending }));
+    halo.scale.set(2, 2, 1); halo.position.y = 0.22; g.add(halo);
+    const txt = textSprite(1.35); txt.set(label + "=0", "#8fa0c4"); txt.sp.position.set(0, 0.62, 0); g.add(txt.sp);
+    /* series resistor, because a real LED never sits alone */
+    const res = new THREE.Mesh(geo("res", () => new THREE.BoxGeometry(0.34, 0.12, 0.13)),
+      new THREE.MeshStandardMaterial({ color:0x8a6a3a, roughness:.7 }));
+    res.position.set(-0.75, 0.06, 0); g.add(res);
+    root.add(g);
+    leds[key] = { dome, halo, txt, label, shown:-1 };
+  }
+
+  function build(type){
+    if(!ok) return;
+    if(root){ scene.remove(root); dispose(root); }
+    root = new THREE.Group(); scene.add(root);
+    wires.length = 0; pulses.length = 0; silk.length = 0; leds = {}; swObjs = {}; hit = [];
+    const d = FFS[type];
+
+    /* board: substrate + solder-mask top + copper grid */
+    const sub = new THREE.Mesh(new THREE.BoxGeometry(13, 0.3, 8.6),
+      new THREE.MeshStandardMaterial({ color:0x061019, roughness:.9, metalness:.1 }));
+    sub.position.y = 0; sub.receiveShadow = true; root.add(sub);
+    const mask = new THREE.Mesh(new THREE.BoxGeometry(12.5, 0.04, 8.1),
+      new THREE.MeshStandardMaterial({ color:0x07202b, roughness:.55, metalness:.25 }));
+    mask.position.y = 0.16; mask.receiveShadow = true; root.add(mask);
+    const grid = new THREE.GridHelper(12, 30, 0x18384d, 0x102838);
+    grid.position.y = 0.181; grid.material.opacity = .5; grid.material.transparent = true; root.add(grid);
+    /* mounting holes */
+    [[-5.9,-3.7],[5.9,-3.7],[-5.9,3.7],[5.9,3.7]].forEach(([x,z]) => {
+      const h = new THREE.Mesh(geo("hole", () => new THREE.CylinderGeometry(0.16, 0.16, 0.34, 14)),
+        new THREE.MeshStandardMaterial({ color:0x9fb0cc, roughness:.35, metalness:1 }));
+      h.position.set(x, 0.08, z); root.add(h);
+    });
+
+    /* DIP chip */
+    const chip = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.7, 2.5),
+      new THREE.MeshStandardMaterial({ color:0x0a0d14, roughness:.42, metalness:.45 }));
+    chip.position.set(0, 0.52, 0); chip.castShadow = true;
+    chip.userData = { tip:d.name + " — " + (d.trigger === "edge" ? "edge-triggered" : "level-triggered (gated)"), act:"chip" };
+    hit.push(chip); root.add(chip);
+    const dimple = new THREE.Mesh(geo("dimple", () => new THREE.CylinderGeometry(0.13, 0.13, 0.08, 14)),
+      new THREE.MeshStandardMaterial({ color:0x04060a }));
+    dimple.position.set(-1.45, 0.87, -0.85); root.add(dimple);
+    const ctxt = textSprite(2.1); ctxt.set(type + "-FF", "#cfdaf2"); ctxt.sp.position.set(0.1, 0.9, 0); root.add(ctxt.sp);
+    const pinGeo = geo("pin", () => new THREE.BoxGeometry(0.34, 0.07, 0.13));
+    const pinMat = new THREE.MeshStandardMaterial({ color:0xc2cfe6, roughness:.22, metalness:1 });
+    for(let i = 0; i < 14; i++){
+      const p = new THREE.Mesh(pinGeo, pinMat);
+      p.position.set(i < 7 ? -1.86 : 1.86, 0.26, -0.9 + (i % 7) * 0.3); root.add(p);
+    }
+    /* decoupling cap next to the chip, like any real board */
+    const cap = new THREE.Mesh(geo("cap", () => new THREE.CylinderGeometry(0.17, 0.17, 0.4, 14)),
+      new THREE.MeshStandardMaterial({ color:0x1b2740, roughness:.5, metalness:.5 }));
+    cap.position.set(0.9, 0.36, 1.6); cap.castShadow = true; root.add(cap);
+
+    /* inputs */
+    const ins = d.inputs, zs = ins.length === 2 ? [-1.6, 0.5] : [-0.9];
+    ins.forEach((inp, i) => {
+      const z = zs[i], zc = ins.length === 2 ? (i === 0 ? -0.7 : 0.1) : -0.4;
+      makeSwitch(-4.8, z, inp.id, inp.label, d.accent);
+      trace([[-4.3, z], [-3.1, z], [-3.1, zc], [-1.95, zc]], 0x35e58a, () => S.in[inp.id] ? 1 : 0, "in-" + inp.id);
+      silkLabel(inp.id, -3.6, z - 0.42, "#4d648c", 0.7);
+    });
+
+    /* clock oscillator */
+    const cg = new THREE.Group(); cg.position.set(-4.8, 0.17, 2.6);
+    const can = new THREE.Mesh(geo("can", () => new THREE.CylinderGeometry(0.34, 0.34, 0.3, 18)),
+      new THREE.MeshStandardMaterial({ color:0x8d99b4, roughness:.3, metalness:1 }));
+    can.position.y = 0.16; can.castShadow = true;
+    can.userData = { tip:"Clock source — click to send one pulse", act:"clk" };
+    hit.push(can); cg.add(can);
+    clkRing = new THREE.Mesh(geo("ring", () => new THREE.TorusGeometry(0.46, 0.035, 8, 26)),
+      new THREE.MeshBasicMaterial({ color:0xab7dff, transparent:true, opacity:.3 }));
+    clkRing.rotation.x = -Math.PI / 2; clkRing.position.y = 0.06; cg.add(clkRing);
+    const ctx2 = textSprite(1.15); ctx2.set("CLK", "#ab7dff"); ctx2.sp.position.set(0, 0.16, 0.8); cg.add(ctx2.sp);
+    root.add(cg);
+    trace([[-4.3, 2.6], [-2.6, 2.6], [-2.6, 0.9], [-1.95, 0.9]], 0xab7dff, () => S.clk, "clk");
+
+    /* outputs */
+    makeLED(5.0, -1.2, "q", "Q");
+    makeLED(5.0, 1.2, "qb", QB);
+    trace([[1.95, -0.6], [3.2, -0.6], [3.2, -1.2], [4.25, -1.2]], 0x35e58a, () => S.q, "q");
+    trace([[1.95, 0.6], [3.2, 0.6], [3.2, 1.2], [4.25, 1.2]], 0x5b8cff, () => S.qbar, "qb");
+
+    /* silkscreen */
+    silkLabel("VCC", -5.6, -3.0, "#4d648c", .75); silkLabel("GND", 5.6, 3.0, "#4d648c", .75);
+    silkLabel("CLOCK IN", -4.8, 3.35, "#4d648c", 1.1);
+    silkLabel("OUTPUTS", 5.0, 2.3, "#4d648c", 1.0);
+    silkLabel("FLIP-FLOP LAB", 0, 3.6, "#3d5478", 1.9);
+
+    focusRing = new THREE.Mesh(geo("focus", () => new THREE.TorusGeometry(0.8, 0.035, 8, 30)),
+      new THREE.MeshBasicMaterial({ color:new THREE.Color(d.accent), transparent:true, opacity:.9 }));
+    focusRing.rotation.x = -Math.PI / 2; focusRing.visible = false; root.add(focusRing);
+    sync();
+  }
+
+  function dispose(o){
+    o.traverse(n => {
+      if(n.geometry && Object.values(G).indexOf(n.geometry) < 0) n.geometry.dispose();
+      if(n.material) (Array.isArray(n.material) ? n.material : [n.material]).forEach(m => { if(m.map && m.map.isCanvasTexture) m.map.dispose(); m.dispose(); });
+    });
+  }
+
+  function setLabels(on){ silk.forEach(s => s.visible = on); }
+
+  function setFocus(kind, id){
+    if(!focusRing) return;
+    let p = null;
+    if(kind === "sw" && swObjs[id]) p = swObjs[id].lev.parent.position;
+    else if(kind === "led" && leds[id]) p = leds[id].dome.parent.position;
+    else if(kind === "clk") p = new THREE.Vector3(-4.8, 0, 2.6);
+    else if(kind === "chip") p = new THREE.Vector3(0, 0, 0);
+    if(!p){ focusRing.visible = false; return; }
+    focusRing.position.set(p.x, 0.22, p.z);
+    focusRing.scale.setScalar(kind === "chip" ? 2.4 : 1);
+    focusRing.visible = true;
+  }
+
+  function sync(){
+    if(!ok || !root) return;
+    for(const id in swObjs) swObjs[id].target = S.in[id] ? 1 : 0;
+  }
+  function inputPulse(id){ fire("in-" + id); }
+  function clockPulse(){
+    if(!ok || !root) return;
+    fire("clk");
+    setTimeout(() => { fire("q"); fire("qb"); }, 210);
+  }
+
+  /* camera */
+  function applyCam(){
+    if(!camera || !target) return;
+    sph.ph = clamp(sph.ph, .22, 1.46); sph.r = clamp(sph.r, 6.5, 26);
+    camera.position.set(
+      target.x + sph.r * Math.sin(sph.ph) * Math.sin(sph.th),
+      target.y + sph.r * Math.cos(sph.ph),
+      target.z + sph.r * Math.sin(sph.ph) * Math.cos(sph.th));
+    camera.lookAt(target);
+  }
+  function resetCam(){ sph = { r:14.5, th:.95, ph:.92 }; applyCam(); }
+  function topView(){ sph = { r:13, th:0, ph:.28 }; applyCam(); }
+
+  function pick(e){
+    if(!tmp) return null;
+    const r = renderer.domElement.getBoundingClientRect();
+    tmp.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+    tmp.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+    ray.setFromCamera(tmp, camera);
+    const h = ray.intersectObjects(hit, false);
+    return h.length ? h[0].object : null;
+  }
+  function setHover(o){
+    if(hovered === o) return;
+    if(hovered && hovered.material && hovered.userData.__e !== undefined){
+      hovered.material.emissiveIntensity = hovered.userData.__e; delete hovered.userData.__e;
+    }
+    hovered = o;
+    if(o && o.material && o.material.emissiveIntensity !== undefined && o.userData.act !== "led"){
+      o.userData.__e = o.material.emissiveIntensity;
+      o.material.emissiveIntensity = Math.max(.55, o.material.emissiveIntensity);
+    }
+  }
+
+  function bindEvents(el){
+    el.style.touchAction = "none";
+    el.addEventListener("pointerdown", e => { dragging = true; moved = 0; px = e.clientX; py = e.clientY;
+      if(el.setPointerCapture) el.setPointerCapture(e.pointerId); });
+    el.addEventListener("pointermove", e => {
+      if(dragging){
+        const dx = e.clientX - px, dy = e.clientY - py;
+        moved += Math.abs(dx) + Math.abs(dy);
+        sph.th -= dx * .006; sph.ph -= dy * .005; px = e.clientX; py = e.clientY; applyCam();
+      } else {
+        const o = pick(e); setHover(o);
+        if(o && o.userData.tip) showTip(e, o.userData.tip); else hideTip();
+        el.style.cursor = o && (o.userData.act === "sw" || o.userData.act === "clk") ? "pointer" : "grab";
+      }
+    });
+    el.addEventListener("pointerup", e => {
+      if(dragging && moved < 7){
+        const o = pick(e);
+        if(o && o.userData.act === "sw"){ setInput(o.userData.id, !S.in[o.userData.id]); inputPulse(o.userData.id); note("switch " + o.userData.id + " toggled on the board"); }
+        else if(o && o.userData.act === "clk"){ pulseClock(); note("clock pulsed from the board"); }
+        else if(o && o.userData.act === "chip"){ note(FFS[S.type].triggerNote); }
+      }
+      dragging = false; hideTip();
+    });
+    el.addEventListener("pointercancel", () => dragging = false);
+    el.addEventListener("pointerleave", () => { dragging = false; hideTip(); setHover(null); });
+    el.addEventListener("wheel", e => { e.preventDefault(); sph.r += e.deltaY * .012; applyCam(); }, { passive:false });
+    el.addEventListener("touchstart", e => {
+      if(e.touches.length === 2) pinch = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    }, { passive:true });
+    el.addEventListener("touchmove", e => {
+      if(e.touches.length === 2){
+        const dd = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        sph.r += (pinch - dd) * .03; pinch = dd; applyCam();
+      }
+    }, { passive:true });
+  }
+  function showTip(e, text){
+    if(!tip || !mountEl) return;
+    const r = mountEl.getBoundingClientRect();
+    tip.textContent = text;
+    tip.style.left = clamp(e.clientX - r.left, 60, r.width - 60) + "px";
+    tip.style.top = (e.clientY - r.top) + "px";
+    tip.classList.add("on");
+  }
+  function hideTip(){ if(tip) tip.classList.remove("on"); }
+
+  let last = 0;
+  function loop(t){
+    requestAnimationFrame(loop);
+    if(!ok || !mountEl || !running || document.hidden) return;
+    const dt = Math.min(.05, (t - last) / 1000 || .016); last = t;
+    if(autoSpin){ sph.th += dt * .08; applyCam(); }
+
+    for(const w of wires){
+      const want = w.get() ? 1 : 0;
+      w.level += (want - w.level) * Math.min(1, dt * 10);
+      w.m.material.emissiveIntensity = .04 + w.level * 1.7;
+      w.m.material.color.setHex(w.level > .5 ? 0x7590c0 : 0x3e4d68);
+    }
+    for(const p of pulses){
+      if(p.t < 1){
+        p.t += dt * p.speed;
+        if(p.t >= 1) p.s.visible = false;
+        else p.s.position.copy(p.curve.getPointAt(clamp(p.t, 0, 1)));
+      }
+    }
+    for(const id in swObjs){
+      const s = swObjs[id], on = S.in[id] ? 1 : 0;
+      s.cur += (s.target - s.cur) * Math.min(1, dt * 13);
+      s.lev.rotation.z = .42 - s.cur * .84;
+      s.knob.material.emissiveIntensity = .15 + s.cur * 1.15;
+      s.lamp.material.emissiveIntensity = .04 + s.cur * 1.6;
+      s.lamp.material.emissive.setHex(on ? 0x35e58a : 0xff5f6d);
+      if(s.shown !== on){ s.shown = on; s.txt.set(id + "=" + on, on ? "#35e58a" : "#8fa0c4"); }
+    }
+    if(leds.q){
+      const col = S.invalid ? 0xff5f6d : 0x35e58a;
+      const upd = (o, v, colHex) => {
+        o.dome.material.emissive.setHex(colHex);
+        o.dome.material.emissiveIntensity += ((v ? 1.8 : .04) - o.dome.material.emissiveIntensity) * Math.min(1, dt * 11);
+        o.halo.material.color.setHex(colHex);
+        o.halo.material.opacity += ((v ? .7 : 0) - o.halo.material.opacity) * Math.min(1, dt * 11);
+        const key = v + (S.invalid ? 2 : 0);
+        if(o.shown !== key){ o.shown = key; o.txt.set(o.label + "=" + v, v ? (S.invalid ? "#ff5f6d" : "#35e58a") : "#8fa0c4"); }
+      };
+      upd(leds.q, S.q, col); upd(leds.qb, S.qbar, S.invalid ? 0xff5f6d : 0x5b8cff);
+    }
+    if(clkRing){ clkRing.material.opacity = S.clk ? .95 : .25; clkRing.scale.setScalar(S.clk ? 1.08 : 1); }
+    if(focusRing && focusRing.visible) focusRing.material.opacity = .45 + Math.sin(t * .005) * .35;
+    renderer.render(scene, camera);
+  }
+
+  function init(){
+    if(typeof THREE === "undefined"){ ok = false; return false; }   /* CDN blocked → 2D bench */
+    target = new THREE.Vector3(0, 0.4, 0); tmp = new THREE.Vector2();
+    try{
+      const c = document.createElement("canvas");
+      if(!(c.getContext("webgl") || c.getContext("experimental-webgl"))) throw 0;
+      renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, canvas:c, powerPreference:"high-performance" });
+    }catch(e){ ok = false; return false; }
+    const mobile = Math.min(window.innerWidth, window.innerHeight) < 700;
+    renderer.setPixelRatio(Math.min(mobile ? 1.5 : 2, window.devicePixelRatio || 1));
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
+    renderer.shadowMap.enabled = !mobile;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x04070d, 19, 42);
+    camera = new THREE.PerspectiveCamera(41, 16 / 10, .1, 120);
+    ray = new THREE.Raycaster();
+    scene.add(new THREE.HemisphereLight(0x9fc4ff, 0x080d16, .5));
+    const key = new THREE.DirectionalLight(0xdce9ff, .95);
+    key.position.set(5, 11, 6);
+    if(!mobile){ key.castShadow = true; key.shadow.mapSize.set(1024, 1024);
+      key.shadow.camera.left = -9; key.shadow.camera.right = 9; key.shadow.camera.top = 9; key.shadow.camera.bottom = -9; }
+    scene.add(key);
+    const p1 = new THREE.PointLight(0x3ad6ff, .7, 26); p1.position.set(-7, 5, 5); scene.add(p1);
+    const p2 = new THREE.PointLight(0xab7dff, .5, 26); p2.position.set(7, 5, -5); scene.add(p2);
+    bindEvents(renderer.domElement);
+    applyCam(); requestAnimationFrame(loop);
+    return true;
+  }
+
+  function mount(el, spin){
+    if(!ok || !el) return;
+    mountEl = el; autoSpin = !!spin; running = true;
+    if(!tip){ tip = document.createElement("div"); tip.id = "tooltip"; }
+    el.appendChild(renderer.domElement); el.appendChild(tip);
+    resize();
+  }
+  function pause(){ running = false; }
+  function unmount(){
+    running = false;
+    if(renderer && renderer.domElement && renderer.domElement.parentNode){
+      renderer.domElement.parentNode.removeChild(renderer.domElement);
+    }
+  }
+  function resize(){
+    if(!ok || !mountEl) return;
+    const w = mountEl.clientWidth, h = mountEl.clientHeight;
+    if(!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", resize);
+
+  return { init, build, mount, unmount, pause, sync, resize, resetCam, topView, clockPulse, inputPulse,
+           setFocus, setLabels, available:()=>ok, spin:v=>autoSpin = v };
+})();
+
+/* ======================= 4. UI ======================= */
+function note(txt){ $$(".stage-tag").forEach(t => t.textContent = String(txt).toUpperCase().slice(0, 90)); }
+let toastT = null;
+function toast(msg){
+  const el = $("#toast"); if(!el) return;
+  el.textContent = msg; el.classList.add("on");
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), 1500);
+}
+function announce(){
+  const el = $("#live"); if(!el) return;
+  const d = def();
+  el.textContent = d.inputs.map(i => i.id + " " + (S.in[i.id] ? "high" : "low")).join(", ") +
+    ", clock " + (S.clk ? "high" : "low") + ", mode " + (S.invalid ? "invalid" : S.mode) +
+    ", Q " + S.q + ", Q bar " + S.qbar;
+}
+function flashQ(before, after){
+  const el = $('[data-ro="q"]'); if(!el) return;
+  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+  const dl = $(".delta", el);
+  if(dl){ dl.textContent = before + " → " + after; dl.classList.add("on"); setTimeout(() => dl.classList.remove("on"), 1800); }
+}
+
+/* ---------- signal flow ribbon ---------- */
+const FLOW = [
+  { k:"1 · INPUT",   v:()=>def().inputs.map(i => i.id + "=" + (S.in[i.id] || 0)).join("  ") },
+  { k:"2 · CLOCK",   v:()=>"CLK=" + S.clk + "  " + (def().trigger === "edge" ? (S.edge === "rise" ? "↑edge" : "↓edge") : "level") },
+  { k:"3 · LOGIC",   v:()=>S.invalid ? "INVALID" : S.mode },
+  { k:"4 · OUTPUT",  v:()=>"Q=" + S.q + "  " + QB + "=" + S.qbar },
+  { k:"5 · TRUTH",   v:()=>{ const r = rowNow(); return r < 0 ? "—" : "row " + (r + 1) + " · " + def().truthRows[r].c.slice(-1)[0]; } },
+  { k:"6 · WAVEFORM",v:()=>"edges " + S.edges + " · flips " + S.changes }
+];
+let flowTimers = [];
+function renderFlow(){
+  $("#flow").innerHTML = FLOW.map((f, i) =>
+    `<div class="fstage" data-f="${i}"><div class="fk mono">${f.k}</div><div class="fv mono"></div></div>`).join("");
+  updateFlow();
+}
+function updateFlow(){
+  $$("#flow .fstage").forEach((el, i) => { const v = $(".fv", el); if(v) v.textContent = FLOW[i].v(); });
+}
+function flowRun(kind){
+  updateFlow();
+  flowTimers.forEach(clearTimeout); flowTimers = [];
+  const seq = kind === "input" ? [0, 2] : [1, 2, 3, 4, 5];
+  $$("#flow .fstage").forEach(el => el.classList.remove("live"));
+  seq.forEach((idx, n) => {
+    flowTimers.push(setTimeout(() => {
+      const el = $(`#flow [data-f="${idx}"]`); if(!el) return;
+      el.classList.add("live");
+      flowTimers.push(setTimeout(() => el.classList.remove("live"), 1000));
+    }, n * 140));
+  });
+}
+
+/* ---------- control dock ---------- */
+function dockHTML(){
+  const d = def();
+  const units = d.inputs.map(i => `
+    <div class="dock-unit">
+      <span class="dock-label">${i.label.toUpperCase()}</span>
+      <div class="seg" role="group" aria-label="Set input ${i.id}">
+        <button type="button" data-set="${i.id}" data-v="0" aria-pressed="false" aria-label="Set ${i.id} to 0, low">0</button>
+        <button type="button" data-set="${i.id}" data-v="1" aria-pressed="false" aria-label="Set ${i.id} to 1, high">1</button>
+      </div>
+      <div class="name mono">${i.id} <span data-lvl="${i.id}" style="color:var(--dim)">LOW (0)</span></div>
+    </div>`).join("");
+  const edgeSel = d.trigger === "edge" ? `
+    <div class="dock-unit">
+      <span class="dock-label">ACTIVE EDGE</span>
+      <div class="seg" role="group" aria-label="Clock edge polarity">
+        <button type="button" data-edge="rise" style="width:60px" aria-pressed="true">↑</button>
+        <button type="button" data-edge="fall" style="width:60px" aria-pressed="false">↓</button>
+      </div>
+      <div class="name mono"><span data-edgelbl>rising</span></div>
+    </div>` : `
+    <div class="dock-unit">
+      <span class="dock-label">TRIGGERING</span>
+      <div class="mono" style="font-size:13px;color:var(--amber);padding:12px 0">level (gated)</div>
+    </div>`;
+  return `<div class="dock-grid">
+    ${units}
+    <div class="dock-sep"></div>
+    <div class="dock-unit" style="min-width:auto">
+      <span class="dock-label">CLOCK</span>
+      <div class="row" style="flex-wrap:nowrap">
+        <button type="button" class="btn clk-btn" data-act="pulse">▶ Pulse CLK</button>
+        <button type="button" class="btn small" data-act="auto" aria-pressed="false" style="min-height:44px">Auto</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+        <span class="mono" style="font-size:10px;color:var(--dim)">RATE</span>
+        <input type="range" class="speed-slider" min="200" max="2000" step="50" value="${S.period}" title="Adjust clock rate" style="flex:1;cursor:pointer;accent-color:var(--cyan);height:4px">
+        <span class="speed-val mono" style="font-size:10px;color:var(--cyan);min-width:38px">${(1000/S.period).toFixed(1)}Hz</span>
+      </div>
+    </div>
+    ${edgeSel}
+    <div class="dock-sep"></div>
+    <div class="dock-unit" style="min-width:auto">
+      <span class="dock-label">BENCH</span>
+      <div class="row" style="flex-wrap:nowrap">
+        <button type="button" class="btn small" data-act="reset" style="min-height:44px">Reset circuit</button>
+        <button type="button" class="btn small" data-act="top" style="min-height:44px">Top view</button>
+      </div>
+    </div>
+  </div>`;
+}
+function renderDocks(){
+  $$(".dock-host").forEach(host => {
+    host.innerHTML = dockHTML();
+    $$("[data-set]", host).forEach(b => b.addEventListener("click", () => {
+      const id = b.dataset.set, v = Number(b.dataset.v);
+      setInput(id, v); Lab3D.inputPulse(id);
+      note(id + " driven " + (v ? "HIGH (1)" : "LOW (0)"));
+    }));
+    $$("[data-edge]", host).forEach(b => b.addEventListener("click", () => {
+      S.edge = b.dataset.edge; syncDocks(); updateFlow(); renderLive();
+      toast("Active edge: " + (S.edge === "rise" ? "rising ↑" : "falling ↓"));
+    }));
+    $$("[data-act]", host).forEach(b => b.addEventListener("click", () => {
+      const a = b.dataset.act;
+      if(a === "pulse"){ pulseClock(); note("clock pulse sent"); b.classList.add("hot"); setTimeout(() => b.classList.remove("hot"), 260); }
+      else if(a === "auto") setAuto(!S.auto);
+      else if(a === "reset"){ resetSim(); toast("Circuit reset"); }
+      else if(a === "top") Lab3D.topView();
+    }));
+  });
+  syncDocks();
+}
+function syncDocks(){
+  $$("[data-set]").forEach(b => b.setAttribute("aria-pressed", String((S.in[b.dataset.set] ? 1 : 0) === Number(b.dataset.v))));
+  $$("[data-lvl]").forEach(s => {
+    const on = !!S.in[s.dataset.lvl];
+    s.textContent = on ? "HIGH (1)" : "LOW (0)";
+    s.style.color = on ? "var(--green)" : "var(--dim)";
+  });
+  $$("[data-edge]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.edge === S.edge)));
+  $$("[data-edgelbl]").forEach(s => s.textContent = S.edge === "rise" ? "rising" : "falling");
+  $$('[data-act="auto"]').forEach(b => { b.setAttribute("aria-pressed", String(S.auto)); b.textContent = S.auto ? "Stop" : "Auto"; });
+}
+
+/* ---------- readouts / truth ---------- */
+function renderReadouts(){
+  const host = $("#readouts"); host.innerHTML = "";
+  const items = [{ k:"Q", id:"q", big:true }, { k:QB, id:"qb", big:true }, { k:"CLK", id:"clk" }]
+    .concat(def().inputs.map(i => ({ k:i.id, id:"in-" + i.id })));
+  items.forEach(it => {
+    const el = document.createElement("div");
+    el.className = "ro" + (it.big ? " big" : ""); el.dataset.ro = it.id;
+    el.innerHTML = `<div class="k mono">${it.k}</div><div class="v mono">0</div><div class="s mono">LOW (0)</div><div class="delta mono"></div>`;
+    host.appendChild(el);
+  });
+}
+function renderTruth(){
+  const d = def();
+  $("#truth thead").innerHTML = "<tr>" + d.truthHead.map(h => `<th>${h}</th>`).join("") + "</tr>";
+  $("#truth tbody").innerHTML = d.truthRows.map((r, i) =>
+    `<tr data-row="${i}" class="${r.bad ? "bad" : ""}">` + r.c.map((c, j) =>
+      `<td class="${j === r.c.length - 1 ? "op" : ""}">${c}</td>`).join("") + "</tr>").join("");
+  $("#tt-trigger").textContent = d.trigger === "edge" ? "edge-triggered" : "level-triggered (gated latch)";
+}
+function rowNow(){ return def().truthRows.findIndex(r => r.m(S.in, S.q)); }
+function rowNext(){
+  const r = nextState(S.type, S.in, S.q);
+  return def().truthRows.findIndex(x => x.m(S.in, r.q));
+}
+function renderSwitcher(){
+  const host = $("#sim-switcher"); host.innerHTML = "";
+  ORDER.forEach(k => {
+    const b = document.createElement("button");
+    b.className = "btn small"; b.textContent = k;
+    b.setAttribute("aria-pressed", String(k === S.type));
+    b.setAttribute("aria-label", FFS[k].name);
+    b.addEventListener("click", () => { switchType(k); toast(FFS[k].name + " loaded"); });
+    host.appendChild(b);
+  });
+}
+function renderLive(){
+  const d = def();
+  const setRO = (id, v, hi, sub, cls) => {
+    const el = $(`[data-ro="${id}"]`); if(!el) return;
+    const vv = $(".v", el); vv.textContent = v; vv.className = "v mono " + (cls || (hi ? "hi" : "lo"));
+    $(".s", el).textContent = sub;
+  };
+  setRO("q", S.q, S.q === 1, S.q ? "HIGH (1)" : "LOW (0)");
+  setRO("qb", S.qbar, S.qbar === 1, S.qbar ? "HIGH (1)" : "LOW (0)");
+  setRO("clk", S.clk, S.clk === 1, S.clk ? "HIGH (1)" : "LOW (0)", "v clk");
+  d.inputs.forEach(i => setRO("in-" + i.id, S.in[i.id] || 0, !!S.in[i.id], S.in[i.id] ? "HIGH (1)" : "LOW (0)"));
+
+  const chip = $("#mode-chip"), m = S.invalid ? "INVALID" : S.mode;
+  chip.textContent = m;
+  chip.className = "mode-chip " + (m === "INVALID" ? "warn" : m === "TOGGLE" ? "tog" : m === "SET" ? "set" : m === "RESET" ? "rst" : "");
+
+  const nI = rowNow(), xI = rowNext();
+  $$("#truth tbody tr").forEach((tr, i) => {
+    tr.classList.toggle("now", i === nI);
+    tr.classList.toggle("next", i === xI && i !== nI);
+  });
+
+  $("#invalid-box").innerHTML = S.invalid
+    ? `<div class="alert"><strong>INVALID STATE</strong><br>${d.invalidNote}</div>` : "";
+
+  syncDocks(); updateFlow(); stepCheck(); chalCheck();
+}
+function chainText(){
+  const d = def(), i = S.in;
+  const ins = d.inputs.map(x => x.id + " = " + (i[x.id] || 0)).join("   ");
+  const r = nextState(S.type, i, S.q);
+  return { ins, rule:r.mode, next:r.invalid ? "Q = " + QB + " = 0" : "Q(next) = " + r.q };
+}
+
+function explain(reason, before){
+  const w = $("#why"); if(!w) return;
+  const d = def(), c = chainText();
+  let title = "READY", body = "";
+  if(S.simple){
+    title = "IN PLAIN WORDS";
+    body = d.simple;
+    w.innerHTML = `<div class="t mono">${title}</div><p>${body}</p>`;
+    return;
+  }
+  if(reason === "reset"){ title = "CIRCUIT RESET"; body = "All inputs are LOW and the stored bit is 0."; }
+  else if(reason === "arm"){
+    title = "INPUTS ARMED";
+    body = d.trigger === "edge"
+      ? `Inputs are set to ${c.ins}. Nothing changes yet — this flip-flop only acts on the rising clock edge. The next edge will ${c.rule.toLowerCase()}.`
+      : `Inputs are set to ${c.ins}. The clock is LOW, so the latch is closed and Q is untouched.`;
+  }
+  else if(reason === "gate-close"){ title = "GATE CLOSED"; body = "CLK went LOW. The latch is opaque again and holds " + S.q + " no matter what S and R do."; }
+  else if(reason === "input" || reason === "gate-open" || reason === "edge"){
+    const changed = before !== undefined && before !== S.q;
+    if(S.invalid){
+      title = "FORBIDDEN COMBINATION";
+      body = "S and R are both HIGH, so Q and " + QB + " are both driven LOW. They are no longer complements and the next state is unpredictable.";
+    } else if(S.mode === "TOGGLE"){
+      title = "TOGGLE";
+      body = (S.type === "JK" ? "Both J and K are HIGH. " : "T is HIGH. ") +
+             "On this rising clock edge the flip-flop copied " + QB + " into Q, so Q went " + before + " → " + S.q + ".";
+    } else if(S.mode === "HOLD"){
+      title = "HOLD";
+      body = "The input combination means hold, so the clock edge passed and Q stayed at " + S.q + ".";
+    } else if(S.mode === "SET"){
+      title = "SET";
+      body = changed ? "Q was driven HIGH, so Q = 1 and " + QB + " = 0." : "The set condition was already satisfied — Q stays at 1.";
+    } else {
+      title = "RESET";
+      body = changed ? "Q was cleared, so Q = 0 and " + QB + " = 1." : "The reset condition was already satisfied — Q stays at 0.";
+    }
+  }
+  w.innerHTML = `<div class="t mono">${title}</div><p>${body}</p>
+    <div class="chain mono">${c.ins} &nbsp;→&nbsp; ${c.rule} &nbsp;→&nbsp; ${c.next}</div>`;
+}
+
+function showLogic(){
+  const c = chainText(), d = def();
+  $("#why").innerHTML = `<div class="t mono">LOGIC EVALUATION</div>
+    <div class="chain mono" style="font-size:13.5px;line-height:1.95">
+      ${c.ins} &nbsp;·&nbsp; Q = ${S.q}<br>↓<br>
+      rule for ${d.name}: <span style="color:var(--cyan)">${c.rule}</span><br>↓<br>
+      ${d.trigger === "edge" ? "on the next " + (S.edge === "rise" ? "rising ↑" : "falling ↓") + " clock edge" : "while CLK is HIGH"}<br>↓<br>
+      <span style="color:var(--green)">${c.next}</span>
+    </div>`;
+}
+
+/* ---------- timing diagram ---------- */
+const tcv = $("#timing");
+let scrubIdx = -1;
+function timingLanes(){
+  const d = def();
+  return [{ k:"CLK", c:"#ab7dff", g:s => s.clk }]
+    .concat(d.inputs.map(i => ({ k:i.id, c:d.accent, g:s => s.in[i.id] || 0 })))
+    .concat([{ k:"Q", c:"#35e58a", g:s => s.q }, { k:QB, c:"#5b8cff", g:s => s.qb }]);
+}
+function drawTiming(){
+  if(!tcv || !tcv.clientWidth || document.hidden) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = tcv.clientWidth, h = tcv.clientHeight || 236;
+  if(tcv.width !== Math.round(w * dpr) || tcv.height !== Math.round(h * dpr)){
+    tcv.width = Math.round(w * dpr); tcv.height = Math.round(h * dpr);
+  }
+  const g = tcv.getContext("2d"); if(!g) return;
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+  const hist = S.history; if(hist.length < 2) return;
+  const lanes = timingLanes(), padL = 52, padT = 16, botH = 18;
+  const laneH = (h - padT - botH) / lanes.length, plotW = w - padL - 14;
+  const n = 220, start = Math.max(0, hist.length - n);
+  const X = i => padL + (plotW * (i - start)) / (n - 1);
+
+  /* active clock edges — the moment the logic acts */
+  S.marks.filter(m => m >= start).forEach(m => {
+    const x = X(m);
+    g.fillStyle = "rgba(171,125,255,.13)"; g.fillRect(x - 2, padT - 6, 4, h - padT - botH + 6);
+    g.strokeStyle = "rgba(171,125,255,.75)"; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(x, padT - 8); g.lineTo(x, h - botH); g.stroke();
+    g.fillStyle = "#ab7dff"; g.beginPath();
+    g.moveTo(x - 4, padT - 9); g.lineTo(x + 4, padT - 9); g.lineTo(x, padT - 2); g.closePath(); g.fill();
+  });
+
+  lanes.forEach((ln, li) => {
+    const top = padT + li * laneH, hi = top + 7, lo = top + laneH - 13;
+    g.fillStyle = "#94a5c9"; g.font = "11px 'IBM Plex Mono', monospace"; g.textAlign = "right";
+    g.fillText(ln.k, padL - 10, (hi + lo) / 2 + 4);
+    g.strokeStyle = "rgba(130,168,255,.09)"; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(padL, lo + 6); g.lineTo(w - 14, lo + 6); g.stroke();
+    g.strokeStyle = ln.c; g.lineWidth = 2; g.beginPath();
+    let prev = null;
+    for(let i = start; i < hist.length; i++){
+      const x = X(i), v = ln.g(hist[i]) ? hi : lo;
+      if(prev === null) g.moveTo(x, v);
+      else { g.lineTo(x, prev); g.lineTo(x, v); }
+      prev = v;
+    }
+    g.stroke();
+    /* transition ticks so a change is readable without colour */
+    g.fillStyle = ln.c;
+    for(let i = start + 1; i < hist.length; i++){
+      if(ln.g(hist[i]) !== ln.g(hist[i - 1])){
+        const x = X(i), v = ln.g(hist[i]) ? hi : lo;
+        g.fillRect(x - 1.5, v - 3, 3, 6);
+      }
+    }
+  });
+
+  const cur = Math.min(n - 1, hist.length - 1) + start;
+  const cx = X(cur);
+  g.strokeStyle = "rgba(58,214,255,.85)"; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(cx, padT - 6); g.lineTo(cx, h - botH); g.stroke();
+  g.fillStyle = "#6a7a9c"; g.font = "10px 'IBM Plex Mono', monospace"; g.textAlign = "left";
+  g.fillText("now", cx - 24, h - 5);
+  g.fillText("active edges: " + S.edges + "   output flips: " + S.changes, padL, h - 5);
+
+  if(scrubIdx >= start && scrubIdx < hist.length){
+    const x = X(scrubIdx);
+    g.strokeStyle = "rgba(255,180,84,.9)"; g.setLineDash([4, 4]);
+    g.beginPath(); g.moveTo(x, padT - 6); g.lineTo(x, h - botH); g.stroke(); g.setLineDash([]);
+  }
+}
+let tTimer = setInterval(drawTiming, 70);
+document.addEventListener("visibilitychange", () => { if(!document.hidden) drawTiming(); });
+
+function bindTiming(){
+  if(!tcv) return;
+  const box = $("#scrub");
+  const at = e => {
+    const r = tcv.getBoundingClientRect(), hist = S.history;
+    if(hist.length < 2) return;
+    const padL = 52, plotW = r.width - padL - 14, n = 220, start = Math.max(0, hist.length - n);
+    const i = Math.round(start + ((e.clientX - r.left - padL) / plotW) * (n - 1));
+    scrubIdx = clamp(i, start, hist.length - 1);
+    const s = hist[scrubIdx];
+    box.innerHTML = timingLanes().map(l => `<span style="color:${l.c}">${l.k}</span> = ${l.g(s)}`).join("&nbsp; ");
+    box.style.left = clamp(e.clientX - r.left, 70, r.width - 70) + "px";
+    box.style.top = "8px"; box.style.transform = "translateX(-50%)";
+    box.classList.add("on");
+  };
+  tcv.addEventListener("pointermove", at);
+  tcv.addEventListener("pointerdown", at);
+  tcv.addEventListener("pointerleave", () => { scrubIdx = -1; box.classList.remove("on"); });
+  $("#timing-clear").addEventListener("click", () => {
+    S.history.length = 0; S.marks.length = 0; S.edges = 0; S.changes = 0;
+    drawTiming(); toast("Trace cleared");
+  });
+}
+
+
+/* ---------- export waveform PNG ---------- */
+function exportTimingPNG(){
+  if(!tcv) return;
+  try {
+    const pad = 36;
+    const exp = document.createElement("canvas");
+    exp.width = tcv.width + pad * 2;
+    exp.height = tcv.height + 110;
+    const g = exp.getContext("2d");
+    g.fillStyle = "#04070d";
+    g.fillRect(0, 0, exp.width, exp.height);
+
+    g.font = "bold 18px 'Space Grotesk', sans-serif";
+    g.fillStyle = "#e9eefc";
+    g.fillText("Flip-Flop Lab — " + def().name + " Waveform Trace", pad, 32);
+
+    g.font = "12px 'IBM Plex Mono', monospace";
+    g.fillStyle = "#3ad6ff";
+    g.fillText("Active Edge: " + (S.edge === "rise" ? "Rising ↑" : "Falling ↓") + "  |  Edges: " + S.edges + "  |  State: Q=" + S.q + " " + QB + "=" + S.qbar, pad, 52);
+
+    g.drawImage(tcv, pad, 68);
+
+    g.font = "11px 'IBM Plex Mono', monospace";
+    g.fillStyle = "#6a7a9c";
+    g.fillText("Generated with Flip-Flop Lab (Digital Electronics Interactive Bench)", pad, exp.height - 14);
+
+    const a = document.createElement("a");
+    a.download = `flipflop-${S.type.toLowerCase()}-waveform.png`;
+    a.href = exp.toDataURL("image/png");
+    a.click();
+    toast("Exported waveform: " + a.download);
+  } catch(e) {
+    console.error(e);
+    toast("Export error");
+  }
+}
+
+/* ---------- educational presets ---------- */
+function applyPreset(id){
+  if(id === "div2"){
+    switchType("T");
+    setInput("T", 1);
+    setAuto(true);
+    toast("Preset: Frequency Divider (÷2) — T=1 toggles Q every clock!");
+  } else if(id === "race"){
+    switchType("SR");
+    setInput("S", 1);
+    setInput("R", 1);
+    pulseClock();
+    toast("Preset: Forbidden State (SR) — S=1, R=1 entered invalid condition!");
+  } else if(id === "latch"){
+    switchType("D");
+    setInput("D", 1);
+    toast("Preset: 1-Bit Latch (D) — Data bit D=1 ready for clock pulse.");
+  } else if(id === "toggle"){
+    switchType("JK");
+    setInput("J", 1);
+    setInput("K", 1);
+    setAuto(true);
+    toast("Preset: Binary Toggle (JK) — J=1, K=1 flips state continuously.");
+  }
+}
+
+/* ---------- step by step ---------- */
+let stepI = 0, stepLock = false;
+function coach(sel){
+  $$(".btn.coach, .seg .coach").forEach(b => b.classList.remove("coach"));
+  $$(sel).forEach(b => b.classList.add("coach"));
+}
+function stepGo(i){
+  const st = def().steps;
+  stepI = clamp(i, 0, st.length - 1);
+  const s = st[stepI];
+  $("#step-n").textContent = String(stepI + 1).padStart(2, "0");
+  $("#step-txt").textContent = s.t;
+  $("#step-hint").textContent = s.h;
+  $("#step-count").textContent = "STEP " + (stepI + 1) + " / " + st.length;
+  $("#step-bar").style.width = ((stepI + 1) / st.length * 100) + "%";
+  $("#step-prev").disabled = stepI === 0;
+  $("#step-next").disabled = stepI === st.length - 1;
+  const txt = (s.t + " " + s.h).toLowerCase();
+  const inp = def().inputs.find(x => new RegExp("\\b" + x.id.toLowerCase() + "\\b\\s*=?").test(txt));
+  if(/clock|clk|pulse|edge/.test(txt)){ Lab3D.setFocus("clk"); coach('[data-act="pulse"]'); }
+  else if(inp){ Lab3D.setFocus("sw", inp.id); coach('[data-set="' + inp.id + '"]'); }
+  else if(/\bq\b|output|led|waveform/.test(txt)){ Lab3D.setFocus("led", "q"); coach("#nothing"); }
+  else { Lab3D.setFocus("chip"); coach("#nothing"); }
+}
+function stepCheck(){
+  const st = def().steps;
+  if(stepLock || stepI >= st.length - 1) return;
+  if(st[stepI].chk({ in:S.in, q:S.q, qbar:S.qbar, clk:S.clk, invalid:S.invalid, auto:S.auto })){
+    stepLock = true;
+    $("#step-hint").innerHTML = '<span class="done-badge mono">✓ done — next step</span>';
+    setTimeout(() => { stepLock = false; stepGo(stepI + 1); }, 750);
+  }
+}
+
+/* ---------- challenge ---------- */
+let chal = null, chalBase = null, chalSolved = 0;
+function chalNew(silent){
+  const pool = CHALLENGES.common.concat(CHALLENGES[S.type] || []);
+  let c = pool[Math.floor(Math.random() * pool.length)];
+  if(chal && pool.length > 1) while(c.t === chal.t) c = pool[Math.floor(Math.random() * pool.length)];
+  chal = c; chalBase = { changes:S.changes, edges:S.edges, seqLen:S.seq.length };
+  const t = $("#chal-target"); if(!t) return;
+  t.textContent = "▶ " + c.t; t.style.color = "var(--amber)";
+  $("#chal-hint").textContent = c.h;
+  if(!silent) toast("New challenge: " + c.t);
+}
+function chalCheck(){
+  if(!chal || !chalBase) return;
+  const st = { q:S.q, qbar:S.qbar, in:S.in, invalid:S.invalid,
+    changes:S.changes - chalBase.changes, edges:S.edges - chalBase.edges,
+    seq:S.seq.slice(Math.max(0, chalBase.seqLen - 1)) };
+  if(chal.chk(st)){
+    const t = $("#chal-target");
+    if(t.dataset.done !== chal.t){
+      t.dataset.done = chal.t;
+      t.textContent = "✓ " + chal.t + " — circuit state achieved";
+      t.style.color = "var(--green)";
+      chalSolved++; $("#chal-score").textContent = chalSolved + " solved";
+      toast("✓ Challenge solved");
+      setTimeout(() => { t.dataset.done = ""; chalNew(); }, 1700);
+    }
+  }
+}
+
+/* ---------- cards & illustrations ---------- */
+function miniSVG(key){
+  const d = FFS[key], a = d.accent, n = d.inputs.length;
+  const rows = n === 2 ? [28, 52] : [40];
+  const lines = rows.map(y => `<path d="M14 ${y} H48 L58 ${y > 40 ? 46 : 38} H74" stroke="${a}" stroke-width="1.6" fill="none" opacity=".75"/>
+    <circle cx="14" cy="${y}" r="3.4" fill="${a}"/>`).join("");
+  return `<svg class="mini" viewBox="0 0 220 108" role="img" aria-label="${d.name} circuit sketch">
+    <defs><linearGradient id="g${key}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${a}" stop-opacity=".3"/><stop offset="1" stop-color="${a}" stop-opacity="0"/></linearGradient></defs>
+    <rect x="4" y="5" width="212" height="98" rx="10" fill="url(#g${key})" stroke="rgba(130,168,255,.16)"/>
+    <g transform="translate(8,4)">${lines}
+      <rect x="74" y="22" width="60" height="44" rx="5" fill="#070b13" stroke="rgba(201,214,240,.34)"/>
+      <text x="104" y="49" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="15" fill="#cfdaf2">${key}</text>
+      <path d="M134 34 H168" stroke="#35e58a" stroke-width="1.6" opacity=".8"/>
+      <path d="M134 56 H168" stroke="#5b8cff" stroke-width="1.6" opacity=".5"/>
+      <circle cx="176" cy="34" r="6" fill="#35e58a"><animate attributeName="opacity" values=".25;1;.25" dur="2.8s" repeatCount="indefinite"/></circle>
+      <circle cx="176" cy="56" r="6" fill="#5b8cff"><animate attributeName="opacity" values="1;.25;1" dur="2.8s" repeatCount="indefinite"/></circle>
+      <path d="M14 80 H58 L66 66 H74" stroke="#ab7dff" stroke-width="1.6" fill="none" opacity=".8"/>
+      <rect x="8" y="74" width="12" height="12" rx="3" fill="#ab7dff" opacity=".85"/></g></svg>`;
+}
+function cardHTML(key, attr){
+  const d = FFS[key];
+  return `<button class="ff-card" ${attr || "data-ff"}="${key}" style="--accent:${d.accent}">
+    ${miniSVG(key)}<div><h3>${d.name}</h3><div class="tag mono">${d.tag}</div></div>
+    <p>${d.line}</p><span class="go">Explore</span></button>`;
+}
+function appSVG(k){
+  const c = { reg:"#3ad6ff", cnt:"#ffb454", mem:"#5b8cff", div:"#ab7dff", clk:"#35e58a", cpu:"#3ad6ff", fsm:"#ab7dff", buf:"#5b8cff" }[k];
+  const body = {
+    reg:[0,1,2,3,4,5,6,7].map(i=>`<rect x="${8+i*22}" y="16" width="16" height="30" rx="3" fill="none" stroke="${c}" opacity=".8"/>`).join("")+
+        `<text x="92" y="58" text-anchor="middle" font-size="9" fill="#6a7a9c" font-family="IBM Plex Mono">8 BITS</text>`,
+    cnt:[0,1,2,3].map(i=>`<rect x="${14+i*42}" y="18" width="30" height="26" rx="4" fill="none" stroke="${c}" opacity=".8"/>
+        <text x="${29+i*42}" y="36" text-anchor="middle" font-size="12" fill="${c}" font-family="IBM Plex Mono">${["1","0","1","0"][i]}</text>`).join(""),
+    mem:[0,1,2].map(r=>[0,1,2,3].map(cI=>`<rect x="${34+cI*24}" y="${12+r*16}" width="18" height="11" rx="2" fill="${c}" opacity="${0.18+((r+cI)%3)*0.28}"/>`).join("")).join(""),
+    div:`<path d="M6 38 h10 v-16 h10 v16 h10 v-16 h10 v16 h10 v-16 h10 v16 h10" fill="none" stroke="${c}" opacity=".85"/>
+         <path d="M96 50 h20 v-22 h20 v22 h20 v-22 h20" fill="none" stroke="#35e58a" opacity=".85"/>`,
+    clk:`<circle cx="92" cy="31" r="21" fill="none" stroke="${c}" opacity=".7"/><path d="M92 17 v14 l11 7" stroke="${c}" fill="none" stroke-linecap="round"/>`,
+    cpu:`<rect x="58" y="10" width="68" height="42" rx="6" fill="none" stroke="${c}" opacity=".85"/>
+         ${[0,1,2,3].map(i=>`<path d="M${70+i*16} 10 v-7 M${70+i*16} 52 v7" stroke="${c}" opacity=".6"/>`).join("")}
+         <text x="92" y="36" text-anchor="middle" font-size="10" fill="${c}" font-family="IBM Plex Mono">CORE</text>`,
+    fsm:`<circle cx="46" cy="31" r="14" fill="none" stroke="${c}" opacity=".8"/><circle cx="138" cy="31" r="14" fill="none" stroke="${c}" opacity=".8"/>
+         <path d="M60 28 h64" stroke="${c}" opacity=".6"/><path d="M124 38 h-64" stroke="${c}" opacity=".35"/>
+         <text x="46" y="35" text-anchor="middle" font-size="10" fill="${c}" font-family="IBM Plex Mono">S0</text>
+         <text x="138" y="35" text-anchor="middle" font-size="10" fill="${c}" font-family="IBM Plex Mono">S1</text>`,
+    buf:`<path d="M20 31 h40" stroke="${c}" opacity=".8"/><rect x="62" y="16" width="34" height="30" rx="4" fill="none" stroke="${c}" opacity=".8"/>
+         <path d="M96 31 h48" stroke="#35e58a" opacity=".8"/><circle cx="152" cy="31" r="6" fill="#35e58a" opacity=".85"/>`
+  }[k];
+  return `<svg viewBox="0 0 184 62" aria-hidden="true">${body}</svg>`;
+}
+function branchSVG(){
+  const b = ORDER.map((k, i) => {
+    const y = 30 + i * 62, d = FFS[k];
+    return `<path d="M250 152 C330 152 330 ${y + 16} 400 ${y + 16}" fill="none" stroke="${d.accent}" stroke-opacity=".45" stroke-width="1.6"/>
+      <rect x="400" y="${y}" width="330" height="34" rx="9" fill="rgba(6,10,18,.85)" stroke="${d.accent}" stroke-opacity=".45"/>
+      <text x="418" y="${y + 22}" font-size="14" fill="${d.accent}" font-family="IBM Plex Mono">${k}</text>
+      <text x="452" y="${y + 22}" font-size="13" fill="#94a5c9" font-family="Space Grotesk">${
+        { SR:"set · reset · hold", JK:"set · reset · hold · toggle", D:"capture one data bit", T:"hold or invert" }[k]}</text>`;
+  }).join("");
+  return `<svg class="branch" viewBox="0 0 750 290" role="img" aria-label="One memory cell branching into SR, JK, D and T behaviours">
+    <rect x="60" y="114" width="190" height="76" rx="14" fill="rgba(6,10,18,.9)" stroke="rgba(58,214,255,.5)"/>
+    <text x="155" y="146" text-anchor="middle" font-size="13" fill="#3ad6ff" font-family="IBM Plex Mono">MEMORY CELL</text>
+    <text x="155" y="168" text-anchor="middle" font-size="12" fill="#94a5c9" font-family="Space Grotesk">two gates, one bit</text>
+    ${b}</svg>`;
+}
+
+/* ---------- quiz ---------- */
+function quizCard(list, host, title){
+  let i = 0, score = 0, wrong = 0, answered = false;
+  function draw(){
+    if(i >= list.length){
+      const pct = Math.round((score / list.length) * 100);
+      host.innerHTML = `<p class="eyebrow">Result</p><h3 class="h-sm">${title}</h3>
+        <div class="gauge"><div class="num mono">${pct}%</div>
+        <div class="mono" style="color:var(--muted);font-size:13px">${score} of ${list.length} correct</div></div>
+        <p style="color:var(--muted);text-align:center;margin-inline:auto">${pct >= 85 ? "Excellent — you can read a timing diagram and predict Q without hesitating."
+          : pct >= 60 ? "Solid. Re-run step-by-step mode on whichever flip-flop tripped you up." 
+          : "Worth another pass — open the simulator and work through the edge-capture steps."}</p>
+        <div class="row" style="justify-content:center"><button class="btn primary q-again">Try again</button>
+        <button class="btn ghost" data-goto="sim">Back to the simulator</button></div>`;
+      $(".q-again", host).addEventListener("click", () => { i = 0; score = 0; wrong = 0; draw(); });
+      wireGoto(host); return;
+    }
+    const q = list[i]; answered = false;
+    host.innerHTML = `<div class="card-head"><p class="eyebrow" style="margin:0">Question ${i + 1} of ${list.length}</p>
+        <div class="score-row"><span style="color:var(--green)">✓ ${score}</span><span style="color:var(--red)">✕ ${wrong}</span></div></div>
+      <div class="progress"><i style="width:${(i / list.length) * 100}%"></i></div>
+      <h3 class="h-sm" style="margin:12px 0 14px">${q.q}</h3>
+      <div class="q-opts"></div><div class="q-fb" style="margin-top:6px"></div>
+      <div class="row" style="margin-top:12px"><button class="btn primary q-next" disabled>Next question</button></div>`;
+    const opts = $(".q-opts", host);
+    q.o.forEach((o, k) => {
+      const b = document.createElement("button");
+      b.className = "opt"; b.type = "button";
+      b.innerHTML = `<span class="k mono">${"ABCD"[k]}</span>${o}`;
+      b.addEventListener("click", () => {
+        if(answered) return; answered = true;
+        $$(".opt", opts).forEach((x, xi) => { x.disabled = true;
+          if(xi === q.a) x.classList.add("correct"); else if(xi === k) x.classList.add("wrong"); });
+        if(k === q.a) score++; else wrong++;
+        $(".q-fb", host).innerHTML = `<div class="why"><div class="t mono">${k === q.a ? "CORRECT" : "NOT QUITE"}</div><p>${q.e}</p></div>`;
+        $(".q-next", host).disabled = false;
+      });
+      opts.appendChild(b);
+    });
+    $(".q-next", host).addEventListener("click", () => { i++; draw(); });
+  }
+  draw();
+}
+
+/* ---------- compare ---------- */
+function renderCompare(){
+  $("#hub").innerHTML = ORDER.map(k => cardHTML(k, "data-cmp")).join("");
+  $("#cmp-table thead").innerHTML = "<tr><th style='text-align:left'></th>" + ORDER.map(k => `<th>${k}</th>`).join("") + "</tr>";
+  $("#cmp-table tbody").innerHTML = CMP_ROWS.map(r =>
+    `<tr><td style="text-align:left;color:var(--dim)">${r.k}</td>` + ORDER.map(k => `<td>${r[k]}</td>`).join("") + "</tr>").join("");
+  $$("#hub [data-cmp]").forEach(b => b.addEventListener("click", () => cmpDetail(b.dataset.cmp)));
+  cmpDetail("JK");
+}
+function cmpDetail(k){
+  const d = FFS[k];
+  $("#cmp-detail").innerHTML = `<div class="card-head">
+      <div><p class="eyebrow" style="margin:0;color:${d.accent}">${d.tag}</p><h3 class="h-sm">${d.name}</h3></div>
+      <div class="row"><span class="pill">${d.trigger === "edge" ? "edge-triggered" : "level-triggered"}</span>
+      <button class="btn small" data-open="${k}">Simulate ${k}</button></div></div>
+    <p>${d.what}</p>
+    <div class="row">${CMP_ROWS.slice(0, 4).map(r => `<span class="pill">${r.k}: ${r[k]}</span>`).join("")}</div>`;
+  $$("#cmp-detail [data-open]").forEach(b => b.addEventListener("click", () => { switchType(k); showPage("sim"); }));
+}
+
+/* ---------- learn detail ---------- */
+function learnDetail(k){
+  const d = FFS[k], host = $("#learn-detail");
+  host.innerHTML = `<div class="card" style="--accent:${d.accent}">
+    <div class="card-head">
+      <div><p class="eyebrow" style="margin:0;color:${d.accent}">${d.tag}</p><h3 class="h-md">${d.name}</h3></div>
+      <div class="row"><span class="pill">${d.trigger === "edge" ? "rising-edge triggered" : "level-triggered model"}</span>
+        <button class="btn primary small" id="ld-sim">Open full simulator</button></div>
+    </div>
+    <div class="sim-grid" style="margin-top:4px">
+      <div>
+        <div class="bench">
+          <div class="stage" id="stage-learn"><div class="stage-tag mono">DRAG TO ORBIT · CLICK THE SWITCHES</div>
+            <div class="stage-hud"><button class="btn small" data-reset-cam="1">Reset view</button></div></div>
+          <div class="dock dock-host"></div>
+        </div>
+        <div class="card" style="margin-top:var(--s3)"><h3>Truth table</h3>
+          <div class="tt-wrap"><table><thead><tr>${d.truthHead.map(h => `<th>${h}</th>`).join("")}</tr></thead>
+          <tbody>${d.truthRows.map(r => `<tr class="${r.bad ? "bad" : ""}">${r.c.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+          <p style="color:var(--muted);font-size:13px;margin-top:9px">${d.triggerNote}</p></div>
+      </div>
+      <div>
+        <div class="card"><h3>What is it?</h3><p style="margin:0">${d.what}</p></div>
+        <div class="card"><h3>Inputs</h3><p style="margin:0">${d.inputsText}</p></div>
+        <div class="card"><h3>Outputs</h3><p style="margin:0">${d.outputsText}</p></div>
+        <div class="card"><h3>How it works</h3><p style="margin:0">${d.how}</p>
+          <div class="why" style="margin-top:10px"><div class="t mono">IN PLAIN WORDS</div><p>${d.simple}</p></div></div>
+        <div class="card"><h3>Where it is used</h3><div class="row">${d.apps.map(a => `<span class="pill">${a}</span>`).join("")}</div></div>
+        <div class="card"><h3>Quick test</h3><div id="ld-quiz"></div></div>
+      </div>
+    </div></div>`;
+  switchType(k);
+  mountStage("learn");
+  $("#ld-sim").addEventListener("click", () => showPage("sim"));
+  bindCam(host);
+  const pick = QUIZ.filter(q => q.q.indexOf(k) >= 0 || q.e.indexOf(k) >= 0);
+  quizCard((pick.length >= 3 ? pick : QUIZ).slice(0, 3), $("#ld-quiz"), "Quick test — " + d.name);
+  if(host.scrollIntoView) host.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+/* ---------- 2D fallback ---------- */
+const Fallback = (function(){
+  let cv = null, host = null, on = false, timer = null;
+  function mount(el){
+    host = el;
+    if(!cv){ cv = document.createElement("canvas"); cv.style.cssText = "width:100%;height:100%;display:block";
+      cv.setAttribute("role", "img"); cv.setAttribute("aria-label", "2D circuit diagram"); }
+    el.appendChild(cv); on = true; clearInterval(timer); timer = setInterval(draw, 90); draw();
+  }
+  function unmount(){ on = false; clearInterval(timer); if(cv && cv.parentNode) cv.parentNode.removeChild(cv); }
+  function draw(){
+    if(!on || !host || document.hidden) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1), w = host.clientWidth, h = host.clientHeight;
+    if(!w || !h) return;
+    cv.width = w * dpr; cv.height = h * dpr;
+    const g = cv.getContext("2d"); if(!g) return;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    const d = def(), cx = w / 2, cy = h / 2, sc = Math.min(1, w / 640);
+    g.save(); g.translate(cx, cy); g.scale(sc, sc); g.translate(-cx, -cy);
+    g.strokeStyle = "rgba(130,168,255,.07)";
+    for(let x = 0; x < w; x += 26){ g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
+    for(let y = 0; y < h; y += 26){ g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+    g.font = "13px 'IBM Plex Mono', monospace"; g.textAlign = "left";
+    d.inputs.forEach((i, k) => {
+      const y = cy - 40 + k * 48, v = !!S.in[i.id];
+      g.strokeStyle = v ? "#35e58a" : "#3a4760"; g.lineWidth = v ? 3 : 2;
+      g.beginPath(); g.moveTo(cx - 185, y); g.lineTo(cx - 62, y); g.stroke();
+      g.fillStyle = v ? "#35e58a" : "#6a7a9c";
+      g.fillText(i.id + " = " + (v ? "1 HIGH" : "0 LOW"), cx - 285, y + 4);
+    });
+    g.strokeStyle = S.clk ? "#ab7dff" : "#3a4760"; g.lineWidth = S.clk ? 3 : 2;
+    g.beginPath(); g.moveTo(cx - 185, cy + 72); g.lineTo(cx - 95, cy + 72); g.lineTo(cx - 62, cy + 34); g.stroke();
+    g.fillStyle = S.clk ? "#ab7dff" : "#6a7a9c"; g.fillText("CLK = " + S.clk, cx - 285, cy + 76);
+    g.fillStyle = "#070b13"; g.strokeStyle = "rgba(201,214,240,.45)"; g.lineWidth = 2;
+    g.fillRect(cx - 62, cy - 62, 124, 124); g.strokeRect(cx - 62, cy - 62, 124, 124);
+    g.fillStyle = "#cfdaf2"; g.font = "18px 'IBM Plex Mono', monospace"; g.textAlign = "center";
+    g.fillText(S.type + "-FF", cx, cy - 2);
+    g.font = "11px 'IBM Plex Mono', monospace"; g.fillStyle = "#94a5c9";
+    g.fillText(S.invalid ? "INVALID" : S.mode, cx, cy + 20);
+    g.textAlign = "left"; g.font = "13px 'IBM Plex Mono', monospace";
+    [["Q", S.q, cy - 32], [QB, S.qbar, cy + 32]].forEach(([lab, v, y]) => {
+      const col = S.invalid ? "#ff5f6d" : (v ? "#35e58a" : "#3a4760");
+      g.strokeStyle = col; g.lineWidth = v ? 3 : 2;
+      g.beginPath(); g.moveTo(cx + 62, y); g.lineTo(cx + 150, y); g.stroke();
+      g.beginPath(); g.arc(cx + 168, y, 13, 0, 7); g.fillStyle = v ? col : "#151d2c"; g.fill(); g.stroke();
+      g.fillStyle = "#94a5c9"; g.fillText(lab + " = " + v, cx + 190, y + 4);
+    });
+    g.restore();
+  }
+  return { mount, unmount };
+})();
+
+
+/* ---------- gate-level schematic visualizer ---------- */
+const Schematic = (function(){
+  let cv = null, host = null, on = false, timer = null;
+
+  function mount(el){
+    host = el;
+    if(!cv){
+      cv = document.createElement("canvas");
+      cv.style.cssText = "width:100%;height:100%;display:block";
+      cv.setAttribute("role", "img");
+      cv.setAttribute("aria-label", "Gate-level logic circuit schematic");
+    }
+    el.appendChild(cv);
+    on = true;
+    clearInterval(timer);
+    timer = setInterval(draw, 60);
+    draw();
+  }
+
+  function unmount(){
+    on = false;
+    clearInterval(timer);
+    if(cv && cv.parentNode) cv.parentNode.removeChild(cv);
+  }
+
+  function drawWire(g, pts, val, label){
+    if(pts.length < 2) return;
+    const isHigh = Boolean(val);
+    g.save();
+    g.strokeStyle = isHigh ? "rgba(53,229,138,0.2)" : "rgba(58,71,96,0.2)";
+    g.lineWidth = isHigh ? 6 : 3;
+    g.beginPath();
+    g.moveTo(pts[0][0], pts[0][1]);
+    for(let i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]);
+    g.stroke();
+
+    g.strokeStyle = isHigh ? "#35e58a" : "#3a4760";
+    g.lineWidth = isHigh ? 2.5 : 1.5;
+    g.stroke();
+
+    if(label){
+      const mid = pts[Math.floor(pts.length / 2)];
+      g.fillStyle = isHigh ? "#35e58a" : "#6a7a9c";
+      g.font = "bold 11px 'IBM Plex Mono', monospace";
+      g.fillText(label + "=" + (isHigh ? "1" : "0"), mid[0], mid[1] - 8);
+    }
+    g.restore();
+  }
+
+  function drawNode(g, x, y, val){
+    g.save();
+    g.fillStyle = val ? "#35e58a" : "#3a4760";
+    g.beginPath();
+    g.arc(x, y, val ? 4.5 : 3.5, 0, Math.PI * 2);
+    g.fill();
+    g.restore();
+  }
+
+  function drawAnd(g, x, y, w, h, name, active){
+    g.save();
+    g.fillStyle = active ? "rgba(58,214,255,0.12)" : "rgba(10,16,28,0.85)";
+    g.strokeStyle = active ? "#3ad6ff" : "rgba(130,168,255,0.35)";
+    g.lineWidth = 2;
+    g.beginPath();
+    g.moveTo(x, y - h/2);
+    g.lineTo(x + w/2, y - h/2);
+    g.arc(x + w/2, y, h/2, -Math.PI/2, Math.PI/2);
+    g.lineTo(x, y + h/2);
+    g.closePath();
+    g.fill();
+    g.stroke();
+    g.fillStyle = active ? "#e9eefc" : "#94a5c9";
+    g.font = "600 11px 'Space Grotesk', sans-serif";
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    g.fillText(name || "AND", x + w/3, y);
+    g.restore();
+  }
+
+  function drawNand(g, x, y, w, h, name, active){
+    drawAnd(g, x, y, w, h, name, active);
+    g.save();
+    const bx = x + w;
+    g.fillStyle = active ? "#3ad6ff" : "#070b14";
+    g.strokeStyle = active ? "#3ad6ff" : "rgba(130,168,255,0.4)";
+    g.lineWidth = 2;
+    g.beginPath();
+    g.arc(bx + 5, y, 5, 0, Math.PI * 2);
+    g.fill();
+    g.stroke();
+    g.restore();
+  }
+
+  function drawNor(g, x, y, w, h, name, active){
+    g.save();
+    g.fillStyle = active ? "rgba(58,214,255,0.12)" : "rgba(10,16,28,0.85)";
+    g.strokeStyle = active ? "#3ad6ff" : "rgba(130,168,255,0.35)";
+    g.lineWidth = 2;
+    g.beginPath();
+    g.moveTo(x, y - h/2);
+    g.quadraticCurveTo(x + w * 0.45, y - h/2, x + w, y);
+    g.quadraticCurveTo(x + w * 0.45, y + h/2, x, y + h/2);
+    g.quadraticCurveTo(x + w * 0.25, y, x, y - h/2);
+    g.closePath();
+    g.fill();
+    g.stroke();
+    const bx = x + w;
+    g.fillStyle = active ? "#3ad6ff" : "#070b14";
+    g.strokeStyle = active ? "#3ad6ff" : "rgba(130,168,255,0.4)";
+    g.beginPath();
+    g.arc(bx + 5, y, 5, 0, Math.PI * 2);
+    g.fill();
+    g.stroke();
+
+    g.fillStyle = active ? "#e9eefc" : "#94a5c9";
+    g.font = "600 11px 'Space Grotesk', sans-serif";
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    g.fillText(name || "NOR", x + w * 0.4, y);
+    g.restore();
+  }
+
+  function drawNot(g, x, y, w, h, active){
+    g.save();
+    g.fillStyle = active ? "rgba(58,214,255,0.12)" : "rgba(10,16,28,0.85)";
+    g.strokeStyle = active ? "#3ad6ff" : "rgba(130,168,255,0.35)";
+    g.lineWidth = 2;
+    g.beginPath();
+    g.moveTo(x, y - h/2);
+    g.lineTo(x + w, y);
+    g.lineTo(x, y + h/2);
+    g.closePath();
+    g.fill();
+    g.stroke();
+    g.fillStyle = active ? "#3ad6ff" : "#070b14";
+    g.strokeStyle = active ? "#3ad6ff" : "rgba(130,168,255,0.4)";
+    g.beginPath();
+    g.arc(x + w + 4, y, 4, 0, Math.PI * 2);
+    g.fill();
+    g.stroke();
+    g.restore();
+  }
+
+  function drawPin(g, x, y, label, val, isOutput){
+    g.save();
+    const isHigh = Boolean(val);
+    g.fillStyle = isHigh ? "#35e58a" : "#3a4760";
+    g.strokeStyle = isHigh ? "rgba(53,229,138,0.4)" : "rgba(148,165,201,0.2)";
+    g.lineWidth = 1.5;
+    g.beginPath();
+    g.arc(x, y, 7, 0, Math.PI * 2);
+    g.fill();
+    g.stroke();
+    g.fillStyle = isHigh ? "#35e58a" : "#94a5c9";
+    g.font = "bold 13px 'IBM Plex Mono', monospace";
+    g.textAlign = isOutput ? "left" : "right";
+    g.textBaseline = "middle";
+    g.fillText(label + "=" + (isHigh ? "1" : "0"), isOutput ? x + 14 : x - 14, y);
+    g.restore();
+  }
+
+  function draw(){
+    if(!on || !host || document.hidden) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const w = host.clientWidth, h = host.clientHeight;
+    if(!w || !h) return;
+    cv.width = w * dpr;
+    cv.height = h * dpr;
+    const g = cv.getContext("2d");
+    if(!g) return;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, w, h);
+
+    g.fillStyle = "#04070d";
+    g.fillRect(0, 0, w, h);
+
+    g.strokeStyle = "rgba(130,168,255,0.04)";
+    g.lineWidth = 1;
+    for(let x = 0; x < w; x += 30){ g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
+    for(let y = 0; y < h; y += 30){ g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+
+    const sc = Math.min(w / 800, (h - 40) / 420);
+    const ox = (w - 800 * sc) / 2;
+    const oy = (h - 420 * sc) / 2 + 18;
+
+    g.save();
+    g.translate(ox, oy);
+    g.scale(sc, sc);
+
+    g.fillStyle = "#3ad6ff";
+    g.font = "bold 11px 'IBM Plex Mono', monospace";
+    g.textAlign = "left";
+    g.fillText(S.type + " FLIP-FLOP LOGIC SCHEMATIC — REAL-TIME GATE SIGNALS", 30, 22);
+
+    g.fillStyle = S.invalid ? "#ff5f6d" : "#94a5c9";
+    g.font = "12px 'IBM Plex Mono', monospace";
+    g.textAlign = "right";
+    g.fillText(S.invalid ? "MODE: INVALID" : "MODE: " + S.mode, 740, 22);
+
+    const type = S.type;
+    const s_in = S.in;
+    const clk = S.clk;
+    const q = S.q;
+    const qb = S.qbar;
+
+    if(type === "SR"){
+      const S_val = !!s_in.S, R_val = !!s_in.R;
+      const andTop = S_val && !!clk;
+      const andBot = R_val && !!clk;
+
+      drawPin(g, 78, 110, "S", S_val, false);
+      drawPin(g, 78, 210, "CLK", clk, false);
+      drawPin(g, 78, 310, "R", R_val, false);
+
+      drawPin(g, 660, 140, "Q", q, true);
+      drawPin(g, 660, 280, QB, qb, true);
+
+      drawWire(g, [[78, 110], [170, 110], [170, 125], [200, 125]], S_val);
+      drawWire(g, [[78, 210], [140, 210]], clk);
+      drawNode(g, 140, 210, clk);
+      drawWire(g, [[140, 210], [140, 145], [200, 145]], clk);
+      drawWire(g, [[140, 210], [140, 275], [200, 275]], clk);
+      drawWire(g, [[78, 310], [170, 310], [170, 295], [200, 295]], R_val);
+
+      drawAnd(g, 200, 135, 50, 44, "AND", andTop);
+      drawAnd(g, 200, 285, 50, 44, "AND", andBot);
+
+      drawWire(g, [[250, 135], [370, 135], [370, 130], [390, 130]], andTop, "S·CLK");
+      drawWire(g, [[250, 285], [370, 285], [370, 290], [390, 290]], andBot, "R·CLK");
+
+      drawNor(g, 390, 140, 60, 52, "NOR 1", q);
+      drawNor(g, 390, 280, 60, 52, "NOR 2", qb);
+
+      drawWire(g, [[455, 140], [530, 140], [660, 140]], q);
+      drawNode(g, 530, 140, q);
+      drawWire(g, [[455, 280], [530, 280], [660, 280]], qb);
+      drawNode(g, 530, 280, qb);
+
+      drawWire(g, [[530, 140], [530, 195], [350, 240], [350, 270], [390, 270]], q);
+      drawWire(g, [[530, 280], [530, 225], [350, 180], [350, 150], [390, 150]], qb);
+
+    } else if(type === "JK"){
+      const J_val = !!s_in.J, K_val = !!s_in.K;
+      const nandTop = !(J_val && !!clk && !!qb);
+      const nandBot = !(K_val && !!clk && !!q);
+
+      drawPin(g, 78, 110, "J", J_val, false);
+      drawPin(g, 78, 210, "CLK", clk, false);
+      drawPin(g, 78, 310, "K", K_val, false);
+
+      drawPin(g, 660, 140, "Q", q, true);
+      drawPin(g, 660, 280, QB, qb, true);
+
+      drawWire(g, [[560, 280], [560, 70], [160, 70], [160, 115], [190, 115]], qb);
+      drawWire(g, [[540, 140], [540, 350], [160, 350], [160, 305], [190, 305]], q);
+
+      drawWire(g, [[78, 110], [190, 130]], J_val);
+      drawWire(g, [[78, 210], [130, 210]], clk);
+      drawNode(g, 130, 210, clk);
+      drawWire(g, [[130, 210], [130, 145], [190, 145]], clk);
+      drawWire(g, [[130, 210], [130, 275], [190, 275]], clk);
+      drawWire(g, [[78, 310], [190, 290]], K_val);
+
+      drawNand(g, 190, 130, 56, 48, "NAND", !nandTop);
+      drawNand(g, 190, 290, 56, 48, "NAND", !nandBot);
+
+      drawWire(g, [[255, 130], [380, 130], [380, 130], [400, 130]], nandTop);
+      drawWire(g, [[255, 290], [380, 290], [380, 290], [400, 290]], nandBot);
+
+      drawNand(g, 400, 140, 60, 52, "NAND", q);
+      drawNand(g, 400, 280, 60, 52, "NAND", qb);
+
+      drawWire(g, [[468, 140], [540, 140], [660, 140]], q);
+      drawNode(g, 540, 140, q);
+      drawWire(g, [[468, 280], [560, 280], [660, 280]], qb);
+      drawNode(g, 560, 280, qb);
+
+      drawWire(g, [[510, 140], [510, 200], [360, 240], [360, 270], [400, 270]], q);
+      drawWire(g, [[510, 280], [510, 220], [360, 180], [360, 150], [400, 150]], qb);
+
+    } else if(type === "D"){
+      const D_val = !!s_in.D;
+      const D_inv = !D_val;
+      const andTop = D_val && !!clk;
+      const andBot = D_inv && !!clk;
+
+      drawPin(g, 78, 120, "D", D_val, false);
+      drawPin(g, 78, 210, "CLK", clk, false);
+
+      drawPin(g, 660, 140, "Q", q, true);
+      drawPin(g, 660, 280, QB, qb, true);
+
+      drawWire(g, [[78, 120], [130, 120]], D_val);
+      drawNode(g, 130, 120, D_val);
+      drawWire(g, [[130, 120], [210, 120]], D_val);
+      drawWire(g, [[130, 120], [130, 300], [145, 300]], D_val);
+
+      drawNot(g, 145, 300, 32, 28, D_inv);
+      drawWire(g, [[182, 300], [210, 300]], D_inv, "D̄");
+
+      drawWire(g, [[78, 210], [170, 210]], clk);
+      drawNode(g, 170, 210, clk);
+      drawWire(g, [[170, 210], [170, 145], [210, 145]], clk);
+      drawWire(g, [[170, 210], [170, 280], [210, 280]], clk);
+
+      drawAnd(g, 210, 132, 50, 44, "AND", andTop);
+      drawAnd(g, 210, 290, 50, 44, "AND", andBot);
+
+      drawWire(g, [[260, 132], [400, 132]], andTop);
+      drawWire(g, [[260, 290], [400, 290]], andBot);
+
+      drawNor(g, 400, 140, 60, 52, "NOR 1", q);
+      drawNor(g, 400, 280, 60, 52, "NOR 2", qb);
+
+      drawWire(g, [[468, 140], [540, 140], [660, 140]], q);
+      drawNode(g, 540, 140, q);
+      drawWire(g, [[468, 280], [540, 280], [660, 280]], qb);
+      drawNode(g, 540, 280, qb);
+
+      drawWire(g, [[540, 140], [540, 195], [370, 240], [370, 270], [400, 270]], q);
+      drawWire(g, [[540, 280], [540, 225], [370, 180], [370, 150], [400, 150]], qb);
+
+    } else if(type === "T"){
+      const T_val = !!s_in.T;
+
+      drawPin(g, 78, 120, "T", T_val, false);
+      drawPin(g, 78, 210, "CLK", clk, false);
+
+      drawPin(g, 660, 140, "Q", q, true);
+      drawPin(g, 660, 280, QB, qb, true);
+
+      drawWire(g, [[78, 120], [120, 120]], T_val);
+      drawNode(g, 120, 120, T_val);
+      drawWire(g, [[120, 120], [120, 130], [200, 130]], T_val, "J=T");
+      drawWire(g, [[120, 120], [120, 290], [200, 290]], T_val, "K=T");
+
+      drawWire(g, [[78, 210], [150, 210]], clk);
+      drawNode(g, 150, 210, clk);
+      drawWire(g, [[150, 210], [150, 145], [200, 145]], clk);
+      drawWire(g, [[150, 210], [150, 275], [200, 275]], clk);
+
+      drawWire(g, [[560, 280], [560, 70], [170, 70], [170, 115], [200, 115]], qb);
+      drawWire(g, [[540, 140], [540, 350], [170, 350], [170, 305], [200, 305]], q);
+
+      drawNand(g, 200, 130, 56, 48, "NAND", T_val && clk && qb);
+      drawNand(g, 200, 290, 56, 48, "NAND", T_val && clk && q);
+
+      drawWire(g, [[265, 130], [410, 130]], !(T_val && clk && qb));
+      drawWire(g, [[265, 290], [410, 290]], !(T_val && clk && q));
+
+      drawNand(g, 410, 140, 60, 52, "NAND", q);
+      drawNand(g, 410, 280, 60, 52, "NAND", qb);
+
+      drawWire(g, [[478, 140], [540, 140], [660, 140]], q);
+      drawNode(g, 540, 140, q);
+      drawWire(g, [[478, 280], [560, 280], [660, 280]], qb);
+      drawNode(g, 560, 280, qb);
+
+      drawWire(g, [[520, 140], [520, 200], [380, 240], [380, 270], [410, 270]], q);
+      drawWire(g, [[520, 280], [520, 220], [380, 180], [380, 150], [410, 150]], qb);
+    }
+
+    g.restore();
+  }
+
+  return { mount, unmount, draw };
+})();
+
+/* ---------- routing ---------- */
+let viewMode = "3d"; // "3d" | "schematic" | "2d"
+function setViewMode(mode){
+  viewMode = mode;
+  $$("[data-vm]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.vm === mode)));
+  const page = $("#page-sim").classList.contains("active") ? "sim" : "home";
+  mountStage(page);
+  toast("Switched to " + (mode === "3d" ? "3D Board" : mode === "schematic" ? "Logic Gates Schematic" : "2D Layout"));
+}
+
+function mountStage(page){
+  const el = page === "home" ? $("#stage-home") : page === "sim" ? $("#stage-sim") : $("#stage-learn");
+  Lab3D.unmount();
+  Fallback.unmount();
+  Schematic.unmount();
+  if(!el){ return; }
+  if(!Lab3D.available() || viewMode === "2d"){
+    Fallback.mount(el);
+  } else if(viewMode === "schematic"){
+    Schematic.mount(el);
+  } else {
+    Lab3D.mount(el, page === "home");
+    Lab3D.resize();
+  }
+}
+function showPage(name){
+  $$(".page").forEach(p => p.classList.toggle("active", p.id === "page-" + name));
+  $$(".navlink").forEach(b => b.dataset.page === name ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+  if(name === "home" || name === "sim" || (name === "learn" && $("#stage-learn"))) mountStage(name);
+  else Lab3D.pause();
+  window.scrollTo(0, 0);
+  setTimeout(() => { Lab3D.resize(); drawTiming(); }, 40);
+}
+function wireGoto(root){
+  $$("[data-goto]", root || document).forEach(b => {
+    if(b.dataset.wired) return; b.dataset.wired = "1";
+    b.addEventListener("click", () => showPage(b.dataset.goto));
+  });
+}
+function bindCam(root){
+  $$("[data-reset-cam]", root || document).forEach(b => {
+    if(b.dataset.wired) return; b.dataset.wired = "1";
+    b.addEventListener("click", () => { Lab3D.resetCam(); note("camera reset"); });
+  });
+}
+
+/* ---------- boot ---------- */
+function renderAll(){
+  const d = def();
+  $("#sim-title").textContent = d.name;
+  $("#sim-eyebrow").textContent = d.tag;
+  $("#home-tag").textContent = d.name.toUpperCase() + (S.auto ? " · AUTO CLOCK" : "");
+  $("#keys-help").innerHTML = d.inputs.map(i => `<div>[${i.id}] toggle ${i.id}</div>`).join("") +
+    "<div>[space] pulse the clock</div><div>[a] auto clock&nbsp; [r] reset&nbsp; [1–4] switch flip-flop</div>";
+  renderSwitcher(); renderReadouts(); renderTruth(); renderFlow(); renderDocks(); renderLive(); Lab3D.sync();
+}
+function init(){
+  $("#home-cards").innerHTML = ORDER.map(k => cardHTML(k)).join("");
+  $("#learn-cards").innerHTML = ORDER.map(k => cardHTML(k)).join("");
+  $("#apps").innerHTML = APPS.map(a => `<div class="app-card">${appSVG(a.ic)}<h4>${a.t}</h4><p>${a.d}</p></div>`).join("");
+  $("#branch-holder").innerHTML = branchSVG();
+  renderCompare();
+  quizCard(QUIZ, $("#quiz-card"), "Flip-Flop Mastery");
+  $$("#home-cards [data-ff]").forEach(b => b.addEventListener("click", () => { switchType(b.dataset.ff); showPage("sim"); }));
+  $$("#learn-cards [data-ff]").forEach(b => b.addEventListener("click", () => learnDetail(b.dataset.ff)));
+  $$(".navlink").forEach(b => b.addEventListener("click", () => showPage(b.dataset.page)));
+  wireGoto(); bindCam(); bindTiming();
+
+  $("#btn-logic").addEventListener("click", showLogic);
+  $("#btn-simple").addEventListener("click", e => {
+    S.simple = !S.simple; e.currentTarget.setAttribute("aria-pressed", String(S.simple));
+    e.currentTarget.textContent = S.simple ? "Full explanation" : "Explain simply";
+    explain("arm");
+  });
+  $("#btn-probe").addEventListener("click", e => {
+    S.labels = !S.labels; e.currentTarget.setAttribute("aria-pressed", String(S.labels));
+    Lab3D.setLabels(S.labels); toast(S.labels ? "Board labels on" : "Board labels off");
+  });
+  $$("[data-vm]").forEach(b => b.addEventListener("click", () => setViewMode(b.dataset.vm)));
+  if($("#btn-sound")){
+    $("#btn-sound").addEventListener("click", () => {
+      const on = Sound.toggle();
+      $("#sound-icon").textContent = on ? "🔊" : "🔈";
+      toast(on ? "Sound effects enabled" : "Sound effects muted");
+    });
+  }
+  $$("[data-preset]").forEach(b => b.addEventListener("click", () => applyPreset(b.dataset.preset)));
+  if($("#timing-export")) $("#timing-export").addEventListener("click", exportTimingPNG);
+  $("#step-prev").addEventListener("click", () => stepGo(stepI - 1));
+  $("#step-next").addEventListener("click", () => stepGo(stepI + 1));
+  $("#step-restart").addEventListener("click", () => { resetSim(true); stepGo(0); });
+  $("#chal-next").addEventListener("click", () => chalNew());
+  $("#chal-skip").addEventListener("click", () => chalNew());
+
+  document.addEventListener("keydown", e => {
+    if(e.target && e.target.matches && e.target.matches("input, textarea, select")) return;
+    if(!$("#page-sim").classList.contains("active")) return;
+    const k = e.key.toLowerCase();
+    if(e.code === "Space"){ e.preventDefault(); pulseClock(); return; }
+    if(k === "a"){ setAuto(!S.auto); return; }
+    if(k === "r"){ resetSim(); return; }
+    if("1234".indexOf(k) >= 0){ switchType(ORDER[Number(k) - 1]); return; }
+    const inp = def().inputs.find(i => i.id.toLowerCase() === k);
+    if(inp){ setInput(inp.id, !S.in[inp.id]); Lab3D.inputPulse(inp.id); }
+  });
+
+  if(Lab3D.init()) Lab3D.build(S.type);
+  else { setViewMode("schematic"); const b = $("#vm-3d"); if(b) b.disabled = true; }
+
+  S.in = { J:1, K:1 };
+  renderAll(); stepGo(0); chalNew(true);
+  mountStage("home"); setAuto(true);
+  $("#home-tag").textContent = def().name.toUpperCase() + " · AUTO CLOCK";
+  explain("arm"); announce();
+}
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>

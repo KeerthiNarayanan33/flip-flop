@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="solar">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2028,10 +2028,10 @@ const THEME_LABELS = {
 const THEME_ICONS = {
   dark:"🌑", solar:"🔥", studio:"☀️"
 };
-let currentTheme = localStorage.getItem("ff_theme") || "dark";
+let currentTheme = localStorage.getItem("ff_theme") || "solar";
 
 function applyTheme(t){
-  if(!THEMES.includes(t)) t = "dark";
+  if(!THEMES.includes(t)) t = "solar";
   currentTheme = t;
   document.documentElement.setAttribute("data-theme", t);
   localStorage.setItem("ff_theme", t);

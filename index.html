@@ -664,6 +664,20 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
 .sd-arrow-head{ fill:var(--muted); }
 .sd-transition-label{ font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--text); text-anchor:middle; }
 
+/* logic circuit diagram */
+.ad-circuit-container{
+  background:linear-gradient(150deg, rgba(3,8,22,.85), rgba(2,6,18,.95));
+  border:1px solid rgba(0,229,255,.2);
+  border-radius:var(--r);
+  box-shadow:inset 0 0 24px rgba(0,229,255,.04);
+}
+.ad-circuit-svg{ display:block; margin:0 auto; max-width:760px; width:100%; height:auto; }
+:root[data-theme="studio"] .ad-circuit-container{
+  background:linear-gradient(150deg, rgba(246,250,255,.95), rgba(238,244,255,.9));
+  border-color:rgba(80,100,240,.18);
+  box-shadow:inset 0 0 20px rgba(80,100,240,.04);
+}
+
 /* k-map */
 .kmap-selector{ display:flex; gap:8px; margin-bottom:var(--s2); flex-wrap:wrap; }
 .kmap-sel-btn{
@@ -878,6 +892,17 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
         <div class="flow" id="flow" aria-hidden="true"></div>
 
         <div class="card" style="margin-top:var(--s3)">
+          <div class="card-head"><h3>What just happened</h3>
+            <div class="row" id="explain-mode-btns" role="tablist" aria-label="Explanation detail level">
+              <button type="button" class="btn small active" id="btn-full" aria-pressed="true" title="Comprehensive transition breakdown and live telemetry">Full analysis</button>
+              <button type="button" class="btn small" id="btn-logic" aria-pressed="false" title="Internal gate-level causal walkthrough">See the logic</button>
+              <button type="button" class="btn small" id="btn-simple" aria-pressed="false" title="Intuitive explanation in plain words">Plain words</button>
+            </div>
+          </div>
+          <div class="why" id="why"><div class="t mono">READY</div><p>Set an input or pulse the clock to begin.</p></div>
+        </div>
+
+        <div class="card">
           <div class="card-head"><h3>Truth table</h3>
             <div class="row"><span class="pill" id="tt-trigger"></span></div>
           </div>
@@ -905,16 +930,6 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
           <div class="card-head"><h3>Live state</h3><span class="mode-chip" id="mode-chip">HOLD</span></div>
           <div class="state-hero" id="readouts"></div>
           <div id="invalid-box" style="margin-top:var(--s2)"></div>
-        </div>
-
-        <div class="card">
-          <div class="card-head"><h3>What just happened</h3>
-            <div class="row">
-              <button class="btn small" id="btn-logic">See the logic</button>
-              <button class="btn small" id="btn-simple" aria-pressed="false">Explain simply</button>
-            </div>
-          </div>
-          <div class="why" id="why"><div class="t mono">READY</div><p>Set an input or pulse the clock to begin.</p></div>
         </div>
 
         <div class="card">
@@ -1007,11 +1022,13 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
       <span class="ad-wf-arrow" aria-hidden="true">→</span>
       <button class="ad-wf-step" data-ad-scroll="ad-s3"><span class="wf-num">03</span> State&nbsp;Diagram</button>
       <span class="ad-wf-arrow" aria-hidden="true">→</span>
-      <button class="ad-wf-step" data-ad-scroll="ad-s4"><span class="wf-num">04</span> K-Map</button>
+      <button class="ad-wf-step" data-ad-scroll="ad-circuit"><span class="wf-num">04</span> Logic&nbsp;Diagram</button>
       <span class="ad-wf-arrow" aria-hidden="true">→</span>
-      <button class="ad-wf-step" data-ad-scroll="ad-s5"><span class="wf-num">05</span> Boolean&nbsp;Expr.</button>
+      <button class="ad-wf-step" data-ad-scroll="ad-s4"><span class="wf-num">05</span> K-Map</button>
       <span class="ad-wf-arrow" aria-hidden="true">→</span>
-      <button class="ad-wf-step" data-ad-scroll="ad-s6"><span class="wf-num">06</span> Char.&nbsp;Equation</button>
+      <button class="ad-wf-step" data-ad-scroll="ad-s5"><span class="wf-num">06</span> Boolean&nbsp;Expr.</button>
+      <span class="ad-wf-arrow" aria-hidden="true">→</span>
+      <button class="ad-wf-step" data-ad-scroll="ad-s6"><span class="wf-num">07</span> Char.&nbsp;Equation</button>
     </nav>
 
     <!-- SECTION 1: Present → Next State -->
@@ -1069,10 +1086,32 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
       </div>
     </div>
 
-    <!-- SECTION 4: K-Map -->
-    <div class="ad-block" id="ad-s4">
+    <!-- SECTION 4: Logic Circuit Diagram -->
+    <div class="ad-block" id="ad-circuit">
       <div class="ad-block-head">
         <span class="ad-block-num">04</span>
+        <div>
+          <div class="ad-block-title">Logic Circuit Diagram</div>
+          <div class="ad-block-sub">Gate-level hardware schematic &amp; signal connections for the active flip-flop</div>
+        </div>
+      </div>
+      <div class="card" style="padding:var(--s3)">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s2)">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <span class="badge badge-present" id="ad-circuit-badge">HARDWARE LOGIC SCHEMATIC</span>
+            <span style="font-size:12.5px;color:var(--muted)">Gate-level hardware implementation</span>
+          </div>
+          <button class="btn small" id="ad-export-circuit" title="Download logic diagram as high-resolution PNG image">📸 Export Diagram Image (PNG)</button>
+        </div>
+        <div class="ad-circuit-container" id="ad-circuit-svg-wrap" style="overflow-x:auto;padding:12px 6px;text-align:center"></div>
+        <div class="why" style="margin-top:var(--s3)" id="ad-circuit-explain"></div>
+      </div>
+    </div>
+
+    <!-- SECTION 5: K-Map -->
+    <div class="ad-block" id="ad-s4">
+      <div class="ad-block-head">
+        <span class="ad-block-num">05</span>
         <div>
           <div class="ad-block-title">Karnaugh Map (K-Map)</div>
           <div class="ad-block-sub">Minimizing Boolean expressions from the excitation table using Gray-code grouping</div>
@@ -1094,10 +1133,10 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
       </div>
     </div>
 
-    <!-- SECTION 5: Boolean Expressions -->
+    <!-- SECTION 6: Boolean Expressions -->
     <div class="ad-block" id="ad-s5">
       <div class="ad-block-head">
-        <span class="ad-block-num">05</span>
+        <span class="ad-block-num">06</span>
         <div>
           <div class="ad-block-title">Boolean Expressions</div>
           <div class="ad-block-sub">Excitation equations derived from K-Map groupings</div>
@@ -1109,10 +1148,10 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
       </div>
     </div>
 
-    <!-- SECTION 6: Characteristic Equation -->
+    <!-- SECTION 7: Characteristic Equation -->
     <div class="ad-block" id="ad-s6">
       <div class="ad-block-head">
-        <span class="ad-block-num">06</span>
+        <span class="ad-block-num">07</span>
         <div>
           <div class="ad-block-title">Characteristic Equation</div>
           <div class="ad-block-sub">Complete description of next-state as function of present state and inputs</div>
@@ -2162,57 +2201,222 @@ function chainText(){
   return { ins, rule:r.mode, next:r.invalid ? "Q = " + QB + " = 0" : "Q(next) = " + r.q };
 }
 
-function explain(reason, before){
-  const w = $("#why"); if(!w) return;
-  const d = def(), c = chainText();
-  let title = "READY", body = "";
-  if(S.simple){
-    title = "IN PLAIN WORDS";
-    body = d.simple;
-    w.innerHTML = `<div class="t mono">${title}</div><p>${body}</p>`;
-    return;
+let explainMode = "full"; // "full" | "logic" | "simple"
+let lastExplainReason = "ready";
+let lastBeforeQ = undefined;
+
+function setExplainMode(mode){
+  explainMode = mode;
+  const fullBtn = $("#btn-full");
+  const logicBtn = $("#btn-logic");
+  const simpleBtn = $("#btn-simple");
+  if(fullBtn){
+    fullBtn.classList.toggle("active", mode === "full");
+    fullBtn.setAttribute("aria-pressed", String(mode === "full"));
   }
-  if(reason === "reset"){ title = "CIRCUIT RESET"; body = "All inputs are LOW and the stored bit is 0."; }
-  else if(reason === "arm"){
-    title = "INPUTS ARMED";
-    body = d.trigger === "edge"
-      ? `Inputs are set to ${c.ins}. Nothing changes yet — this flip-flop only acts on the rising clock edge. The next edge will ${c.rule.toLowerCase()}.`
-      : `Inputs are set to ${c.ins}. The clock is LOW, so the latch is closed and Q is untouched.`;
+  if(logicBtn){
+    logicBtn.classList.toggle("active", mode === "logic");
+    logicBtn.setAttribute("aria-pressed", String(mode === "logic"));
   }
-  else if(reason === "gate-close"){ title = "GATE CLOSED"; body = "CLK went LOW. The latch is opaque again and holds " + S.q + " no matter what S and R do."; }
-  else if(reason === "input" || reason === "gate-open" || reason === "edge"){
-    const changed = before !== undefined && before !== S.q;
+  if(simpleBtn){
+    simpleBtn.classList.toggle("active", mode === "simple");
+    simpleBtn.setAttribute("aria-pressed", String(mode === "simple"));
+  }
+  explain(lastExplainReason, lastBeforeQ);
+}
+
+function renderExplainFull(reason, before, d, c, i){
+  let badgeText = "READY";
+  let badgeColor = "var(--cyan)";
+  let narrative = "";
+  const changed = before !== undefined && before !== S.q;
+  const qTrans = before !== undefined ? `${before} → ${S.q}` : `${S.q}`;
+
+  if(reason === "reset" || reason === "ready"){
+    badgeText = "CIRCUIT INITIALIZED / RESET";
+    narrative = `The simulation is in its initial state. All inputs are cleared to 0, clock is quiescent, and the bistable core holds <strong>Q = 0</strong> with complement <strong>Q̅ = 1</strong>. Set any input or pulse the clock to trigger a state transition.`;
+  } else if(reason === "arm"){
+    badgeText = "INPUTS ARMED · AWAITING CLOCK TRIGGER";
+    badgeColor = "var(--amber)";
+    narrative = d.trigger === "edge"
+      ? `Inputs were updated to <strong>${c.ins}</strong>. Because this ${d.name} is <strong>${S.edge === 'rise' ? 'rising-edge ↑' : 'falling-edge ↓'} triggered</strong>, the internal bistable memory cell has not captured them yet. The stored bit remains stable at <strong>Q = ${S.q}</strong> (Q̅ = ${S.qbar}). The next clock edge will execute the <strong>${c.rule}</strong> operation.`
+      : `Inputs updated to <strong>${c.ins}</strong>. The clock is currently LOW (0), keeping the transmission gates disabled. The latch maintains <strong>Q = ${S.q}</strong> until CLK transitions to HIGH.`;
+  } else if(reason === "gate-close"){
+    badgeText = "TRANSMISSION GATE CLOSED (LATCHED)";
+    narrative = `CLK dropped to 0 (LOW). The gating transistors turned OFF, making the latch opaque. It securely holds <strong>Q = ${S.q}</strong> regardless of subsequent changes to S or R until the next clock pulse.`;
+  } else {
     if(S.invalid){
-      title = "FORBIDDEN COMBINATION";
-      body = "S and R are both HIGH, so Q and " + QB + " are both driven LOW. They are no longer complements and the next state is unpredictable.";
+      badgeText = "CRITICAL HAZARD · FORBIDDEN COMBINATION";
+      badgeColor = "var(--red)";
+      narrative = `<strong>State Invariant Violated:</strong> Both S=1 and R=1 are active simultaneously. Both cross-coupled NOR/NAND gates are forced active, pulling both Q and Q̅ to 0. When inputs return to 0, internal propagation delay differences create an unpredictable race condition.`;
     } else if(S.mode === "TOGGLE"){
-      title = "TOGGLE";
-      body = (S.type === "JK" ? "Both J and K are HIGH. " : "T is HIGH. ") +
-             "On this rising clock edge the flip-flop copied " + QB + " into Q, so Q went " + before + " → " + S.q + ".";
-    } else if(S.mode === "HOLD"){
-      title = "HOLD";
-      body = "The input combination means hold, so the clock edge passed and Q stayed at " + S.q + ".";
+      badgeText = `TOGGLE OPERATION · Q INVERTED (${qTrans})`;
+      badgeColor = "var(--violet)";
+      narrative = `<strong>Inversion Triggered:</strong> Both toggle excitation inputs are active (${S.type === 'JK' ? 'J=1 and K=1' : 'T=1'}). Upon the active ${S.edge === 'rise' ? 'rising ↑' : 'falling ↓'} clock edge, feedback steered the complement value into the latch core, inverting the stored bit from <strong>${before !== undefined ? before : (S.q?0:1)} → ${S.q}</strong> with complement settling to <strong>${S.qbar}</strong>.`;
     } else if(S.mode === "SET"){
-      title = "SET";
-      body = changed ? "Q was driven HIGH, so Q = 1 and " + QB + " = 0." : "The set condition was already satisfied — Q stays at 1.";
+      badgeText = changed ? `SET TRANSITION · Q DRIVEN HIGH (${qTrans})` : `SET STATE REINFORCED (Q = 1)`;
+      badgeColor = "var(--green)";
+      narrative = changed
+        ? `<strong>Set Action Executed:</strong> Input drove the latch core HIGH. State transitioned from <strong>${before} → 1</strong> and complement Q̅ settled to <strong>0</strong>.`
+        : `<strong>Set Condition Maintained:</strong> Set input is active. Since the flip-flop was already set to <strong>Q = 1</strong>, the clock pulse reinforced the existing state without disturbance.`;
+    } else if(S.mode === "RESET"){
+      badgeText = changed ? `RESET TRANSITION · Q CLEARED (${qTrans})` : `RESET STATE MAINTAINED (Q = 0)`;
+      badgeColor = "var(--cyan)";
+      narrative = changed
+        ? `<strong>Reset (Clear) Action Executed:</strong> Input drove the latch core LOW. State cleared from <strong>${before} → 0</strong> and complement Q̅ settled to <strong>1</strong>.`
+        : `<strong>Reset Condition Maintained:</strong> Reset input is active. Since the flip-flop was already cleared to <strong>Q = 0</strong>, the clock pulse maintained the cleared state.`;
     } else {
-      title = "RESET";
-      body = changed ? "Q was cleared, so Q = 0 and " + QB + " = 1." : "The reset condition was already satisfied — Q stays at 0.";
+      badgeText = `HOLD STATE · MEMORY PRESERVED (Q = ${S.q})`;
+      badgeColor = "var(--cyan)";
+      narrative = `<strong>Hold Condition Active:</strong> Inputs specify no change (${S.type === 'SR' ? 'S=0, R=0' : S.type === 'JK' ? 'J=0, K=0' : 'T=0'}). Clock transition occurred, but steering gates remained inactive. The cross-coupled bistable pair retained its internal charge, stably holding <strong>Q = ${S.q}</strong> and Q̅ = ${S.qbar}.`;
     }
   }
-  w.innerHTML = `<div class="t mono">${title}</div><p>${body}</p>
-    <div class="chain mono">${c.ins} &nbsp;→&nbsp; ${c.rule} &nbsp;→&nbsp; ${c.next}</div>`;
+
+  const rowIdx = rowNow();
+  const row = (rowIdx >= 0 && d.truthRows && d.truthRows[rowIdx]) ? d.truthRows[rowIdx] : null;
+  const rowDetail = row ? `Truth Row [${d.truthHead.join(", ")}]: <strong>${row.c.join(" | ")}</strong>` : "";
+
+  return `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
+      <div class="t mono" style="color:${badgeColor};font-weight:700;font-size:12px;letter-spacing:.06em">${badgeText}</div>
+      <div class="mono" style="font-size:11px;color:var(--muted)">Clock Edges: <span style="color:var(--text);font-weight:600">${S.edges}</span> · Transitions: <span style="color:var(--cyan);font-weight:600">${S.changes}</span></div>
+    </div>
+    <p style="margin:4px 0 10px;font-size:14px;line-height:1.55">${narrative}</p>
+    <div class="chain mono" style="background:rgba(0,0,0,.15);border:1px solid var(--line);border-radius:6px;padding:8px 12px;line-height:1.8;font-size:12.5px">
+      <div style="color:var(--muted)">LIVE SIGNAL PATH:</div>
+      <div>Inputs: <span style="color:var(--cyan);font-weight:600">${c.ins}</span> &nbsp;·&nbsp; CLK Trigger: <span style="color:var(--violet)">${d.trigger === "edge" ? (S.edge === "rise" ? "Rising Edge ↑" : "Falling Edge ↓") : "Level High"}</span></div>
+      <div>Rule: <span style="color:var(--amber);font-weight:600">${c.rule}</span> &nbsp;→&nbsp; Next: <span style="color:var(--green);font-weight:600">${c.next}</span> &nbsp;·&nbsp; Settled: <span style="color:var(--cyan);font-weight:600">Q = ${S.q}, Q̅ = ${S.qbar}</span></div>
+      ${rowDetail ? `<div style="margin-top:4px;padding-top:4px;border-top:1px dashed var(--line);color:var(--muted);font-size:11.5px">${rowDetail}</div>` : ""}
+    </div>
+  `;
+}
+
+function renderExplainLogic(reason, before, d, c, i){
+  let gateDesc = "";
+  if(S.type === "SR"){
+    gateDesc = `Steering Gates (AND/NAND): S_gate = S·CLK = ${(i.S||0)}·${S.clk} = ${(i.S||0)&S.clk}, R_gate = R·CLK = ${(i.R||0)}·${S.clk} = ${(i.R||0)&S.clk}`;
+  } else if(S.type === "JK"){
+    const jG = (i.J||0) & S.qbar;
+    const kG = (i.K||0) & S.q;
+    gateDesc = `Steering Gates with feedback: J_steer = J·Q̅ = ${(i.J||0)}·${S.qbar} = ${jG} &nbsp;|&nbsp; K_steer = K·Q = ${(i.K||0)}·${S.q} = ${kG}`;
+  } else if(S.type === "D"){
+    const dVal = i.D || 0;
+    gateDesc = `Steering Inverter & Gates: D = ${dVal}, D̅ = ${dVal ? 0 : 1} &nbsp;→&nbsp; Set_pulse = ${dVal}, Reset_pulse = ${dVal ? 0 : 1}`;
+  } else if(S.type === "T"){
+    const tG1 = (i.T||0) & S.qbar;
+    const tG2 = (i.T||0) & S.q;
+    gateDesc = `Toggle Steering: Gate_T1 = T·Q̅ = ${(i.T||0)}·${S.qbar} = ${tG1} &nbsp;|&nbsp; Gate_T2 = T·Q = ${(i.T||0)}·${S.q} = ${tG2}`;
+  }
+
+  let coreDesc = "";
+  if(S.invalid){
+    coreDesc = `<span style="color:var(--red)">Hazard: Both cross-coupled gates receive active 1 inputs → Q = 0 and Q̅ = 0 simultaneously (unstable/illegal).</span>`;
+  } else if(S.mode === "TOGGLE"){
+    coreDesc = `Feedback pulse inverts cross-coupled latch pair: Previous bit ${before !== undefined ? before : (S.q?0:1)} inverts into Q = ${S.q}, Q̅ = ${S.qbar}.`;
+  } else if(S.mode === "SET"){
+    coreDesc = `Set gate pulse forces upper cross-coupled gate output Q → 1; feedback input forces lower gate output Q̅ → 0.`;
+  } else if(S.mode === "RESET"){
+    coreDesc = `Reset gate pulse forces lower cross-coupled gate output Q̅ → 1; feedback input forces upper gate output Q → 0.`;
+  } else {
+    coreDesc = `Both steering gate outputs are 0 (quiescent); internal cross-coupled regenerative feedback maintains stored charge (Q = ${S.q}).`;
+  }
+
+  const trigDesc = d.trigger === "edge"
+    ? `${S.edge === "rise" ? "Rising Clock Edge (↑ 0→1)" : "Falling Clock Edge (↓ 1→0)"}: Transient edge detector generates a ~100ps trigger strobe.`
+    : `Level-Triggered Window: While CLK is HIGH (1), transmission gates conduct continuously.`;
+
+  return `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div class="t mono" style="color:var(--cyan);font-weight:700;font-size:12px">GATE-LEVEL CAUSAL LOGIC EVALUATION</div>
+      <span class="pill mono" style="font-size:11px">${d.name} Logic</span>
+    </div>
+    <div class="chain mono" style="background:rgba(0,0,0,.15);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:12.5px;line-height:1.8">
+      <div><strong style="color:var(--cyan)">1. Input & Feedback Stage:</strong> ${c.ins} &nbsp;·&nbsp; Q = ${S.q}, Q̅ = ${S.qbar}</div>
+      <div style="padding-left:14px;color:var(--muted)">↳ ${gateDesc}</div>
+      <div style="margin-top:4px"><strong style="color:var(--violet)">2. Clock Strobe & Trigger:</strong> CLK = ${S.clk}</div>
+      <div style="padding-left:14px;color:var(--muted)">↳ ${trigDesc}</div>
+      <div style="margin-top:4px"><strong style="color:var(--amber)">3. Bistable Latch Core Resolution:</strong></div>
+      <div style="padding-left:14px;color:var(--muted)">↳ ${coreDesc}</div>
+      <div style="margin-top:4px"><strong style="color:var(--green)">4. Settled Output Verification:</strong></div>
+      <div style="padding-left:14px;color:var(--cyan);font-weight:600">↳ Q = ${S.q} &nbsp;·&nbsp; Q̅ = ${S.qbar} &nbsp;(Operation: ${c.rule})</div>
+    </div>
+  `;
+}
+
+function renderExplainSimple(reason, before, d, c, i){
+  let plainText = "";
+  let tip = "";
+
+  if(S.type === "JK"){
+    if(i.J && i.K){
+      plainText = `Both J and K are turned ON (1). This is <strong>Toggle mode</strong>. Think of it like a push-button light switch: every single time the clock pulses, the output flips to the opposite value. It just switched from <strong>${before !== undefined ? before : (S.q?0:1)} to ${S.q}</strong>.`;
+      tip = "Try turning K off (K=0) to keep Q at 1, or turn J off (J=0) to force Q to 0.";
+    } else if(i.J && !i.K){
+      plainText = `J is Set (turn the bit ON) and K is Reset. Since J=1 and K=0, the clock pulse drives the output <strong>Q to 1</strong>. As long as J stays 1 and K stays 0, Q will stay ON.`;
+      tip = "Try turning J to 0 as well to watch the flip-flop remember and hold the 1.";
+    } else if(!i.J && i.K){
+      plainText = `K is Reset (clear the bit to 0). Since K=1 and J=0, the clock pulse cleared the output <strong>Q to 0</strong>.`;
+      tip = "Try turning both inputs to 1 to watch it start toggling back and forth.";
+    } else {
+      plainText = `Both J and K are turned OFF (0). The flip-flop is in <strong>Hold mode (memory)</strong>. Clock pulses will arrive, but the stored bit stays exactly where it is (<strong>Q = ${S.q}</strong>).`;
+      tip = "Turn J to 1 to store a 1 on the next pulse, or turn K to 1 to store a 0.";
+    }
+  } else if(S.type === "D"){
+    plainText = `The D flip-flop is like taking a photo with a digital camera. The Data input D is currently <strong>${i.D || 0}</strong>. When the clock ticks, the flip-flop captures that exact value and saves it into <strong>Q = ${S.q}</strong>. Any changes to D between clock ticks are completely ignored.`;
+    tip = i.D ? "Try changing D to 0 and pulse the clock to see Q change to 0." : "Try changing D to 1 and pulse the clock to see Q change to 1.";
+  } else if(S.type === "T"){
+    if(i.T){
+      plainText = `T stands for <strong>Toggle</strong>. Because T is 1, every clock pulse inverts the output bit (0 flips to 1, and 1 flips to 0). Q is now <strong>${S.q}</strong>. Because it flips once per clock pulse, it divides the clock speed in half — which is how digital clocks and binary counters count!`;
+      tip = "Turn Auto Clock on to see the clean half-speed square wave in the timing diagram below.";
+    } else {
+      plainText = `T is 0, which means Toggle is disabled. The flip-flop ignores all clock pulses and holds its memory at <strong>Q = ${S.q}</strong>.`;
+      tip = "Turn T to 1 to start toggling the stored bit on every clock pulse.";
+    }
+  } else {
+    if(i.S && i.R){
+      plainText = `<strong>Warning:</strong> Both S (Set) and R (Reset) are ON at the same time. You are telling the circuit to be ON and OFF simultaneously! This breaks the rule that Q and Q̅ must be opposites.`;
+      tip = "Turn off either S or R to return the flip-flop to a normal, safe state.";
+    } else if(i.S){
+      plainText = `S (Set) is 1 and R is 0. The circuit sets the stored bit to <strong>1</strong>.`;
+      tip = "Turn S back to 0 to see how the latch continues holding the 1 even after you let go.";
+    } else if(i.R){
+      plainText = `R (Reset) is 1 and S is 0. The circuit clears the stored bit to <strong>0</strong>.`;
+      tip = "Turn R back to 0 to see how the latch continues holding the 0.";
+    } else {
+      plainText = `Both S and R are 0. The latch is in memory mode: it quietly remembers whatever bit was previously saved (currently <strong>Q = ${S.q}</strong>).`;
+      tip = "Turn S to 1 to store a 1, or turn R to 1 to store a 0.";
+    }
+  }
+
+  return `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div class="t mono" style="color:var(--cyan);font-weight:700;font-size:12px">IN PLAIN WORDS</div>
+      <span class="pill mono" style="font-size:11px">${d.name} Concept</span>
+    </div>
+    <p style="margin:4px 0 10px;font-size:14.5px;line-height:1.55">${plainText}</p>
+    <div style="background:rgba(0,229,255,.07);border-left:3px solid var(--cyan);padding:8px 12px;border-radius:4px;font-size:13px;color:var(--text)">
+      <strong>💡 What to try next:</strong> ${tip}
+    </div>
+  `;
+}
+
+function explain(reason, before){
+  const w = $("#why"); if(!w) return;
+  lastExplainReason = reason || lastExplainReason;
+  if(before !== undefined) lastBeforeQ = before;
+  const d = def(), c = chainText(), i = S.in;
+
+  if(explainMode === "logic"){
+    w.innerHTML = renderExplainLogic(reason, before !== undefined ? before : lastBeforeQ, d, c, i);
+  } else if(explainMode === "simple"){
+    w.innerHTML = renderExplainSimple(reason, before !== undefined ? before : lastBeforeQ, d, c, i);
+  } else {
+    w.innerHTML = renderExplainFull(reason, before !== undefined ? before : lastBeforeQ, d, c, i);
+  }
 }
 
 function showLogic(){
-  const c = chainText(), d = def();
-  $("#why").innerHTML = `<div class="t mono">LOGIC EVALUATION</div>
-    <div class="chain mono" style="font-size:13.5px;line-height:1.95">
-      ${c.ins} &nbsp;·&nbsp; Q = ${S.q}<br>↓<br>
-      rule for ${d.name}: <span style="color:var(--cyan)">${c.rule}</span><br>↓<br>
-      ${d.trigger === "edge" ? "on the next " + (S.edge === "rise" ? "rising ↑" : "falling ↓") + " clock edge" : "while CLK is HIGH"}<br>↓<br>
-      <span style="color:var(--green)">${c.next}</span>
-    </div>`;
+  setExplainMode("logic");
 }
 
 /* ---------- timing diagram ---------- */
@@ -2336,6 +2540,7 @@ function applyTheme(t){
   const icon = $("#theme-icon");
   if(icon) icon.textContent = THEME_ICONS[t] || "🎨";
   Lab3D.updateThemeColors(t);
+  if(typeof adRenderCircuitDiagram === "function") adRenderCircuitDiagram();
   toast("Theme: " + (THEME_LABELS[t] || t));
 }
 
@@ -3182,6 +3387,8 @@ const AD_DATA = {
       { n:"③", txt:"From excitation table: Q=1 → Q_next=0 requires <code>R=1</code>. Q=1 → Q_next=1 requires <code>R=0</code>." },
       { n:"④", txt:"Therefore R is true only when <code>Q=1</code> AND <code>Q_next=0</code> (Q_next'). → <code>R = Q · Q(next)'</code>" }
     ],
+    circuitBadge: "2x AND GATES + 2x CROSS-COUPLED NOR LATCH",
+    circuitExplain: "<div class='t mono'>CIRCUIT OPERATION</div><p>The <strong>Clocked SR Flip-Flop</strong> uses two input AND gates to gate S and R with the clock (CLK). When CLK=1, input S drives NOR 1 to set Q=1 (Q̅=0); input R drives NOR 2 to reset Q=0 (Q̅=1). Cross-coupling between NOR 1 and NOR 2 creates the regenerative feedback loop that stores the bit when CLK returns to 0. When S=R=1, both NOR gates output 0 simultaneously, violating Q ≠ Q̅ and resulting in an invalid/unpredictable state.</p>",
     characteristicEq: "Q(next) = S + R'·Q",
     charExplain: "Derived from the SR latch behavior. When S=1, Q becomes 1 regardless. When R=1 (and S=0), Q becomes 0. Otherwise Q holds. The constraint S·R=0 must always hold (no forbidden state)."
   },
@@ -3248,6 +3455,8 @@ const AD_DATA = {
       { n:"④", txt:"K is only needed when transitioning from 1 to 0: <code>K = Q · Q(next)'</code>" },
       { n:"⑤", txt:"Combining both via characteristic equation: <code>Q(next) = J·Q' + K'·Q</code>" }
     ],
+    circuitBadge: "2x 3-INPUT STEERING NAND + 2x CROSS-COUPLED NAND LATCH",
+    circuitExplain: "<div class='t mono'>CIRCUIT OPERATION</div><p>The <strong>Universal JK Flip-Flop</strong> eliminates the forbidden state by routing complementary feedback from Q to the bottom NAND gate and from Q̅ to the top NAND gate. When J=K=1 and CLK pulses, the feedback steers the clock to the gate that will invert the current state, producing a reliable <strong>TOGGLE</strong>. When J=K=0, both input gates are blocked, holding the latched bit.</p>",
     characteristicEq: "Q(next) = J·Q' + K'·Q",
     charExplain: "The characteristic equation of JK is derived by substituting S = J·Q' and R = K·Q into Q(next) = S + R'·Q. This gives the complete next-state description: Q(next) = J·Q' + K'·Q."
   },
@@ -3299,6 +3508,8 @@ const AD_DATA = {
       { n:"②", txt:"<code>D = Q_next</code> — the D input is simply set to whatever the next state should be." },
       { n:"③", txt:"This is the simplest excitation of all flip-flops — no logic needed, D directly represents the desired next state." }
     ],
+    circuitBadge: "1x INVERTER (NOT) + 2x AND GATES + 2x NOR LATCH",
+    circuitExplain: "<div class='t mono'>CIRCUIT OPERATION</div><p>The <strong>D (Data) Flip-Flop</strong> places an inverter (NOT gate) between the Set and Reset input paths. This guarantees that S and R are always complementary (when D=1, S=1 and R=0; when D=0, S=0 and R=1), making the invalid S=R=1 state physically impossible. On each active clock pulse, the circuit latches the exact value of D to output Q and maintains it until the next pulse.</p>",
     characteristicEq: "Q(next) = D",
     charExplain: "The D flip-flop has the simplest characteristic equation of all: Q(next) = D. The next state is purely determined by the data input D at the clock edge, with no dependence on the current state Q."
   },
@@ -3351,6 +3562,8 @@ const AD_DATA = {
       { n:"③", txt:"Therefore: <code>T = Q ⊕ Q_next</code>" },
       { n:"④", txt:"Rearranging: <code>Q_next = T ⊕ Q</code> (the characteristic equation)." }
     ],
+    circuitBadge: "TIED-INPUT JK FLIP-FLOP TOPOLOGY",
+    circuitExplain: "<div class='t mono'>CIRCUIT OPERATION</div><p>The <strong>T (Toggle) Flip-Flop</strong> is formed by tying the J and K inputs of a JK flip-flop together to a single terminal T (J = K = T). When T=0, clock pulses have no effect and the circuit holds its state. When T=1, both J and K are 1, causing the output to toggle on every active clock pulse. This divides the clock frequency by 2 at output Q, making the T flip-flop ideal for digital counters and frequency dividers.</p>",
     characteristicEq: "Q(next) = T ⊕ Q",
     charExplain: "The T flip-flop characteristic equation Q(next) = T ⊕ Q directly expresses the toggle behavior: when T=0, Q(next)=Q (hold); when T=1, Q(next)=Q' (toggle/invert). This XOR relationship is the mathematical definition of toggling."
   }
@@ -3368,6 +3581,7 @@ function adSetType(type){
   adRenderPresentNext();
   adRenderExcitation();
   adRenderStateDiagram();
+  adRenderCircuitDiagram();
   adRenderKmap();
   adRenderBoolExpr();
   adRenderCharEq();
@@ -3498,6 +3712,246 @@ function adRenderStateDiagram(){
   </svg>`;
 
   $("#ad-sd-container").innerHTML = svg;
+}
+
+
+function adGetCircuitSVG(type, isStudio){
+  const w = 760, h = 330;
+  const wireColor = isStudio ? "#3a4a68" : "#8aa0cc";
+  const textColor = isStudio ? "#1a2536" : "#f0f4ff";
+  const mutedColor = isStudio ? "#586982" : "#8aa0cc";
+  const gateFill = isStudio ? "rgba(0,112,216,0.06)" : "rgba(0,229,255,0.08)";
+  const gateStroke = isStudio ? "#0070d8" : "#00e5ff";
+  const norFill = isStudio ? "rgba(123,66,246,0.06)" : "rgba(169,123,255,0.1)";
+  const norStroke = isStudio ? "#7b42f6" : "#a97bff";
+  const clkColor = isStudio ? "#6020c0" : "#bd8eff";
+  const pinBg = isStudio ? "rgba(235,242,255,0.95)" : "rgba(10,18,36,0.9)";
+  const pinStroke = isStudio ? "rgba(80,100,240,0.3)" : "rgba(0,229,255,0.35)";
+
+  function pin(x, y, label, sub, color){
+    const col = color || gateStroke;
+    return '<g transform="translate(' + x + ',' + y + ')">' +
+      '<rect x="-35" y="-14" width="70" height="28" rx="7" fill="' + pinBg + '" stroke="' + pinStroke + '" stroke-width="1.5"/>' +
+      '<text x="0" y="-1" fill="' + col + '" font-family=\"IBM Plex Mono, monospace\" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="central">' + label + '</text>' +
+      (sub ? '<text x="0" y="22" fill="' + mutedColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="9" text-anchor="middle">' + sub + '</text>' : '') +
+    '</g>';
+  }
+
+  function andGate(x, y, wG, hG, name, color, fill){
+    const col = color || gateStroke;
+    const f = fill || gateFill;
+    const w_ = wG || 54, h_ = hG || 44;
+    return '<g transform="translate(' + x + ',' + y + ')">' +
+      '<path d="M 0 ' + (-h_/2) + ' L ' + (w_/2) + ' ' + (-h_/2) + ' A ' + (h_/2) + ' ' + (h_/2) + ' 0 0 1 ' + (w_/2) + ' ' + (h_/2) + ' L 0 ' + (h_/2) + ' Z" fill="' + f + '" stroke="' + col + '" stroke-width="1.8"/>' +
+      '<text x="' + (w_*0.35) + '" y="1" fill="' + textColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="10" font-weight="600" text-anchor="middle" dominant-baseline="central">' + (name || 'AND') + '</text>' +
+    '</g>';
+  }
+
+  function nandGate(x, y, wG, hG, name, color, fill){
+    const col = color || gateStroke;
+    const f = fill || gateFill;
+    const w_ = wG || 54, h_ = hG || 44;
+    return '<g transform="translate(' + x + ',' + y + ')">' +
+      '<path d="M 0 ' + (-h_/2) + ' L ' + (w_/2) + ' ' + (-h_/2) + ' A ' + (h_/2) + ' ' + (h_/2) + ' 0 0 1 ' + (w_/2) + ' ' + (h_/2) + ' L 0 ' + (h_/2) + ' Z" fill="' + f + '" stroke="' + col + '" stroke-width="1.8"/>' +
+      '<circle cx="' + (w_ + 5) + '" cy="0" r="4.5" fill="' + (isStudio ? '#fff' : '#030816') + '" stroke="' + col + '" stroke-width="1.8"/>' +
+      '<text x="' + (w_*0.35) + '" y="1" fill="' + textColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="9.5" font-weight="600" text-anchor="middle" dominant-baseline="central">' + (name || 'NAND') + '</text>' +
+    '</g>';
+  }
+
+  function norGate(x, y, wG, hG, name, color, fill){
+    const col = color || norStroke;
+    const f = fill || norFill;
+    const w_ = wG || 58, h_ = hG || 48;
+    return '<g transform="translate(' + x + ',' + y + ')">' +
+      '<path d="M 0 ' + (-h_/2) + ' Q ' + (w_*0.5) + ' ' + (-h_/2) + ' ' + w_ + ' 0 Q ' + (w_*0.5) + ' ' + (h_/2) + ' 0 ' + (h_/2) + ' Q ' + (w_*0.25) + ' 0 0 ' + (-h_/2) + ' Z" fill="' + f + '" stroke="' + col + '" stroke-width="1.8"/>' +
+      '<circle cx="' + (w_ + 5) + '" cy="0" r="4.5" fill="' + (isStudio ? '#fff' : '#030816') + '" stroke="' + col + '" stroke-width="1.8"/>' +
+      '<text x="' + (w_*0.38) + '" y="1" fill="' + textColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="9.5" font-weight="600" text-anchor="middle" dominant-baseline="central">' + (name || 'NOR') + '</text>' +
+    '</g>';
+  }
+
+  function notGate(x, y, wG, hG, color){
+    const col = color || (isStudio ? "#d97706" : "#ffb454");
+    const w_ = wG || 32, h_ = hG || 26;
+    return '<g transform="translate(' + x + ',' + y + ')">' +
+      '<polygon points="0,' + (-h_/2) + ' ' + w_ + ',0 0,' + (h_/2) + '" fill="' + (isStudio ? 'rgba(217,119,6,0.08)' : 'rgba(255,180,84,0.1)') + '" stroke="' + col + '" stroke-width="1.8"/>' +
+      '<circle cx="' + (w_ + 4.5) + '" cy="0" r="4" fill="' + (isStudio ? '#fff' : '#030816') + '" stroke="' + col + '" stroke-width="1.8"/>' +
+    '</g>';
+  }
+
+  function wire(pts, color, width, dash){
+    const col = color || wireColor;
+    const w_ = width || 1.6;
+    const d = pts.map(function(p, i){ return (i === 0 ? 'M ' : 'L ') + p[0] + ' ' + p[1]; }).join(' ');
+    return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + w_ + '"' + (dash ? ' stroke-dasharray="' + dash + '"' : '') + '/>';
+  }
+
+  function dot(x, y, color){
+    return '<circle cx="' + x + '" cy="' + y + '" r="3.5" fill="' + (color || wireColor) + '"/>';
+  }
+
+  let body = "";
+
+  if(type === "SR"){
+    body = pin(55, 90, "S", "Set Input") +
+      pin(55, 170, "CLK", "Clock Input", clkColor) +
+      pin(55, 250, "R", "Reset Input") +
+      wire([[90, 90], [175, 90]]) +
+      wire([[90, 250], [175, 250]]) +
+      wire([[90, 170], [130, 170], [130, 110], [175, 110]], clkColor) +
+      wire([[130, 170], [130, 230], [175, 230]], clkColor) +
+      dot(130, 170, clkColor) +
+      andGate(175, 100, 54, 44, "AND 1") +
+      andGate(175, 240, 54, 44, "AND 2") +
+      wire([[230, 100], [330, 100], [330, 95], [375, 95]]) +
+      '<text x="280" y="90" fill="' + mutedColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="9.5" text-anchor="middle">S·CLK</text>' +
+      wire([[230, 240], [330, 240], [330, 245], [375, 245]]) +
+      '<text x="280" y="255" fill="' + mutedColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="9.5" text-anchor="middle">R·CLK</text>' +
+      norGate(375, 105, 58, 48, "NOR 1") +
+      norGate(375, 235, 58, 48, "NOR 2") +
+      wire([[438, 105], [510, 105], [665, 105]], isStudio ? "#0070d8" : "#00e5ff", 2) +
+      dot(510, 105, isStudio ? "#0070d8" : "#00e5ff") +
+      wire([[438, 235], [510, 235], [665, 235]], isStudio ? "#7b42f6" : "#a97bff", 2) +
+      dot(510, 235, isStudio ? "#7b42f6" : "#a97bff") +
+      wire([[510, 105], [510, 155], [345, 195], [345, 225], [375, 225]], isStudio ? "#0070d8" : "#00e5ff", 1.4, "4,3") +
+      wire([[510, 235], [510, 185], [345, 145], [345, 115], [375, 115]], isStudio ? "#7b42f6" : "#a97bff", 1.4, "4,3") +
+      pin(705, 105, "Q", "Stored Bit", isStudio ? "#0070d8" : "#00e5ff") +
+      pin(705, 235, "Q̅", "Complement", isStudio ? "#7b42f6" : "#a97bff") +
+      '<text x="380" y="315" fill="' + mutedColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="11" text-anchor="middle">AND-Gated Cross-Coupled NOR Latch · Invalid condition if S=R=1</text>';
+  } else if(type === "JK"){
+    body = pin(55, 80, "J", "Set/Toggle") +
+      pin(55, 170, "CLK", "Clock Input", clkColor) +
+      pin(55, 260, "K", "Reset/Toggle") +
+      wire([[90, 170], [130, 170], [130, 105], [175, 105]], clkColor) +
+      wire([[130, 170], [130, 235], [175, 235]], clkColor) +
+      dot(130, 170, clkColor) +
+      wire([[90, 80], [175, 80]]) +
+      wire([[90, 260], [175, 260]]) +
+      wire([[530, 95], [530, 45], [145, 45], [145, 65], [175, 65]], isStudio ? "#7b42f6" : "#a97bff", 1.4, "4,3") +
+      wire([[510, 245], [510, 295], [145, 295], [145, 275], [175, 275]], isStudio ? "#0070d8" : "#00e5ff", 1.4, "4,3") +
+      nandGate(175, 85, 54, 50, "NAND 1") +
+      nandGate(175, 255, 54, 50, "NAND 2") +
+      wire([[235, 85], [340, 85], [340, 95], [375, 95]]) +
+      wire([[235, 255], [340, 255], [340, 245], [375, 245]]) +
+      nandGate(375, 105, 56, 46, "NAND 3") +
+      nandGate(375, 235, 56, 46, "NAND 4") +
+      wire([[436, 105], [510, 105], [665, 105]], isStudio ? "#0070d8" : "#00e5ff", 2) +
+      dot(510, 105, isStudio ? "#0070d8" : "#00e5ff") +
+      wire([[436, 235], [530, 235], [665, 235]], isStudio ? "#7b42f6" : "#a97bff", 2) +
+      dot(530, 235, isStudio ? "#7b42f6" : "#a97bff") +
+      wire([[510, 105], [510, 155], [345, 195], [345, 225], [375, 225]], isStudio ? "#0070d8" : "#00e5ff", 1.4) +
+      wire([[530, 235], [530, 185], [345, 145], [345, 115], [375, 115]], isStudio ? "#7b42f6" : "#a97bff", 1.4) +
+      pin(705, 105, "Q", "Stored Bit", isStudio ? "#0070d8" : "#00e5ff") +
+      pin(705, 235, "Q̅", "Complement", isStudio ? "#7b42f6" : "#a97bff") +
+      '<text x="380" y="315" fill="' + mutedColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="11" text-anchor="middle">Feedback from Q and Q̅ into 3-input NANDs prevents forbidden state &amp; produces TOGGLE</text>';
+  } else if(type === "D"){
+    body = pin(55, 90, "D", "Data Input") +
+      pin(55, 190, "CLK", "Clock Input", clkColor) +
+      wire([[90, 90], [130, 90], [205, 90]]) +
+      dot(130, 90) +
+      wire([[130, 90], [130, 250], [150, 250]]) +
+      notGate(150, 250, 32, 26) +
+      wire([[187, 250], [205, 250]]) +
+      '<text x="175" y="238" fill="' + (isStudio ? '#d97706' : '#ffb454') + '" font-family=\"IBM Plex Mono, monospace\" font-size="10" font-weight="700">D̅</text>' +
+      wire([[90, 190], [170, 190], [170, 110], [205, 110]], clkColor) +
+      wire([[170, 190], [170, 230], [205, 230]], clkColor) +
+      dot(170, 190, clkColor) +
+      andGate(205, 100, 54, 44, "AND 1") +
+      andGate(205, 240, 54, 44, "AND 2") +
+      wire([[260, 100], [340, 100], [340, 95], [380, 95]]) +
+      '<text x="300" y="90" fill="' + mutedColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="9.5" text-anchor="middle">S = D·CLK</text>' +
+      wire([[260, 240], [340, 240], [340, 245], [380, 245]]) +
+      '<text x="300" y="255" fill="' + mutedColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="9.5" text-anchor="middle">R = D̅·CLK</text>' +
+      norGate(380, 105, 58, 48, "NOR 1") +
+      norGate(380, 235, 58, 48, "NOR 2") +
+      wire([[443, 105], [510, 105], [665, 105]], isStudio ? "#0070d8" : "#00e5ff", 2) +
+      dot(510, 105, isStudio ? "#0070d8" : "#00e5ff") +
+      wire([[443, 235], [510, 235], [665, 235]], isStudio ? "#7b42f6" : "#a97bff", 2) +
+      dot(510, 235, isStudio ? "#7b42f6" : "#a97bff") +
+      wire([[510, 105], [510, 155], [350, 195], [350, 225], [380, 225]], isStudio ? "#0070d8" : "#00e5ff", 1.4, "4,3") +
+      wire([[510, 235], [510, 185], [350, 145], [350, 115], [380, 115]], isStudio ? "#7b42f6" : "#a97bff", 1.4, "4,3") +
+      pin(705, 105, "Q", "Follows D", isStudio ? "#0070d8" : "#00e5ff") +
+      pin(705, 235, "Q̅", "Inverted D", isStudio ? "#7b42f6" : "#a97bff") +
+      '<text x="380" y="315" fill="' + mutedColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="11" text-anchor="middle">Inverter prevents S=R=1 condition · Q always tracks D on active clock pulse</text>';
+  } else if(type === "T"){
+    body = pin(55, 100, "T", "Toggle Input") +
+      pin(55, 190, "CLK", "Clock Input", clkColor) +
+      wire([[90, 100], [130, 100], [130, 80], [175, 80]]) +
+      dot(130, 100) +
+      wire([[130, 100], [130, 260], [175, 260]]) +
+      '<text x="148" y="74" fill="' + mutedColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="9.5">J=T</text>' +
+      '<text x="148" y="272" fill="' + mutedColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="9.5">K=T</text>' +
+      wire([[90, 190], [150, 190], [150, 105], [175, 105]], clkColor) +
+      wire([[150, 190], [150, 235], [175, 235]], clkColor) +
+      dot(150, 190, clkColor) +
+      wire([[530, 95], [530, 45], [145, 45], [145, 65], [175, 65]], isStudio ? "#7b42f6" : "#a97bff", 1.4, "4,3") +
+      wire([[510, 245], [510, 295], [145, 295], [145, 275], [175, 275]], isStudio ? "#0070d8" : "#00e5ff", 1.4, "4,3") +
+      nandGate(175, 85, 54, 50, "NAND 1") +
+      nandGate(175, 255, 54, 50, "NAND 2") +
+      wire([[235, 85], [340, 85], [340, 95], [375, 95]]) +
+      wire([[235, 255], [340, 255], [340, 245], [375, 245]]) +
+      nandGate(375, 105, 56, 46, "NAND 3") +
+      nandGate(375, 235, 56, 46, "NAND 4") +
+      wire([[436, 105], [510, 105], [665, 105]], isStudio ? "#0070d8" : "#00e5ff", 2) +
+      dot(510, 105, isStudio ? "#0070d8" : "#00e5ff") +
+      wire([[436, 235], [530, 235], [665, 235]], isStudio ? "#7b42f6" : "#a97bff", 2) +
+      dot(530, 235, isStudio ? "#7b42f6" : "#a97bff") +
+      wire([[510, 105], [510, 155], [345, 195], [345, 225], [375, 225]], isStudio ? "#0070d8" : "#00e5ff", 1.4) +
+      wire([[530, 235], [530, 185], [345, 145], [345, 115], [375, 115]], isStudio ? "#7b42f6" : "#a97bff", 1.4) +
+      pin(705, 105, "Q", "Toggles on T=1", isStudio ? "#0070d8" : "#00e5ff") +
+      pin(705, 235, "Q̅", "Complement", isStudio ? "#7b42f6" : "#a97bff") +
+      '<text x="380" y="315" fill="' + mutedColor + '" font-family=\"IBM Plex Mono, monospace\" font-size="11" text-anchor="middle">J and K inputs tied together: T=0 holds state; T=1 toggles output every clock pulse</text>';
+  }
+
+  return '<svg viewBox="0 0 ' + w + ' ' + h + '" class="ad-circuit-svg" role="img" aria-label="Logic diagram for ' + type + ' flip-flop">' + body + '</svg>';
+}
+
+function adRenderCircuitDiagram(){
+  const d = AD_DATA[adType];
+  const badge = $("#ad-circuit-badge");
+  if(badge) badge.textContent = d.circuitBadge || "GATE-LEVEL SCHEMATIC";
+  const wrap = $("#ad-circuit-svg-wrap");
+  if(wrap){
+    const isStudio = document.documentElement.getAttribute("data-theme") === "studio";
+    wrap.innerHTML = adGetCircuitSVG(adType, isStudio);
+  }
+  const exp = $("#ad-circuit-explain");
+  if(exp) exp.innerHTML = d.circuitExplain || "";
+
+  const btn = $("#ad-export-circuit");
+  if(btn && !btn._adWired){
+    btn._adWired = true;
+    btn.addEventListener("click", adExportCircuitPNG);
+  }
+}
+
+function adExportCircuitPNG(){
+  const svgEl = document.querySelector("#ad-circuit-svg-wrap svg");
+  if(!svgEl) return;
+  const svgStr = new XMLSerializer().serializeToString(svgEl);
+  const blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = function(){
+    const scale = 2;
+    const cv = document.createElement("canvas");
+    cv.width = 760 * scale;
+    cv.height = 330 * scale;
+    const ctx = cv.getContext("2d");
+    const isStudio = document.documentElement.getAttribute("data-theme") === "studio";
+    ctx.fillStyle = isStudio ? "#ffffff" : "#030712";
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(img, 0, 0, cv.width, cv.height);
+    URL.revokeObjectURL(url);
+    const pngUrl = cv.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.download = adType + "_flip_flop_logic_diagram.png";
+    a.href = pngUrl;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast(adType + " logic diagram exported as PNG!");
+  };
+  img.src = url;
 }
 
 function adRenderKmap(){
@@ -3702,12 +4156,10 @@ function init(){
   $$(`.navlink`).forEach(b => b.addEventListener("click", () => showPage(b.dataset.page)));
   wireGoto(); bindCam(); bindTiming();
 
-  $("#btn-logic").addEventListener("click", showLogic);
-  $("#btn-simple").addEventListener("click", e => {
-    S.simple = !S.simple; e.currentTarget.setAttribute("aria-pressed", String(S.simple));
-    e.currentTarget.textContent = S.simple ? "Full explanation" : "Explain simply";
-    explain("arm");
-  });
+  const bFull = $("#btn-full"), bLogic = $("#btn-logic"), bSimple = $("#btn-simple");
+  if(bFull) bFull.addEventListener("click", () => setExplainMode("full"));
+  if(bLogic) bLogic.addEventListener("click", () => setExplainMode("logic"));
+  if(bSimple) bSimple.addEventListener("click", () => setExplainMode("simple"));
   $("#btn-probe").addEventListener("click", e => {
     S.labels = !S.labels; e.currentTarget.setAttribute("aria-pressed", String(S.labels));
     Lab3D.setLabels(S.labels); toast(S.labels ? "Board labels on" : "Board labels off");

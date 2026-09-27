@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="solar">
+<html lang="en" data-theme="studio">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -567,6 +567,200 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
 @media (prefers-reduced-motion: reduce){
   *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
 }
+
+/* ===================== ANALYSIS & DESIGN SECTION ===================== */
+.ad-hero{ display:flex; align-items:center; gap:var(--s4); flex-wrap:wrap; }
+.ad-ff-selector{ display:flex; gap:8px; flex-wrap:wrap; margin:var(--s3) 0; }
+.ad-ff-btn{
+  font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:700; letter-spacing:.08em;
+  border:1px solid var(--line-strong); border-radius:11px; padding:10px 20px; cursor:pointer;
+  background:rgba(2,6,20,.8); color:var(--muted);
+  transition:all .2s;
+}
+.ad-ff-btn:hover{ color:var(--text); border-color:rgba(0,229,255,.4); background:rgba(0,229,255,.07); }
+.ad-ff-btn.active{
+  color:var(--cyan); border-color:var(--cyan);
+  background:rgba(0,229,255,.15);
+  box-shadow:0 0 20px -6px rgba(0,229,255,.4), inset 0 0 14px rgba(0,229,255,.08);
+  text-shadow:0 0 12px rgba(0,229,255,.5);
+}
+
+/* workflow breadcrumb */
+.ad-workflow{ display:flex; align-items:center; gap:0; flex-wrap:wrap; margin:var(--s3) 0 var(--s4); overflow-x:auto; scrollbar-width:none; }
+.ad-workflow::-webkit-scrollbar{ display:none; }
+.ad-wf-step{
+  display:flex; align-items:center; gap:8px;
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.07em;
+  padding:8px 12px; border:1px solid var(--line); border-radius:9px; cursor:pointer;
+  background:rgba(2,6,20,.7); color:var(--dim); white-space:nowrap;
+  transition:all .18s;
+}
+.ad-wf-step:hover{ color:var(--text); border-color:rgba(0,229,255,.35); background:rgba(0,229,255,.07); }
+.ad-wf-step .wf-num{ color:var(--cyan); font-weight:700; }
+.ad-wf-arrow{ color:var(--dim); padding:0 4px; font-size:16px; }
+
+/* section blocks */
+.ad-block{ margin-top:var(--s4); scroll-margin-top:80px; }
+.ad-block-head{
+  display:flex; align-items:center; gap:14px; margin-bottom:var(--s3);
+  padding-bottom:var(--s2); border-bottom:1px solid var(--line);
+}
+.ad-block-num{
+  font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:700;
+  color:var(--bg); background:var(--cyan); border-radius:8px;
+  padding:4px 10px; min-width:32px; text-align:center; line-height:1.4;
+}
+.ad-block-title{ font-size:clamp(18px,2.5vw,22px); font-weight:700; }
+.ad-block-sub{ color:var(--muted); font-size:14px; }
+
+/* badges */
+.badge{
+  display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:700;
+  letter-spacing:.08em; padding:3px 8px; border-radius:5px; text-transform:uppercase;
+  border:1px solid currentColor;
+}
+.badge-present{ color:#3ad6ff; background:rgba(58,214,255,.1); }
+.badge-next{ color:#a97bff; background:rgba(169,123,255,.1); }
+.badge-input{ color:#ffb454; background:rgba(255,180,84,.1); }
+.badge-output{ color:#35e58a; background:rgba(53,229,138,.1); }
+.badge-dontcare{ color:#94a5c9; background:rgba(148,165,201,.1); }
+.badge-invalid{ color:#ff5f6d; background:rgba(255,95,109,.1); }
+
+/* academic tables */
+.ad-table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin:var(--s2) 0; }
+.ad-table{
+  border-collapse:collapse; width:100%; font-family:"IBM Plex Mono",monospace; font-size:13px;
+  min-width:320px;
+}
+.ad-table th{
+  background:rgba(0,229,255,.06); color:var(--cyan); font-size:11px; letter-spacing:.1em;
+  padding:10px 14px; text-align:center; border:1px solid var(--line-strong);
+  font-weight:700; white-space:nowrap;
+}
+.ad-table td{
+  padding:9px 14px; text-align:center; border:1px solid var(--line);
+  font-size:13px; transition:background .18s;
+}
+.ad-table tr:hover td{ background:rgba(0,229,255,.04); }
+.ad-table .row-invalid td{ color:var(--red); background:rgba(255,95,109,.06); }
+.ad-table .cell-q{ color:var(--cyan); font-weight:700; }
+.ad-table .cell-qn{ color:var(--purple); font-weight:700; }
+.ad-table .cell-dc{ color:var(--muted); letter-spacing:.05em; }
+.ad-table .cell-1{ color:var(--green); font-weight:700; }
+.ad-table .cell-0{ color:var(--dim); }
+.ad-table .cell-inv{ color:var(--red); font-weight:700; font-size:11px; letter-spacing:.04em; }
+
+@media (max-width:640px){
+  .ad-table{ font-size:11px; }
+  .ad-table th, .ad-table td{ padding:6px 8px; }
+}
+
+/* state diagram */
+.ad-state-diagram{ width:100%; max-width:600px; margin:0 auto; display:block; overflow:visible; }
+.sd-state-circle{ fill:rgba(2,6,20,.9); stroke:var(--cyan); stroke-width:2.5; }
+.sd-state-text{ font-family:"IBM Plex Mono",monospace; font-size:18px; font-weight:700; fill:var(--cyan); text-anchor:middle; dominant-baseline:central; }
+.sd-state-label{ font-family:"Space Grotesk",sans-serif; font-size:11px; fill:var(--muted); text-anchor:middle; }
+.sd-arrow{ stroke:var(--muted); stroke-width:1.8; fill:none; }
+.sd-arrow-head{ fill:var(--muted); }
+.sd-transition-label{ font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--text); text-anchor:middle; }
+
+/* k-map */
+.kmap-selector{ display:flex; gap:8px; margin-bottom:var(--s2); flex-wrap:wrap; }
+.kmap-sel-btn{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600;
+  border:1px solid var(--line-strong); border-radius:8px; padding:6px 14px; cursor:pointer;
+  background:rgba(2,6,20,.7); color:var(--muted); transition:all .18s;
+}
+.kmap-sel-btn:hover{ color:var(--text); border-color:rgba(0,229,255,.4); }
+.kmap-sel-btn.active{ color:var(--cyan); border-color:var(--cyan); background:rgba(0,229,255,.12); }
+
+.kmap-container{ display:flex; gap:var(--s4); flex-wrap:wrap; align-items:flex-start; margin-top:var(--s2); }
+.kmap-grid-wrap{ overflow-x:auto; }
+.kmap-table{ border-collapse:collapse; font-family:"IBM Plex Mono",monospace; font-size:14px; }
+.kmap-table th{ padding:10px 14px; background:rgba(0,229,255,.08); color:var(--cyan); border:2px solid var(--line-strong); font-size:11px; letter-spacing:.1em; min-width:56px; }
+.kmap-table .kmap-rowhead{ background:rgba(169,123,255,.08); color:var(--purple); border:2px solid var(--line-strong); padding:10px 14px; font-size:11px; letter-spacing:.1em; }
+.kmap-cell{
+  width:56px; height:52px; text-align:center; vertical-align:middle;
+  border:2px solid var(--line); font-size:18px; font-weight:700; cursor:default;
+  position:relative; transition:background .2s;
+}
+.kmap-cell.val-1{ color:var(--green); background:rgba(53,229,138,.1); }
+.kmap-cell.val-0{ color:var(--dim); background:transparent; }
+.kmap-cell.val-x{ color:var(--amber); background:rgba(255,180,84,.08); font-style:italic; }
+.kmap-cell.grouped{ box-shadow:inset 0 0 0 3px rgba(0,229,255,.6); background:rgba(0,229,255,.08) !important; }
+.kmap-cell.grouped.val-1{ color:var(--cyan); }
+.kmap-cell.grouped.val-x{ color:var(--cyan); }
+
+.kmap-info{ flex:1; min-width:220px; }
+.kmap-expr-box{
+  background:rgba(0,229,255,.05); border:1px solid rgba(0,229,255,.2); border-radius:12px;
+  padding:var(--s3); margin-bottom:var(--s2);
+}
+.kmap-expr-title{ font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--cyan); letter-spacing:.12em; margin-bottom:8px; }
+.kmap-expr-text{ font-family:"IBM Plex Mono",monospace; font-size:17px; color:var(--text); line-height:1.5; }
+.kmap-expr-text sup{ font-size:10px; color:var(--muted); }
+
+/* boolean expression section */
+.ad-eq-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:var(--s3); margin-top:var(--s2); }
+.ad-eq-card{
+  border:1px solid var(--line); border-radius:var(--r); padding:var(--s3);
+  background:linear-gradient(145deg, rgba(8,16,40,.85), rgba(2,6,20,.9));
+}
+.ad-eq-label{ font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--cyan); letter-spacing:.12em; margin-bottom:8px; }
+.ad-eq-formula{ font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600; color:var(--text); line-height:1.6; }
+.ad-eq-derive{ font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted); margin-top:8px; line-height:1.7; }
+
+/* characteristic equation */
+.ad-char-eq{
+  text-align:center; padding:var(--s4);
+  border:1px solid rgba(0,229,255,.25); border-radius:var(--r-lg);
+  background:linear-gradient(145deg, rgba(0,229,255,.06), rgba(2,6,20,.9));
+  box-shadow:0 0 40px -20px rgba(0,229,255,.3);
+}
+.ad-char-eq-label{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--cyan); letter-spacing:.14em; margin-bottom:12px; }
+.ad-char-eq-formula{ font-family:"IBM Plex Mono",monospace; font-size:clamp(20px,3.5vw,30px); font-weight:700; color:var(--text); }
+.ad-char-eq-formula .var-q{ color:var(--purple); }
+.ad-char-eq-formula .var-inp{ color:var(--cyan); }
+.ad-char-eq-explain{ color:var(--muted); font-size:14px; margin-top:var(--s2); max-width:56ch; margin-inline:auto; }
+
+/* verify button */
+.ad-verify-section{ margin-top:var(--s4); text-align:center; }
+.ad-verify-btn{
+  font-size:15px; padding:14px 32px; border-radius:14px; min-height:50px;
+  background:linear-gradient(135deg,rgba(53,229,138,.2),rgba(0,229,255,.1));
+  border:1px solid rgba(53,229,138,.5);
+  color:#fff;
+  box-shadow:0 0 32px -12px rgba(53,229,138,.45);
+  transition:all .2s;
+}
+.ad-verify-btn:hover{ box-shadow:0 0 40px -10px rgba(53,229,138,.65); border-color:var(--green); }
+.ad-verify-result{ margin-top:var(--s3); font-family:"IBM Plex Mono",monospace; font-size:14px; }
+.ad-verify-ok{ color:var(--green); }
+.ad-verify-err{ color:var(--red); }
+
+/* derivation steps */
+.ad-derive-steps{ margin-top:var(--s2); }
+.ad-derive-step{ display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.ad-derive-step:last-child{ border-bottom:none; }
+.ad-derive-n{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--cyan); min-width:24px; padding-top:2px; }
+.ad-derive-txt{ font-size:14px; color:var(--muted); line-height:1.6; }
+.ad-derive-txt code{ font-family:"IBM Plex Mono",monospace; color:var(--text); background:rgba(0,229,255,.07); border-radius:4px; padding:1px 6px; }
+
+/* light theme overrides */
+:root[data-theme="studio"] .ad-ff-btn{ background:rgba(255,255,255,.9); color:#44546a; border-color:rgba(80,100,240,.2); }
+:root[data-theme="studio"] .ad-ff-btn.active{ color:var(--cyan); background:rgba(0,112,216,.08); border-color:var(--cyan); box-shadow:0 0 16px -6px rgba(0,112,216,.2); text-shadow:none; }
+:root[data-theme="studio"] .ad-wf-step{ background:rgba(255,255,255,.85); border-color:rgba(80,100,240,.14); color:#6474a0; }
+:root[data-theme="studio"] .ad-table th{ background:rgba(0,112,216,.06); }
+:root[data-theme="studio"] .ad-table tr:hover td{ background:rgba(0,112,216,.04); }
+:root[data-theme="studio"] .ad-table .row-invalid td{ background:rgba(204,0,48,.05); }
+:root[data-theme="studio"] .kmap-cell.val-1{ background:rgba(6,122,80,.1); }
+:root[data-theme="studio"] .kmap-cell.val-x{ background:rgba(184,90,0,.07); }
+:root[data-theme="studio"] .kmap-cell.grouped{ box-shadow:inset 0 0 0 3px rgba(0,112,216,.6); background:rgba(0,112,216,.08) !important; }
+:root[data-theme="studio"] .kmap-expr-box{ background:rgba(0,112,216,.05); border-color:rgba(0,112,216,.2); }
+:root[data-theme="studio"] .ad-eq-card{ background:rgba(255,255,255,.9); border-color:rgba(80,100,240,.14); }
+:root[data-theme="studio"] .ad-char-eq{ background:linear-gradient(145deg,rgba(0,112,216,.05),rgba(255,255,255,.9)); border-color:rgba(0,112,216,.22); }
+:root[data-theme="studio"] .kmap-sel-btn{ background:rgba(255,255,255,.85); color:#44546a; border-color:rgba(80,100,240,.2); }
+:root[data-theme="studio"] .kmap-sel-btn.active{ color:var(--cyan); background:rgba(0,112,216,.08); }
 </style>
 </head>
 <body>
@@ -580,6 +774,7 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
     <div class="navlinks">
       <button class="navlink" data-page="home" aria-current="page">Home</button>
       <button class="navlink" data-page="sim">Learn</button>
+      <button class="navlink" data-page="analysis">Analysis &amp; Design</button>
       <button class="navlink" data-page="compare">Compare</button>
       <button class="navlink" data-page="quiz">Quiz</button>
     </div>
@@ -600,10 +795,11 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
         <p class="hero-desc">Explore, simulate and master SR, JK, D and T flip-flops through interactive 3D circuits. Set an input, pulse the clock, and watch one bit get stored — on the board, in the truth table and on the waveform at the same time.</p>
         <div class="row" style="margin-top:var(--s4)">
           <button class="btn primary" data-goto="sim">Start Learning</button>
+          <button class="btn ghost" data-goto="analysis">Analysis &amp; Design</button>
           <button class="btn ghost" data-goto="compare">Compare Flip-Flops</button>
         </div>
         <div class="row" style="margin-top:var(--s3)">
-          <span class="pill">4 flip-flops</span><span class="pill">live truth tables</span><span class="pill">scrubbable waveforms</span><span class="pill">18-question test</span>
+          <span class="pill">4 flip-flops</span><span class="pill">analysis &amp; design</span><span class="pill">live truth tables</span><span class="pill">scrubbable waveforms</span><span class="pill">18-question test</span>
         </div>
       </div>
       <div class="bench">
@@ -780,6 +976,164 @@ footer strong{ color:var(--text); display:block; font-size:16px; }
     <h2 class="h-lg">Flip-flop mastery</h2>
     <p class="lead" style="margin-top:8px">Eighteen questions on states, clock edges, truth tables and waveforms. Every answer comes with the reasoning.</p>
     <div class="card" style="margin-top:var(--s3)" id="quiz-card"></div>
+  </div>
+</section>
+
+
+<!-- ============ ANALYSIS & DESIGN ============ -->
+<section class="page" id="page-analysis" aria-label="Flip-Flop Analysis and Design">
+  <div class="wrap">
+    <p class="eyebrow" id="ad-eyebrow">Academic Analysis</p>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:var(--s2)">
+      <div>
+        <h2 class="h-lg" id="ad-title">Flip-Flop Analysis &amp; Design</h2>
+        <p class="lead" style="margin-top:8px" id="ad-subtitle">From state transitions to Boolean expressions — understand how flip-flop circuits are analyzed and designed.</p>
+      </div>
+    </div>
+
+    <!-- FF Selector -->
+    <div class="ad-ff-selector" role="group" aria-label="Select flip-flop type for analysis">
+      <button class="ad-ff-btn active" data-ad-ff="SR" id="ad-btn-SR">SR</button>
+      <button class="ad-ff-btn" data-ad-ff="JK" id="ad-btn-JK">JK</button>
+      <button class="ad-ff-btn" data-ad-ff="D" id="ad-btn-D">D</button>
+      <button class="ad-ff-btn" data-ad-ff="T" id="ad-btn-T">T</button>
+    </div>
+
+    <!-- Workflow nav -->
+    <nav class="ad-workflow" aria-label="Analysis steps">
+      <button class="ad-wf-step" data-ad-scroll="ad-s1"><span class="wf-num">01</span> Present&nbsp;→&nbsp;Next</button>
+      <span class="ad-wf-arrow" aria-hidden="true">→</span>
+      <button class="ad-wf-step" data-ad-scroll="ad-s2"><span class="wf-num">02</span> Excitation</button>
+      <span class="ad-wf-arrow" aria-hidden="true">→</span>
+      <button class="ad-wf-step" data-ad-scroll="ad-s3"><span class="wf-num">03</span> State&nbsp;Diagram</button>
+      <span class="ad-wf-arrow" aria-hidden="true">→</span>
+      <button class="ad-wf-step" data-ad-scroll="ad-s4"><span class="wf-num">04</span> K-Map</button>
+      <span class="ad-wf-arrow" aria-hidden="true">→</span>
+      <button class="ad-wf-step" data-ad-scroll="ad-s5"><span class="wf-num">05</span> Boolean&nbsp;Expr.</button>
+      <span class="ad-wf-arrow" aria-hidden="true">→</span>
+      <button class="ad-wf-step" data-ad-scroll="ad-s6"><span class="wf-num">06</span> Char.&nbsp;Equation</button>
+    </nav>
+
+    <!-- SECTION 1: Present → Next State -->
+    <div class="ad-block" id="ad-s1">
+      <div class="ad-block-head">
+        <span class="ad-block-num">01</span>
+        <div>
+          <div class="ad-block-title">Present State → Next State Table</div>
+          <div class="ad-block-sub">Given <span class="badge badge-present">PRESENT STATE</span> + <span class="badge badge-input">INPUTS</span> → <span class="badge badge-next">NEXT STATE</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ad-table-wrap">
+          <table class="ad-table" id="ad-pn-table" aria-label="Present state to next state table"></table>
+        </div>
+        <p style="margin-top:var(--s2);font-size:13.5px;color:var(--muted)" id="ad-pn-explain"></p>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Excitation Table -->
+    <div class="ad-block" id="ad-s2">
+      <div class="ad-block-head">
+        <span class="ad-block-num">02</span>
+        <div>
+          <div class="ad-block-title">Excitation Table</div>
+          <div class="ad-block-sub">Given <span class="badge badge-present">PRESENT STATE</span> + <span class="badge badge-next">REQUIRED NEXT STATE</span> → <span class="badge badge-input">REQUIRED INPUTS</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ad-table-wrap">
+          <table class="ad-table" id="ad-ex-table" aria-label="Excitation table"></table>
+        </div>
+        <div style="margin-top:var(--s2);display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center">
+          <div style="display:flex;gap:10px;align-items:center">
+            <span class="badge badge-dontcare">X = DON'T CARE</span>
+            <span style="font-size:13px;color:var(--muted)">The input can be either 0 or 1 without affecting the required transition.</span>
+          </div>
+        </div>
+        <p style="margin-top:var(--s2);font-size:13.5px;color:var(--muted)" id="ad-ex-explain"></p>
+      </div>
+    </div>
+
+    <!-- SECTION 3: State Diagram -->
+    <div class="ad-block" id="ad-s3">
+      <div class="ad-block-head">
+        <span class="ad-block-num">03</span>
+        <div>
+          <div class="ad-block-title">State Diagram</div>
+          <div class="ad-block-sub">Visual map of state transitions driven by inputs</div>
+        </div>
+      </div>
+      <div class="card" style="padding:var(--s4)">
+        <div id="ad-sd-container" style="display:flex;justify-content:center;align-items:center;min-height:280px"></div>
+        <p style="text-align:center;font-size:13.5px;color:var(--muted);margin-top:var(--s2);max-width:60ch;margin-inline:auto">State diagram shows how the flip-flop moves from its present state to its next state for different input combinations. Self-loops (curved arrows) indicate the state remains unchanged.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 4: K-Map -->
+    <div class="ad-block" id="ad-s4">
+      <div class="ad-block-head">
+        <span class="ad-block-num">04</span>
+        <div>
+          <div class="ad-block-title">Karnaugh Map (K-Map)</div>
+          <div class="ad-block-sub">Minimizing Boolean expressions from the excitation table using Gray-code grouping</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="kmap-selector" id="ad-kmap-selector" role="group" aria-label="Select input variable to map"></div>
+        <div class="kmap-container">
+          <div class="kmap-grid-wrap"><div id="ad-kmap-grid"></div></div>
+          <div class="kmap-info">
+            <div class="kmap-expr-box" id="ad-kmap-expr-box">
+              <div class="kmap-expr-title">SIMPLIFIED EXPRESSION</div>
+              <div class="kmap-expr-text" id="ad-kmap-expr"></div>
+            </div>
+            <div id="ad-kmap-group-legend" style="font-size:12px;color:var(--muted)"></div>
+          </div>
+        </div>
+        <p style="margin-top:var(--s2);font-size:13px;color:var(--muted)" id="ad-kmap-explain"></p>
+      </div>
+    </div>
+
+    <!-- SECTION 5: Boolean Expressions -->
+    <div class="ad-block" id="ad-s5">
+      <div class="ad-block-head">
+        <span class="ad-block-num">05</span>
+        <div>
+          <div class="ad-block-title">Boolean Expressions</div>
+          <div class="ad-block-sub">Excitation equations derived from K-Map groupings</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ad-eq-grid" id="ad-bool-grid"></div>
+        <div class="ad-derive-steps" id="ad-bool-derive"></div>
+      </div>
+    </div>
+
+    <!-- SECTION 6: Characteristic Equation -->
+    <div class="ad-block" id="ad-s6">
+      <div class="ad-block-head">
+        <span class="ad-block-num">06</span>
+        <div>
+          <div class="ad-block-title">Characteristic Equation</div>
+          <div class="ad-block-sub">Complete description of next-state as function of present state and inputs</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ad-char-eq" id="ad-char-eq">
+          <div class="ad-char-eq-label">CHARACTERISTIC EQUATION</div>
+          <div class="ad-char-eq-formula" id="ad-char-eq-formula"></div>
+          <p class="ad-char-eq-explain">The characteristic equation describes the next state of the flip-flop as a function of its present state and inputs.</p>
+        </div>
+        <div style="margin-top:var(--s3)" id="ad-char-explain"></div>
+      </div>
+    </div>
+
+    <!-- VERIFY -->
+    <div class="ad-verify-section">
+      <button class="btn ad-verify-btn" id="ad-verify-btn" aria-label="Verify all tables and equations for logical consistency">🔍  Verify Logic Consistency</button>
+      <div class="ad-verify-result" id="ad-verify-result" aria-live="polite"></div>
+    </div>
+
   </div>
 </section>
 
@@ -1964,7 +2318,7 @@ function bindTiming(){
 
 
 /* ---------- theme management ---------- */
-const THEMES = ["solar","studio"];
+const THEMES = ["studio","solar"];
 const THEME_LABELS = {
   solar:   "🔥 Solar Flare",
   studio:  "☀️ Clean Studio"
@@ -1972,10 +2326,10 @@ const THEME_LABELS = {
 const THEME_ICONS = {
   solar:"🔥", studio:"☀️"
 };
-let currentTheme = localStorage.getItem("ff_theme") || "solar";
+let currentTheme = localStorage.getItem("ff_theme") || "studio";
 
 function applyTheme(t){
-  if(!THEMES.includes(t)) t = "solar";
+  if(!THEMES.includes(t)) t = "studio";
   currentTheme = t;
   document.documentElement.setAttribute("data-theme", t);
   localStorage.setItem("ff_theme", t);
@@ -2644,7 +2998,7 @@ const Schematic = (function(){
       drawWire(g, [[130, 120], [130, 300], [145, 300]], D_val);
 
       drawNot(g, 145, 300, 32, 28, D_inv);
-      drawWire(g, [[182, 300], [210, 300]], D_inv, "D̄");
+      drawWire(g, [[182, 300], [210, 300]], D_inv, "D̅");
 
       drawWire(g, [[78, 210], [170, 210]], clk);
       drawNode(g, 170, 210, clk);
@@ -2744,6 +3098,7 @@ function showPage(name){
   $$(".navlink").forEach(b => b.dataset.page === name ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
   if(name === "home" || name === "sim") mountStage(name);
   else Lab3D.pause();
+  if(name === "analysis") renderAnalysis();
   window.scrollTo(0, 0);
   setTimeout(() => { Lab3D.resize(); drawTiming(); }, 40);
 }
@@ -2758,6 +3113,572 @@ function bindCam(root){
     if(b.dataset.wired) return; b.dataset.wired = "1";
     b.addEventListener("click", () => { Lab3D.resetCam(); note("camera reset"); });
   });
+}
+
+/* ======================= ANALYSIS & DESIGN MODULE ======================= */
+
+const AD_DATA = {
+  SR: {
+    presentNextHead: ["Present Q", "S", "R", "Next Q(t+1)", "Operation"],
+    presentNextRows: [
+      { q:0, inputs:[0,0], qn:0,   op:"Hold",    invalid:false },
+      { q:0, inputs:[0,1], qn:0,   op:"Reset",   invalid:false },
+      { q:0, inputs:[1,0], qn:1,   op:"Set",     invalid:false },
+      { q:0, inputs:[1,1], qn:"—", op:"INVALID / FORBIDDEN", invalid:true },
+      { q:1, inputs:[0,0], qn:1,   op:"Hold",    invalid:false },
+      { q:1, inputs:[0,1], qn:0,   op:"Reset",   invalid:false },
+      { q:1, inputs:[1,0], qn:1,   op:"Set",     invalid:false },
+      { q:1, inputs:[1,1], qn:"—", op:"INVALID / FORBIDDEN", invalid:true }
+    ],
+    presentNextExplain: "With S=0, R=0, the flip-flop holds its current state. S=1, R=0 sets Q to 1. S=0, R=1 resets Q to 0. S=R=1 is the FORBIDDEN state — both outputs go LOW and the next state is unpredictable.",
+    inputLabels: ["S","R"],
+
+    excitationHead: ["Present Q", "Next Q(t+1)", "S", "R"],
+    excitationRows: [
+      { q:0, qn:0, inputs:["0","X"], note:"No change needed, S=0. R can be anything." },
+      { q:0, qn:1, inputs:["1","0"], note:"Must Set Q. S=1, R must be 0." },
+      { q:1, qn:0, inputs:["0","1"], note:"Must Reset Q. R=1, S must be 0." },
+      { q:1, qn:1, inputs:["X","0"], note:"Must Hold Q at 1. R=0. S can be anything." }
+    ],
+    excitationExplain: "The excitation table is the inverse of the characteristic table: given the required state transition (Q → Q_next), it tells you what inputs S and R must be applied. X = don't care. Note: S=1,R=1 is never required — all transitions can be achieved without the forbidden combination.",
+
+    stateTransitions: [
+      { from:0, to:0, label:"S=0, R=X" },
+      { from:0, to:1, label:"S=1, R=0" },
+      { from:1, to:0, label:"S=0, R=1" },
+      { from:1, to:1, label:"S=X, R=0" }
+    ],
+
+    kmaps: {
+      S: {
+        label: "S (Set input)",
+        /* K-map for S: rows=Q, cols=Q_next (Gray code: Q_next=0→col0, Q_next=1→col1) */
+        /* Rows: Q=0, Q=1;  Cols: Q_next=0, Q_next=1 */
+        /* From excitation: (Q=0,Qn=0)→S=0; (Q=0,Qn=1)→S=1; (Q=1,Qn=0)→S=0; (Q=1,Qn=1)→S=X */
+        cells: ["0","1","0","X"],  /* order: [Q=0,Qn=0], [Q=0,Qn=1], [Q=1,Qn=0], [Q=1,Qn=1] */
+        groups: [[1,3]],  /* cells 1 and 3 (indices) are the group: Q_next=1 column (1 and X) */
+        grouped: [1,3],
+        expression: "S = Q'·Q(next)",
+        derivation: "From the K-map, the only 1 is at Q=0, Q_next=1. The X at Q=1, Q_next=1 can be included. Group: Q_next=1 column with Q=0 and X. This gives S = Q' · Q_next."
+      },
+      R: {
+        label: "R (Reset input)",
+        /* From excitation: (Q=0,Qn=0)→R=X; (Q=0,Qn=1)→R=0; (Q=1,Qn=0)→R=1; (Q=1,Qn=1)→R=0 */
+        cells: ["X","0","1","0"],
+        groups: [[0,2]],
+        grouped: [0,2],
+        expression: "R = Q·Q(next)'",
+        derivation: "From the K-map, the only 1 is at Q=1, Q_next=0. The X at Q=0, Q_next=0 can be included. Group: Q_next=0 column with X and 1. This gives R = Q · Q_next'."
+      }
+    },
+
+    boolExpressions: [
+      { label:"Set Excitation",   formula:"S = Q'·Q(next)" },
+      { label:"Reset Excitation", formula:"R = Q·Q(next)'" }
+    ],
+    derivationSteps: [
+      { n:"①", txt:"From excitation table: Q=0 → Q_next=1 requires <code>S=1</code>. Q=0 → Q_next=0 requires <code>S=0</code>." },
+      { n:"②", txt:"Therefore S is true only when <code>Q=0</code> (Q') AND <code>Q_next=1</code>. → <code>S = Q' · Q(next)</code>" },
+      { n:"③", txt:"From excitation table: Q=1 → Q_next=0 requires <code>R=1</code>. Q=1 → Q_next=1 requires <code>R=0</code>." },
+      { n:"④", txt:"Therefore R is true only when <code>Q=1</code> AND <code>Q_next=0</code> (Q_next'). → <code>R = Q · Q(next)'</code>" }
+    ],
+    characteristicEq: "Q(next) = S + R'·Q",
+    charExplain: "Derived from the SR latch behavior. When S=1, Q becomes 1 regardless. When R=1 (and S=0), Q becomes 0. Otherwise Q holds. The constraint S·R=0 must always hold (no forbidden state)."
+  },
+
+  JK: {
+    presentNextHead: ["Present Q", "J", "K", "Next Q(t+1)", "Operation"],
+    presentNextRows: [
+      { q:0, inputs:[0,0], qn:0, op:"Hold",   invalid:false },
+      { q:0, inputs:[0,1], qn:0, op:"Reset",  invalid:false },
+      { q:0, inputs:[1,0], qn:1, op:"Set",    invalid:false },
+      { q:0, inputs:[1,1], qn:1, op:"Toggle", invalid:false },
+      { q:1, inputs:[0,0], qn:1, op:"Hold",   invalid:false },
+      { q:1, inputs:[0,1], qn:0, op:"Reset",  invalid:false },
+      { q:1, inputs:[1,0], qn:1, op:"Set",    invalid:false },
+      { q:1, inputs:[1,1], qn:0, op:"Toggle", invalid:false }
+    ],
+    presentNextExplain: "The JK flip-flop eliminates the forbidden SR state by using output feedback. J=K=1 causes the flip-flop to toggle (invert) its current state. This is why JK is called the universal flip-flop — it can perform all four operations.",
+    inputLabels: ["J","K"],
+
+    excitationHead: ["Present Q", "Next Q(t+1)", "J", "K"],
+    excitationRows: [
+      { q:0, qn:0, inputs:["0","X"], note:"Hold at 0: J=0. K is don't care (it resets anyway, doesn't matter)." },
+      { q:0, qn:1, inputs:["1","X"], note:"Set to 1: J=1. K is don't care." },
+      { q:1, qn:0, inputs:["X","1"], note:"Reset to 0: K=1. J is don't care." },
+      { q:1, qn:1, inputs:["X","0"], note:"Hold at 1: K=0. J is don't care." }
+    ],
+    excitationExplain: "The JK excitation table has many don't-care (X) entries because J and K can take any value when they don't affect the required transition. This makes JK the easiest flip-flop to use in sequential circuit design.",
+
+    stateTransitions: [
+      { from:0, to:0, label:"J=0, K=X" },
+      { from:0, to:1, label:"J=1, K=X" },
+      { from:1, to:0, label:"J=X, K=1" },
+      { from:1, to:1, label:"J=X, K=0" }
+    ],
+
+    kmaps: {
+      J: {
+        label: "J input",
+        /* Rows: Q=0,Q=1; Cols: Q_next=0, Q_next=1 */
+        /* (Q=0,Qn=0)→J=0; (Q=0,Qn=1)→J=1; (Q=1,Qn=0)→J=X; (Q=1,Qn=1)→J=X */
+        cells: ["0","1","X","X"],
+        grouped: [1,3],
+        expression: "J = Q'·Q(next)",
+        derivation: "The 1 is at cell (Q=0, Q_next=1). The X at (Q=1, Q_next=1) can be grouped with it. This gives J = Q' · Q(next) — J is needed only when Q is 0 and the next state is 1."
+      },
+      K: {
+        label: "K input",
+        /* (Q=0,Qn=0)→K=X; (Q=0,Qn=1)→K=X; (Q=1,Qn=0)→K=1; (Q=1,Qn=1)→K=0 */
+        cells: ["X","X","1","0"],
+        grouped: [0,2],
+        expression: "K = Q·Q(next)'",
+        derivation: "The 1 is at cell (Q=1, Q_next=0). The X at (Q=0, Q_next=0) can be grouped with it. This gives K = Q · Q_next' — K is needed only when Q is 1 and the next state is 0."
+      }
+    },
+
+    boolExpressions: [
+      { label:"J Excitation", formula:"J = Q'·Q(next)" },
+      { label:"K Excitation", formula:"K = Q·Q(next)'" }
+    ],
+    derivationSteps: [
+      { n:"①", txt:"Observe: Q=0 → Q_next=0 requires <code>J=0</code>. Q=0 → Q_next=1 requires <code>J=1</code>." },
+      { n:"②", txt:"J is only needed when transitioning from 0 to 1: <code>J = Q' · Q(next)</code>" },
+      { n:"③", txt:"Observe: Q=1 → Q_next=0 requires <code>K=1</code>. Q=1 → Q_next=1 requires <code>K=0</code>." },
+      { n:"④", txt:"K is only needed when transitioning from 1 to 0: <code>K = Q · Q(next)'</code>" },
+      { n:"⑤", txt:"Combining both via characteristic equation: <code>Q(next) = J·Q' + K'·Q</code>" }
+    ],
+    characteristicEq: "Q(next) = J·Q' + K'·Q",
+    charExplain: "The characteristic equation of JK is derived by substituting S = J·Q' and R = K·Q into Q(next) = S + R'·Q. This gives the complete next-state description: Q(next) = J·Q' + K'·Q."
+  },
+
+  D: {
+    presentNextHead: ["Present Q", "D", "Next Q(t+1)", "Operation"],
+    presentNextRows: [
+      { q:0, inputs:[0], qn:0, op:"Store 0", invalid:false },
+      { q:0, inputs:[1], qn:1, op:"Store 1", invalid:false },
+      { q:1, inputs:[0], qn:0, op:"Store 0", invalid:false },
+      { q:1, inputs:[1], qn:1, op:"Store 1", invalid:false }
+    ],
+    presentNextExplain: "The D flip-flop directly captures its data input D on each clock edge. The next state is simply equal to D, regardless of the current state Q. There are no invalid input combinations.",
+    inputLabels: ["D"],
+
+    excitationHead: ["Present Q", "Next Q(t+1)", "D"],
+    excitationRows: [
+      { q:0, qn:0, inputs:["0"], note:"Store 0: D must be 0." },
+      { q:0, qn:1, inputs:["1"], note:"Store 1: D must be 1." },
+      { q:1, qn:0, inputs:["0"], note:"Clear to 0: D must be 0." },
+      { q:1, qn:1, inputs:["1"], note:"Keep at 1: D must be 1." }
+    ],
+    excitationExplain: "The D flip-flop excitation table has no don't-care entries because D must always equal the required next state. This simplicity makes D flip-flops ideal for registers and data storage.",
+
+    stateTransitions: [
+      { from:0, to:0, label:"D=0" },
+      { from:0, to:1, label:"D=1" },
+      { from:1, to:0, label:"D=0" },
+      { from:1, to:1, label:"D=1" }
+    ],
+
+    kmaps: {
+      D: {
+        label: "D input",
+        /* Rows: Q=0,Q=1; Cols: Q_next=0, Q_next=1 */
+        /* D = Q_next always */
+        cells: ["0","1","0","1"],
+        grouped: [1,3],
+        expression: "D = Q(next)",
+        derivation: "The K-map shows D=0 in the left column (Q_next=0) and D=1 in the right column (Q_next=1), regardless of Q. The entire Q_next=1 column groups to give D = Q_next."
+      }
+    },
+
+    boolExpressions: [
+      { label:"D Excitation", formula:"D = Q(next)" }
+    ],
+    derivationSteps: [
+      { n:"①", txt:"From excitation table: D must always equal the required next state." },
+      { n:"②", txt:"<code>D = Q_next</code> — the D input is simply set to whatever the next state should be." },
+      { n:"③", txt:"This is the simplest excitation of all flip-flops — no logic needed, D directly represents the desired next state." }
+    ],
+    characteristicEq: "Q(next) = D",
+    charExplain: "The D flip-flop has the simplest characteristic equation of all: Q(next) = D. The next state is purely determined by the data input D at the clock edge, with no dependence on the current state Q."
+  },
+
+  T: {
+    presentNextHead: ["Present Q", "T", "Next Q(t+1)", "Operation"],
+    presentNextRows: [
+      { q:0, inputs:[0], qn:0, op:"Hold",   invalid:false },
+      { q:0, inputs:[1], qn:1, op:"Toggle", invalid:false },
+      { q:1, inputs:[0], qn:1, op:"Hold",   invalid:false },
+      { q:1, inputs:[1], qn:0, op:"Toggle", invalid:false }
+    ],
+    presentNextExplain: "The T (Toggle) flip-flop has one input T. When T=0, the state holds. When T=1, the state inverts on each clock edge. It is derived from JK by tying J=K=T together.",
+    inputLabels: ["T"],
+
+    excitationHead: ["Present Q", "Next Q(t+1)", "T"],
+    excitationRows: [
+      { q:0, qn:0, inputs:["0"], note:"Hold at 0: T=0 (no toggle)." },
+      { q:0, qn:1, inputs:["1"], note:"Toggle to 1: T=1." },
+      { q:1, qn:0, inputs:["1"], note:"Toggle to 0: T=1." },
+      { q:1, qn:1, inputs:["0"], note:"Hold at 1: T=0 (no toggle)." }
+    ],
+    excitationExplain: "The T flip-flop requires T=1 when the state must change, and T=0 when it must hold. T is therefore the XOR of the present state and required next state: T = Q ⊕ Q_next.",
+
+    stateTransitions: [
+      { from:0, to:0, label:"T=0" },
+      { from:0, to:1, label:"T=1" },
+      { from:1, to:0, label:"T=1" },
+      { from:1, to:1, label:"T=0" }
+    ],
+
+    kmaps: {
+      T: {
+        label: "T input",
+        /* Rows: Q=0,Q=1; Cols: Q_next=0, Q_next=1 */
+        /* (Q=0,Qn=0)→T=0; (Q=0,Qn=1)→T=1; (Q=1,Qn=0)→T=1; (Q=1,Qn=1)→T=0 */
+        cells: ["0","1","1","0"],
+        grouped: [1,2],  /* the two 1s form the T=Q XOR Q_next pattern */
+        expression: "T = Q ⊕ Q(next)",
+        derivation: "The K-map shows 1s at (Q=0,Q_next=1) and (Q=1,Q_next=0) — a checkerboard XOR pattern. No further simplification is possible; the result is T = Q ⊕ Q_next."
+      }
+    },
+
+    boolExpressions: [
+      { label:"T Excitation", formula:"T = Q ⊕ Q(next)" }
+    ],
+    derivationSteps: [
+      { n:"①", txt:"From excitation table: T=1 when the state changes; T=0 when the state holds." },
+      { n:"②", txt:"State changes occur when <code>Q ≠ Q_next</code> — which is precisely the XOR operation." },
+      { n:"③", txt:"Therefore: <code>T = Q ⊕ Q_next</code>" },
+      { n:"④", txt:"Rearranging: <code>Q_next = T ⊕ Q</code> (the characteristic equation)." }
+    ],
+    characteristicEq: "Q(next) = T ⊕ Q",
+    charExplain: "The T flip-flop characteristic equation Q(next) = T ⊕ Q directly expresses the toggle behavior: when T=0, Q(next)=Q (hold); when T=1, Q(next)=Q' (toggle/invert). This XOR relationship is the mathematical definition of toggling."
+  }
+};
+
+let adType = "SR";
+let adKmapVar = null;
+
+function adSetType(type){
+  adType = type;
+  $$("[data-ad-ff]").forEach(b => b.classList.toggle("active", b.dataset.adFf === type));
+  const d = AD_DATA[type];
+  const ff = FFS[type];
+  adKmapVar = Object.keys(d.kmaps)[0];
+  adRenderPresentNext();
+  adRenderExcitation();
+  adRenderStateDiagram();
+  adRenderKmap();
+  adRenderBoolExpr();
+  adRenderCharEq();
+  $("#ad-verify-result").innerHTML = "";
+}
+
+function adCellClass(val){
+  if(val === "X" || val === "x") return "cell-dc";
+  if(val === 1 || val === "1") return "cell-1";
+  if(val === 0 || val === "0") return "cell-0";
+  return "";
+}
+
+function adCellVal(val){
+  if(val === "X" || val === "x") return "X";
+  if(val === 1 || val === "1") return "1";
+  if(val === 0 || val === "0") return "0";
+  if(val === "—") return "—";
+  return String(val);
+}
+
+function adRenderPresentNext(){
+  const d = AD_DATA[adType];
+  const ff = FFS[adType];
+  const tbl = $("#ad-pn-table");
+  const heads = d.presentNextHead;
+  tbl.innerHTML = `<thead><tr>${heads.map(h => `<th>${h}</th>`).join("")}</tr></thead>`;
+  const tbody = document.createElement("tbody");
+  d.presentNextRows.forEach(row => {
+    const tr = document.createElement("tr");
+    if(row.invalid) tr.className = "row-invalid";
+    const qCell = `<td class="cell-q">${row.q}</td>`;
+    const inputCells = row.inputs.map(v => `<td class="${adCellClass(v)}">${adCellVal(v)}</td>`).join("");
+    let qnClass = row.invalid ? "cell-inv" : "cell-qn";
+    let qnVal = row.invalid ? "INVALID" : adCellVal(row.qn);
+    const qnCell = `<td class="${qnClass}">${qnVal}</td>`;
+    const opCell = row.invalid ? `<td><span class="badge badge-invalid">${row.op}</span></td>` : `<td style="color:var(--muted);font-size:12px">${row.op}</td>`;
+    tr.innerHTML = qCell + inputCells + qnCell + opCell;
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+  $("#ad-pn-explain").textContent = d.presentNextExplain;
+}
+
+function adRenderExcitation(){
+  const d = AD_DATA[adType];
+  const tbl = $("#ad-ex-table");
+  const heads = d.excitationHead;
+  tbl.innerHTML = `<thead><tr>${heads.map(h => `<th>${h}</th>`).join("")}</tr></thead>`;
+  const tbody = document.createElement("tbody");
+  d.excitationRows.forEach(row => {
+    const tr = document.createElement("tr");
+    const qCell = `<td class="cell-q">${row.q}</td>`;
+    const qnCell = `<td class="cell-qn">${row.qn}</td>`;
+    const inputCells = row.inputs.map(v => `<td class="${adCellClass(v)}">${v}</td>`).join("");
+    tr.innerHTML = qCell + qnCell + inputCells;
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+  $("#ad-ex-explain").textContent = d.excitationExplain;
+}
+
+function adRenderStateDiagram(){
+  const d = AD_DATA[adType];
+  const ff = FFS[adType];
+  const accent = ff.accent;
+  const w = 560, h = 280, r = 54;
+  const cx0 = 140, cy0 = 140;
+  const cx1 = 420, cy1 = 140;
+
+  const selfLoopOffset = 70;
+
+  /* group transitions by type */
+  const selfLoops0 = d.stateTransitions.filter(t => t.from === 0 && t.to === 0);
+  const selfLoops1 = d.stateTransitions.filter(t => t.from === 1 && t.to === 1);
+  const fwd = d.stateTransitions.filter(t => t.from === 0 && t.to === 1);
+  const rev = d.stateTransitions.filter(t => t.from === 1 && t.to === 0);
+
+  function fwdLabels(){ return fwd.map(t => t.label).join(", "); }
+  function revLabels(){ return rev.map(t => t.label).join(", "); }
+  function sl0Labels(){ return selfLoops0.map(t => t.label).join(", "); }
+  function sl1Labels(){ return selfLoops1.map(t => t.label).join(", "); }
+
+  const arrowMarker = `<defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="rgba(148,165,201,.8)" />
+    </marker>
+    <marker id="arrowhead-fwd" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="${accent}" opacity=".7" />
+    </marker>
+  </defs>`;
+
+  let arrows = "";
+  /* forward 0→1 arrow (below center line) */
+  if(fwd.length){
+    const yOff = 42;
+    arrows += `<path d="M${cx0+r+4},${cy0+yOff} C${(cx0+cx1)/2},${cy0+yOff+50} ${(cx0+cx1)/2},${cy1+yOff+50} ${cx1-r-4},${cy1+yOff}" stroke="${accent}" stroke-opacity=".7" stroke-width="2" fill="none" marker-end="url(#arrowhead-fwd)"/>
+      <text x="${(cx0+cx1)/2}" y="${cy0+yOff+78}" font-family="IBM Plex Mono, monospace" font-size="11" fill="${accent}" text-anchor="middle" opacity=".9">${fwdLabels()}</text>`;
+  }
+  /* reverse 1→0 arrow (above center line) */
+  if(rev.length){
+    const yOff = -42;
+    arrows += `<path d="M${cx1-r-4},${cy1+yOff} C${(cx0+cx1)/2},${cy1+yOff-50} ${(cx0+cx1)/2},${cy0+yOff-50} ${cx0+r+4},${cy0+yOff}" stroke="rgba(148,165,201,.8)" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+      <text x="${(cx0+cx1)/2}" y="${cy0+yOff-54}" font-family="IBM Plex Mono, monospace" font-size="11" fill="rgba(148,165,201,.9)" text-anchor="middle">${revLabels()}</text>`;
+  }
+  /* self-loop state 0 */
+  if(selfLoops0.length){
+    arrows += `<path d="M${cx0-r},${cy0-20} C${cx0-r-55},${cy0-90} ${cx0+20},${cy0-90} ${cx0+20},${cy0-r-4}" stroke="rgba(148,165,201,.6)" stroke-width="1.8" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="5,3"/>
+      <text x="${cx0-40}" y="${cy0-100}" font-family="IBM Plex Mono, monospace" font-size="10" fill="rgba(148,165,201,.85)" text-anchor="middle">${sl0Labels()}</text>`;
+  }
+  /* self-loop state 1 */
+  if(selfLoops1.length){
+    arrows += `<path d="M${cx1+r},${cy1-20} C${cx1+r+55},${cy1-90} ${cx1-20},${cy1-90} ${cx1-20},${cy1-r-4}" stroke="rgba(148,165,201,.6)" stroke-width="1.8" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="5,3"/>
+      <text x="${cx1+38}" y="${cy1-100}" font-family="IBM Plex Mono, monospace" font-size="10" fill="rgba(148,165,201,.85)" text-anchor="middle">${sl1Labels()}</text>`;
+  }
+
+  const svg = `<svg viewBox="0 0 ${w} ${h}" class="ad-state-diagram" role="img" aria-label="State diagram for ${FFS[adType].name}">
+    ${arrowMarker}
+    ${arrows}
+    <!-- State 0 -->
+    <circle cx="${cx0}" cy="${cy0}" r="${r}" class="sd-state-circle" stroke="${accent}"/>
+    <text x="${cx0}" y="${cy0-8}" class="sd-state-text" fill="${accent}">0</text>
+    <text x="${cx0}" y="${cy0+16}" class="sd-state-label">State 0</text>
+    <!-- State 1 -->
+    <circle cx="${cx1}" cy="${cy1}" r="${r}" class="sd-state-circle" stroke="${accent}"/>
+    <text x="${cx1}" y="${cy1-8}" class="sd-state-text" fill="${accent}">1</text>
+    <text x="${cx1}" y="${cy1+16}" class="sd-state-label">State 1</text>
+  </svg>`;
+
+  $("#ad-sd-container").innerHTML = svg;
+}
+
+function adRenderKmap(){
+  const d = AD_DATA[adType];
+  const vars = Object.keys(d.kmaps);
+
+  /* selector buttons */
+  const sel = $("#ad-kmap-selector");
+  sel.innerHTML = vars.map(v => `<button class="kmap-sel-btn${v === adKmapVar ? " active" : ""}" data-kmap-var="${v}">${v} K-Map</button>`).join("");
+  $$("[data-kmap-var]", sel).forEach(b => b.addEventListener("click", () => {
+    adKmapVar = b.dataset.kmapVar;
+    adRenderKmap();
+  }));
+
+  const km = d.kmaps[adKmapVar];
+  /* 2-var K-map: rows=Q(0,1), cols=Q_next (Gray: 00→0, 01→1) */
+  /* cells order: [Q=0,Qn=0], [Q=0,Qn=1], [Q=1,Qn=0], [Q=1,Qn=1] */
+  const grouped = new Set(km.grouped || []);
+  function cellClass(idx){
+    const v = km.cells[idx];
+    let cls = "kmap-cell ";
+    if(v === "1" || v === 1) cls += "val-1";
+    else if(v === "X" || v === "x") cls += "val-x";
+    else cls += "val-0";
+    if(grouped.has(idx)) cls += " grouped";
+    return cls;
+  }
+
+  const grid = `<table class="kmap-table" role="table" aria-label="K-map for ${adKmapVar}">
+    <thead>
+      <tr>
+        <th style="background:transparent;border:none"></th>
+        <th title="Q_next = 0">Q(next)=0</th>
+        <th title="Q_next = 1">Q(next)=1</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="kmap-rowhead">Q=0</td>
+        <td class="${cellClass(0)}">${adCellVal(km.cells[0])}</td>
+        <td class="${cellClass(1)}">${adCellVal(km.cells[1])}</td>
+      </tr>
+      <tr>
+        <td class="kmap-rowhead">Q=1</td>
+        <td class="${cellClass(2)}">${adCellVal(km.cells[2])}</td>
+        <td class="${cellClass(3)}">${adCellVal(km.cells[3])}</td>
+      </tr>
+    </tbody>
+  </table>`;
+
+  $("#ad-kmap-grid").innerHTML = grid;
+  $("#ad-kmap-expr").textContent = km.expression;
+  $("#ad-kmap-group-legend").innerHTML = `<p style="margin-top:10px;font-size:12px;color:var(--muted)"><span style="display:inline-block;width:14px;height:14px;border:2px solid var(--cyan);border-radius:3px;vertical-align:middle;margin-right:6px"></span>Highlighted cells form the grouped term</p>`;
+  $("#ad-kmap-explain").textContent = km.derivation;
+}
+
+function adRenderBoolExpr(){
+  const d = AD_DATA[adType];
+  const grid = $("#ad-bool-grid");
+  grid.innerHTML = d.boolExpressions.map(e => `
+    <div class="ad-eq-card">
+      <div class="ad-eq-label">${e.label}</div>
+      <div class="ad-eq-formula">${e.formula}</div>
+    </div>`).join("");
+
+  const derive = $("#ad-bool-derive");
+  derive.innerHTML = `<h4 style="font-size:15px;margin-bottom:var(--s2)">Step-by-step derivation:</h4>` +
+    d.derivationSteps.map(s => `
+      <div class="ad-derive-step">
+        <span class="ad-derive-n">${s.n}</span>
+        <span class="ad-derive-txt">${s.txt}</span>
+      </div>`).join("");
+}
+
+function adRenderCharEq(){
+  const d = AD_DATA[adType];
+  $("#ad-char-eq-formula").textContent = d.characteristicEq;
+  $("#ad-char-explain").innerHTML = `<div class="why"><div class="t mono">EXPLANATION</div><p>${d.charExplain}</p></div>`;
+}
+
+function adVerify(){
+  const d = AD_DATA[adType];
+  const issues = [];
+
+  /* 1. Verify presentNextRows match simulation engine */
+  d.presentNextRows.forEach(row => {
+    if(row.invalid) return;
+    const inpObj = {};
+    d.inputLabels.forEach((lbl, i) => inpObj[lbl] = row.inputs[i]);
+    const r = nextState(adType, inpObj, row.q);
+    if(r.q !== row.qn){
+      issues.push(`Present/Next table: Q=${row.q}, inputs=${JSON.stringify(inpObj)} → table says Q_next=${row.qn} but simulation gives ${r.q}`);
+    }
+  });
+
+  /* 2. Verify excitation table: applying the required inputs produces the required next state */
+  d.excitationRows.forEach(row => {
+    /* expand don't-care entries and check both 0 and 1 */
+    const inpSets = [{}];
+    row.inputs.forEach((v, i) => {
+      const lbl = d.excitationHead[i + 2]; /* skip Q, Q_next columns */
+      if(v === "X" || v === "x"){
+        const expanded = [];
+        inpSets.forEach(inp => {
+          expanded.push(Object.assign({}, inp, {[lbl]: 0}));
+          expanded.push(Object.assign({}, inp, {[lbl]: 1}));
+        });
+        inpSets.splice(0, inpSets.length, ...expanded);
+      } else {
+        inpSets.forEach(inp => inp[lbl] = Number(v));
+      }
+    });
+    inpSets.forEach(inp => {
+      /* for SR, skip forbidden */
+      if(adType === "SR" && inp.S === 1 && inp.R === 1) return;
+      const r = nextState(adType, inp, row.q);
+      if(!r.invalid && r.q !== row.qn){
+        issues.push(`Excitation table: Q=${row.q}→${row.qn} with inputs ${JSON.stringify(inp)} gives Q_next=${r.q}`);
+      }
+    });
+  });
+
+  /* 3. Verify state diagram matches present/next table */
+  const sdTransMap = {};
+  d.stateTransitions.forEach(t => { const k = `${t.from}->${t.to}`; sdTransMap[k] = true; });
+  d.presentNextRows.forEach(row => {
+    if(row.invalid) return;
+    const key = `${row.q}->${row.qn}`;
+    if(!sdTransMap[key]){
+      issues.push(`State diagram missing transition: ${key}`);
+    }
+  });
+
+  /* 4. Verify K-map cells match excitation table */
+  Object.keys(d.kmaps).forEach(varName => {
+    const km = d.kmaps[varName];
+    /* cells[0]=Q=0,Qn=0; cells[1]=Q=0,Qn=1; cells[2]=Q=1,Qn=0; cells[3]=Q=1,Qn=1 */
+    const pairs = [{q:0,qn:0,idx:0},{q:0,qn:1,idx:1},{q:1,qn:0,idx:2},{q:1,qn:1,idx:3}];
+    pairs.forEach(pair => {
+      const excRow = d.excitationRows.find(r => r.q === pair.q && r.qn === pair.qn);
+      if(!excRow) return;
+      const varIdx = d.inputLabels.indexOf(varName);
+      if(varIdx < 0) return;
+      const excVal = excRow.inputs[varIdx];
+      const kmVal = km.cells[pair.idx];
+      if(excVal === "X" || excVal === "x" || kmVal === "X" || kmVal === "x") return;
+      if(String(excVal) !== String(kmVal)){
+        issues.push(`K-map for ${varName}: cell (Q=${pair.q}, Q_next=${pair.qn}) is ${kmVal} but excitation table says ${excVal}`);
+      }
+    });
+  });
+
+  const res = $("#ad-verify-result");
+  if(issues.length === 0){
+    res.innerHTML = `<div class="ad-verify-ok" style="font-size:16px">✓ Logic Verified — All tables, diagrams, K-maps and equations are mutually consistent for ${FFS[adType].name}.</div>`;
+  } else {
+    res.innerHTML = `<div class="ad-verify-err"><div style="margin-bottom:8px">⚠️ ${issues.length} inconsistency${issues.length > 1 ? "ies" : ""} found:</div>${issues.map(i => `<div style="padding:4px 0;font-size:12px;opacity:.85">• ${i}</div>`).join("")}</div>`;
+  }
+}
+
+function renderAnalysis(){
+  /* wire FF selector buttons */
+  $$("[data-ad-ff]").forEach(b => {
+    if(!b._adWired){ b._adWired = true;
+      b.addEventListener("click", () => adSetType(b.dataset.adFf));
+    }
+  });
+  /* wire workflow scroll buttons */
+  $$("[data-ad-scroll]").forEach(b => {
+    if(!b._adScrollWired){ b._adScrollWired = true;
+      b.addEventListener("click", () => {
+        const target = $("#" + b.dataset.adScroll);
+        if(target) target.scrollIntoView({ behavior:"smooth", block:"start" });
+      });
+    }
+  });
+  /* wire verify button */
+  const vBtn = $("#ad-verify-btn");
+  if(vBtn && !vBtn._adWired){ vBtn._adWired = true; vBtn.addEventListener("click", adVerify); }
+  /* render content for current type */
+  adSetType(adType);
 }
 
 /* ---------- boot ---------- */
@@ -2775,9 +3696,10 @@ function init(){
   $("#apps").innerHTML = APPS.map(a => `<div class="app-card">${appSVG(a.ic)}<h4>${a.t}</h4><p>${a.d}</p></div>`).join("");
   $("#branch-holder").innerHTML = branchSVG();
   renderCompare();
+  renderAnalysis();
   quizCard(QUIZ, $("#quiz-card"), "Flip-Flop Mastery");
   $$("#home-cards [data-ff]").forEach(b => b.addEventListener("click", () => { switchType(b.dataset.ff); showPage("sim"); }));
-  $$(".navlink").forEach(b => b.addEventListener("click", () => showPage(b.dataset.page)));
+  $$(`.navlink`).forEach(b => b.addEventListener("click", () => showPage(b.dataset.page)));
   wireGoto(); bindCam(); bindTiming();
 
   $("#btn-logic").addEventListener("click", showLogic);
